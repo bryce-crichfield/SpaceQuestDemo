@@ -4,7 +4,7 @@ import game.Game;
 import game.GameState;
 import game.OptionsMenuState;
 import game.UserInterface;
-import game.battle.PlayBattleState;
+import game.battle.BattleState;
 import game.overworld.PlayOverworldState;
 import widget.ButtonWidget;
 import widget.Menu;
@@ -33,7 +33,7 @@ public class MainMenuState extends GameState {
                 }),
 
                 new ButtonWidget("Battle", getGame(), () -> {
-                    getGame().pushState(new PlayBattleState(getGame()));
+                    getGame().pushState(new BattleState(getGame()));
                 }),
 
                 new ButtonWidget("Options", getGame(), () -> {

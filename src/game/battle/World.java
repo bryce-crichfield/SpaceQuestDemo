@@ -1,16 +1,19 @@
 package game.battle;
 
-import javax.xml.datatype.Duration;
+import java.time.Duration;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
-public class TileMap {
+public class World {
     private final int width;
     private final int height;
     private final Tile[][] tiles;
+    private final List<Actor> actors = new ArrayList<>();
 
-    public TileMap(int width, int height) {
+    public World(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -26,20 +29,10 @@ public class TileMap {
                 }
             }
         }
-//
-//        wall(3, 3);
-//        wall(3, 4);
-//        wall(3, 5);
-//        wall(3, 6);
-//
-//        wall(5, 3);
-//        wall(5, 4);
-//        wall(5, 5);
-//        wall(5, 6);
-//
-//        wall(7, 3);
-//        wall(7, 4);
-//        wall(7, 5);
+
+        actors.add(new Actor(3, 0, Color.RED));
+        actors.add(new Actor(5, 0, Color.BLUE));
+        actors.add(new Actor(6, 0, Color.MAGENTA));
     }
 
     public void wall(int x, int y) {
@@ -47,7 +40,9 @@ public class TileMap {
     }
 
     public void onUpdate(Duration duration) {
-
+        for (Actor actor : actors) {
+            actor.onUpdate(duration);
+        }
     }
 
     public void onRender(Graphics2D graphics) {
@@ -55,6 +50,10 @@ public class TileMap {
             for (int y = 0; y < height; y++) {
                 tiles[x][y].onRender(graphics);
             }
+        }
+
+        for (Actor actor : actors) {
+            actor.onRender(graphics);
         }
     }
 
@@ -96,5 +95,35 @@ public class TileMap {
         return neighbors.toArray(new Tile[0]);
     }
 
+    public Optional<Actor> getActorByPosition(int x, int y) {
+        for (Actor actor : actors) {
+            if (actor.getX() == x && actor.getY() == y) {
+                return Optional.of(actor);
+            }
+        }
 
+        return Optional.empty();
+    }
+
+    public void addActor(Actor actor) {
+        actors.add(actor);
+    }
+
+    public void removeActor(Actor actor) {
+        actors.remove(actor);
+    }
+
+    public List<Actor> getActors() {
+        return actors;
+    }
+
+    public Optional<Actor> findActor(Predicate<Actor> predicate) {
+        for (Actor actor : actors) {
+            if (predicate.test(actor)) {
+                return Optional.of(actor);
+            }
+        }
+
+        return Optional.empty();
+    }
 }

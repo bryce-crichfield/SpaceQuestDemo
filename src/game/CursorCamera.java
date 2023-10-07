@@ -1,6 +1,6 @@
 package game;
 
-import game.battle.TileMap;
+import game.battle.World;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -30,7 +30,7 @@ public class CursorCamera {
         accelerationY = 0;
     }
 
-    public boolean onUpdate(Duration duration, TileMap tileMap) {
+    public boolean onUpdate(Duration duration, World world) {
         float dt = Util.perSecond(duration);
 
         int cursorWorldX = cursorX * tileSize;
@@ -81,8 +81,8 @@ public class CursorCamera {
         }
 
         // clamp
-        cursorX = Util.clamp(cursorX, 0, tileMap.getWidth() - 1);
-        cursorY = Util.clamp(cursorY, 0, tileMap.getHeight() - 1);
+        cursorX = Util.clamp(cursorX, 0, world.getWidth() - 1);
+        cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
 
         return cursorChanged;
     }

@@ -5,14 +5,12 @@ import game.Util;
 import java.util.*;
 
 public class Pathfinder {
-    TileMap map;
-    List<Actor> actors;
+    World world;
     Queue<Node> open;
     Set<Node> closed;
 
-    public Pathfinder(TileMap map, List<Actor> actors) {
-        this.map = map;
-        this.actors = actors;
+    public Pathfinder(World world) {
+        this.world = world;
         open = new PriorityQueue<>(Comparator.comparingInt(n -> n.gScore + n.hScore));
         closed = new HashSet<>();
     }
@@ -47,7 +45,7 @@ public class Pathfinder {
         List<Tile> path = new ArrayList<>();
         Node current = end;
         while (current != null) {
-            path.add(map.getTile(current.x, current.y));
+            path.add(world.getTile(current.x, current.y));
             current = current.parent;
         }
         Collections.reverse(path);
@@ -56,7 +54,7 @@ public class Pathfinder {
 
     public void expand(Node current, Tile end) {
         // Add the neighbors to the open list
-        for (Tile neighbor : map.getNeighbors(current.x, current.y)) {
+        for (Tile neighbor : world.getNeighbors(current.x, current.y)) {
             if (!neighbor.isPassable() || actorOccupies(neighbor.getX(), neighbor.getY())) {
                 continue;
             }
@@ -76,12 +74,7 @@ public class Pathfinder {
     }
 
     public boolean actorOccupies(int x, int y) {
-        for (Actor actor : actors) {
-            if (actor.getX() == x && actor.getY() == y) {
-                return true;
-            }
-        }
-        return false;
+        return world.getActorByPosition(x, y).isPresent();
     }
 
     private static class Node {

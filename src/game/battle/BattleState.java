@@ -10,30 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PlayBattleState extends GameState {
+public class BattleState extends GameState {
     StarBackground starBackground;
     Camera camera;
     CursorCamera cursorCamera;
-    TileMap tileMap;
+    World world;
     List<Tile> path;
 
-    List<Actor> actors;
     Optional<Actor> selectedActor = Optional.empty();
     List<Tile> possiblePath = new ArrayList<>();
 
     boolean actionMenuOpen = true;
 
 
-    public PlayBattleState(Game game) {
+    public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
         cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32);
-        tileMap = new TileMap(8, 8);
+        world = new World(8, 8);
         path = new ArrayList<>();
-        actors = new ArrayList<>();
-        actors.add(new Actor(3, 0, Color.RED));
-        actors.add(new Actor(5, 0, Color.BLUE));
-        actors.add(new Actor(6, 0, Color.MAGENTA));
 
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
     }
@@ -42,16 +37,14 @@ public class PlayBattleState extends GameState {
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
 
-        boolean cursorChanged = cursorCamera.onUpdate(delta, tileMap);
+        boolean cursorChanged = cursorCamera.onUpdate(delta, world);
 
         updateActorSelection();
 
         if (cursorChanged)
             updatePossiblePath();
 
-        for (Actor actor : actors) {
-            actor.onUpdate(delta);
-        }
+        world.onUpdate(delta);
     }
 
     private void updateActorSelection() {
@@ -60,8 +53,11 @@ public class PlayBattleState extends GameState {
 
         boolean primaryPressed = getGame().getKeyboard().pressed(Keyboard.PRIMARY);
         boolean secondaryPressed = getGame().getKeyboard().pressed(Keyboard.SECONDARY);
-        Optional<Actor> hoveredActor = actors.stream().filter(
-                actor -> actor.getX() == cursorX && actor.getY() == cursorY).findFirst();
+        Optional<Actor> hoveredActor = world.findActor(actor -> {
+            int actorX = (int) actor.getX();
+            int actorY = (int) actor.getY();
+            return actorX == cursorX && actorY == cursorY;
+        });
 
         if (secondaryPressed) {
             selectedActor.ifPresent(actor -> actor.setSelected(false));
@@ -96,18 +92,21 @@ public class PlayBattleState extends GameState {
     private void updatePossiblePath() {
         int cursorX = cursorCamera.getCursorX();
         int cursorY = cursorCamera.getCursorY();
-        Optional<Actor> hoveredActor = actors.stream().filter(
-                actor -> actor.getX() == cursorX && actor.getY() == cursorY).findFirst();
+        Optional<Actor> hoveredActor = world.findActor(actor -> {
+            int actorX = (int) actor.getX();
+            int actorY = (int) actor.getY();
+            return actorX == cursorX && actorY == cursorY;
+        });
         boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
 
         if (selectedActor.isPresent() && hoveredOnEmptyTile) {
             // do pathfinding
-            Pathfinder pathfinder = new Pathfinder(tileMap, actors);
+            Pathfinder pathfinder = new Pathfinder(world);
             int actorX = (int) selectedActor.get().getX();
             int actorY = (int) selectedActor.get().getY();
             System.out.println("Recalculating path from " + actorX + ", " + actorY + " to " + cursorX + ", " + cursorY);
-            Tile start = tileMap.getTile(actorX, actorY);
-            Tile end = tileMap.getTile(cursorX, cursorY);
+            Tile start = world.getTile(actorX, actorY);
+            Tile end = world.getTile(cursorX, cursorY);
             possiblePath = pathfinder.find(start, end);
         }
     }
@@ -124,13 +123,7 @@ public class PlayBattleState extends GameState {
         graphics.setTransform(transform);
 
         // Draw the map
-        tileMap.onRender(graphics);
-
-        // Draw the actors
-        for (Actor actor : actors) {
-            actor.onRender(graphics);
-        }
-
+        world.onRender(graphics);
 
         if (!possiblePath.isEmpty()) {
             int tileSize = getGame().TILE_SIZE;

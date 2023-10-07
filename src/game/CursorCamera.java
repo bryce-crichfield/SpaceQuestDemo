@@ -16,6 +16,7 @@ public class CursorCamera {
     Camera camera;
     Keyboard keyboard;
     int tileSize;
+
     public CursorCamera(Camera camera, Keyboard keyboard, int tileSize) {
         this.camera = camera;
         this.keyboard = keyboard;

@@ -4,7 +4,6 @@ import game.Game;
 import game.Keyboard;
 import game.UserInterface;
 import game.Util;
-import widget.Widget;
 
 import java.awt.*;
 import java.time.Duration;
@@ -18,6 +17,8 @@ public class Menu {
     private final int height;
     private int caret = 0;
     private List<Widget> widgets;
+    private int itemDistance;
+    private int textSize;
 
     public Menu(Game game, int x, int y, int width, int height) {
         this.game = game;
@@ -25,6 +26,17 @@ public class Menu {
         this.y = y;
         this.width = width;
         this.height = height;
+
+        itemDistance = game.TILE_SIZE;
+        textSize = 12;
+    }
+
+    public void setItemDistance(int itemDistance) {
+        this.itemDistance = itemDistance;
+    }
+
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
     }
 
     public Game getGame() {
@@ -52,9 +64,7 @@ public class Menu {
     }
 
     public void onRender(Graphics2D graphics) {
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                getGame().TILE_SIZE
-        );
+        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT, getGame().TILE_SIZE);
 
         int menuWidth = width;
         int menuX = x;
@@ -65,16 +75,16 @@ public class Menu {
         ui.textColor = Color.WHITE;
         ui.drawPanel(menuX, menuY, menuWidth, height);
 
-        ui.textSize = 12;
+        ui.textSize = textSize;
         int optionsStartY = menuY;
         int y = optionsStartY;
         for (Widget widget : widgets) {
             boolean selected = widgets.indexOf(widget) == caret;
             widget.onRender(ui, menuX, y, menuWidth, selected);
-            y += ui.tileSize;
+            y += itemDistance;
         }
 
-        int caretY = optionsStartY + caret * ui.tileSize;
+        int caretY = optionsStartY + caret * itemDistance;
         ui.drawTextRightJustified(">", menuX, caretY, menuWidth, 32, 12);
     }
 }

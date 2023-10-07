@@ -7,21 +7,21 @@ import game.UserInterface;
 import java.time.Duration;
 
 public class ButtonWidget extends Widget {
-    public boolean pressed = false;
+    private final Runnable action;
 
-    public ButtonWidget(String text, Game game) {
+    public ButtonWidget(String text, Game game, Runnable action) {
         super(text, game);
+        this.action = action;
     }
+
 
     @Override
     public void onUpdate(Duration delta) {
         super.onUpdate(delta);
 
-        pressed = false;
-
         if (game.getKeyboard().pressed(Keyboard.PRIMARY)) {
-            pressed = true;
             game.getAudio().play("caret.wav");
+            action.run();
         }
     }
 

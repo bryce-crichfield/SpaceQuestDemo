@@ -9,24 +9,24 @@ import java.awt.*;
 import java.time.Duration;
 
 public class OptionsMenuState extends GameState {
-    private int caret = 0;
-
-    private final SliderWidget musicVolume;
-    private final SliderWidget soundVolume;
-    private final RadioButtonWidget fullscreen;
-    private final ButtonWidget controls;
-    private final ButtonWidget back;
-    private final widget.Menu menu;
+    private final Menu menu;
+    private final int caret = 0;
 
 
     public OptionsMenuState(Game game) {
         super(game);
 
-        musicVolume = new SliderWidget("Music Volume", getGame());
-        soundVolume = new SliderWidget("Sound Volume", getGame());
-        fullscreen = new RadioButtonWidget("Fullscreen", getGame());
-        controls = new ButtonWidget("Controls", getGame());
-        back = new ButtonWidget("Back", getGame());
+        var musicVolume = new SliderWidget("Music Volume", getGame());
+        var soundVolume = new SliderWidget("Sound Volume", getGame());
+        var fullscreen = new RadioButtonWidget("Fullscreen", getGame());
+
+        var controls = new ButtonWidget("Controls", getGame(), () -> {
+            getGame().pushState(new ControlsMenuState(getGame()));
+        });
+
+        var back = new ButtonWidget("Back", getGame(), () -> {
+            getGame().popState();
+        });
 
 
         int menuWidth = 11 * getGame().TILE_SIZE;
@@ -40,14 +40,6 @@ public class OptionsMenuState extends GameState {
     @Override
     public void onUpdate(Duration delta) {
         menu.onUpdate(delta);
-
-        if (back.pressed) {
-            getGame().popState();
-        }
-
-        if (controls.pressed) {
-            getGame().pushState(new ControlsMenuState(getGame()));
-        }
     }
 
     @Override

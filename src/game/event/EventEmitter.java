@@ -3,10 +3,10 @@ package game.event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventContext {
+public class EventEmitter {
     private final List<EventListener> listeners;
 
-    public EventContext() {
+    public EventEmitter() {
         listeners = new ArrayList<>();
     }
 

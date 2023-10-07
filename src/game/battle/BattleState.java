@@ -1,6 +1,8 @@
 package game.battle;
 
 import game.*;
+import game.event.Event;
+import game.event.EventListener;
 import game.title.StarBackground;
 
 import java.awt.*;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BattleState extends GameState {
+public class BattleState extends GameState implements EventListener {
     StarBackground starBackground;
     Camera camera;
     CursorCamera cursorCamera;
@@ -31,18 +33,17 @@ public class BattleState extends GameState {
         path = new ArrayList<>();
 
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+
+        cursorCamera.getEmitter().addListener(this);
     }
 
     @Override
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
 
-        boolean cursorChanged = cursorCamera.onUpdate(delta, world);
+        cursorCamera.onUpdate(delta, world);
 
         updateActorSelection();
-
-        if (cursorChanged)
-            updatePossiblePath();
 
         world.onUpdate(delta);
     }
@@ -189,6 +190,13 @@ public class BattleState extends GameState {
             ui.textColor = Color.WHITE;
 
             ui.drawPanel(menuX, menuY, menuWidth, menuHeight);
+        }
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (event instanceof CursorCamera.CursorMovedEvent moved) {
+            updatePossiblePath();
         }
     }
 }

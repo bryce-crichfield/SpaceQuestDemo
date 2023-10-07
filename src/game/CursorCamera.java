@@ -1,12 +1,15 @@
 package game;
 
 import game.battle.World;
+import game.event.Event;
+import game.event.EventEmitter;
+import game.event.EventSource;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 
-public class CursorCamera {
+public class CursorCamera implements EventSource {
     public int cursorX;
     public int cursorY;
     float velocityX;
@@ -16,6 +19,7 @@ public class CursorCamera {
     Camera camera;
     Keyboard keyboard;
     int tileSize;
+    EventEmitter emitter;
 
     public CursorCamera(Camera camera, Keyboard keyboard, int tileSize) {
         this.camera = camera;
@@ -28,9 +32,11 @@ public class CursorCamera {
         velocityY = 0;
         accelerationX = 0;
         accelerationY = 0;
+
+        emitter = new EventEmitter();
     }
 
-    public boolean onUpdate(Duration duration, World world) {
+    public void onUpdate(Duration duration, World world) {
         float dt = Util.perSecond(duration);
 
         int cursorWorldX = cursorX * tileSize;
@@ -84,7 +90,10 @@ public class CursorCamera {
         cursorX = Util.clamp(cursorX, 0, world.getWidth() - 1);
         cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
 
-        return cursorChanged;
+
+        if (cursorChanged) {
+            getEmitter().fireEvent(new CursorMovedEvent(this));
+        }
     }
 
     public void onRender(Graphics2D graphics) {
@@ -107,5 +116,18 @@ public class CursorCamera {
 
     public void setCursorY(int cursorY) {
         this.cursorY = cursorY;
+    }
+
+    @Override
+    public EventEmitter getEmitter() {
+        return emitter;
+    }
+
+    public class CursorMovedEvent extends Event {
+        public final CursorCamera cursorCamera;
+
+        public CursorMovedEvent(CursorCamera cursorCamera) {
+            this.cursorCamera = cursorCamera;
+        }
     }
 }

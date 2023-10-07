@@ -13,11 +13,11 @@ public class OptionsMenuState extends GameState {
     private final List<Widget> widgets;
     private int caret = 0;
 
-    private SliderWidget musicVolume;
-    private SliderWidget soundVolume;
-    private RadioButtonWidget fullscreen;
-    private ButtonWidget controls;
-    private ButtonWidget back;
+    private final SliderWidget musicVolume;
+    private final SliderWidget soundVolume;
+    private final RadioButtonWidget fullscreen;
+    private final ButtonWidget controls;
+    private final ButtonWidget back;
 
 
     public OptionsMenuState(Game game) {
@@ -70,7 +70,7 @@ public class OptionsMenuState extends GameState {
         graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
         UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
+                getGame().TILE_SIZE
         );
 
         int menuWidth = 11 * ui.tileSize;

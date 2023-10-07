@@ -35,6 +35,9 @@ public class Camera {
         return zoom;
     }
 
+    public void setZoom(float zoom) {
+        this.zoom = zoom;
+    }
 
     public AffineTransform getTransform() {
         AffineTransform transform = new AffineTransform();
@@ -47,9 +50,5 @@ public class Camera {
         int cameraY = (int) (y - (screenHeight / 2));
         transform.translate(-cameraX, -cameraY);
         return transform;
-    }
-
-    public void setZoom(float zoom) {
-        this.zoom = zoom;
     }
 }

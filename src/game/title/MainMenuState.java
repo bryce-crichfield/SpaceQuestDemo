@@ -43,8 +43,7 @@ public class MainMenuState extends GameState {
                 getGame().pushState(new PlayBattleState(getGame()));
             } else if (currentOption.text.equals("Overworld")) {
                 getGame().pushState(new PlayOverworldState(getGame()));
-            }
-            else if (currentOption.text.equals("Options")) {
+            } else if (currentOption.text.equals("Options")) {
                 getGame().pushState(new OptionsMenuState(getGame()));
             } else if (currentOption.text.equals("Exit")) {
                 System.exit(0);
@@ -63,7 +62,7 @@ public class MainMenuState extends GameState {
 
 
         UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
+                getGame().TILE_SIZE
         );
 
         int menuWidth = 5 * ui.tileSize;

@@ -6,23 +6,37 @@ import java.time.Duration;
 import java.time.Instant;
 
 public class Main {
+    public final static long targetUps = 60;
+    public final static long targetFps = 60;
+
     public static void main(String[] args) {
-        int tileSize = 16;
         Game game = new Game();
         Window window = new Window(640, 480, game);
         game.pushState(new MainMenuState(game));
 
+        Instant lastUpdate = Instant.now();
+        Instant lastRender = Instant.now();
 
-        Instant lastTime = Instant.now();
-        Duration delta = Duration.ZERO;
 
         while (true) {
             Instant currentTime = Instant.now();
-            delta = Duration.between(lastTime, currentTime);
-            lastTime = currentTime;
 
-            game.onUpdate(delta);
-            window.repaint();
+            Duration deltaUpdate = Duration.between(lastUpdate, currentTime);
+            Duration deltaRender = Duration.between(lastRender, currentTime);
+
+            float dtUpdate = Util.perSecond(deltaUpdate);
+            float dtRender = Util.perSecond(deltaRender);
+            System.out.println(dtUpdate + " " + dtRender);
+
+            if (dtUpdate > 1f / targetUps) {
+                lastUpdate = currentTime;
+                game.onUpdate(deltaUpdate);
+            }
+
+            if (dtRender > 1f / targetFps) {
+                lastRender = currentTime;
+                window.onRender(dtUpdate, dtRender);
+            }
         }
     }
 }

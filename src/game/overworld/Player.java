@@ -8,6 +8,7 @@ import java.time.Duration;
 
 public class Player extends Entity {
     Game game;
+
     public Player(float x, float y, Game game) {
         super(x, y);
         this.game = game;
@@ -15,7 +16,7 @@ public class Player extends Entity {
 
     @Override
     public void onUpdate(Duration dt) {
-        int speed = (int) ((int) 2 * 1e4);
+        int speed = (int) (2 * 1e4);
 
         if (game.getKeyboard().down(Keyboard.UP)) {
             accelerationY = -speed;

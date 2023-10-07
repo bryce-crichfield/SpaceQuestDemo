@@ -6,26 +6,24 @@ import java.awt.*;
 import java.time.Duration;
 
 public abstract class Entity {
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
     float x;
     float y;
-
     float velocityX;
     float velocityY;
-
     float accelerationX;
     float accelerationY;
 
     public Entity(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public void onUpdate(Duration delta) {

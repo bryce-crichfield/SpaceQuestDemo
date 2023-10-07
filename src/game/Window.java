@@ -32,8 +32,9 @@ public class Window extends JFrame {
         strategy = canvas.getBufferStrategy();
     }
 
-    @Override
-    public void repaint() {
+    public void onRender(float updateTime, float renderTime) {
+        this.repaint();
+
         Graphics2D g = (Graphics2D) buffer.getGraphics();
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
@@ -63,8 +64,40 @@ public class Window extends JFrame {
         int centerX = (canvas.getWidth() - displayWidth) / 2;
         int centerY = (canvas.getHeight() - displayHeight) / 2;
         g2.drawImage(buffer, centerX, centerY, displayWidth, displayHeight, null);
+        drawDebugStats(g2, updateTime, renderTime);
         g2.dispose();
 
         strategy.show();
+    }
+
+    private void drawDebugStats(Graphics2D graphics, float updateTime, float renderTime) {
+        graphics.setColor(Color.WHITE);
+
+        String upsString = String.format("%.1f ups", 1f / updateTime);
+        String fpsString = String.format("%.1f fps", 1f / renderTime);
+
+        String updateTimeString = String.format("%.1f ms", updateTime * 1000);
+        String renderTimeString = String.format("%.1f ms", renderTime * 1000);
+
+        final int textSize = 12;
+        int y = 20;
+
+        Font font = graphics.getFont();
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font(font.getName(), Font.PLAIN, textSize));
+
+        graphics.drawString("UPS: " + upsString, 10, y);
+        y += textSize;
+
+        graphics.drawString("FPS: " + fpsString, 10, y);
+        y += textSize;
+
+        graphics.drawString("Update Time: " + updateTimeString, 10, y);
+        y += textSize;
+
+        graphics.drawString("Render Time: " + renderTimeString, 10, y);
+        y += textSize;
+
+        graphics.setFont(font);
     }
 }

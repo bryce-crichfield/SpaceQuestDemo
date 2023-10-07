@@ -7,25 +7,15 @@ import java.awt.event.KeyEvent;
 import java.time.Duration;
 
 public class CursorCamera {
-    public void setCursorX(int cursorX) {
-        this.cursorX = cursorX;
-    }
-
-    public void setCursorY(int cursorY) {
-        this.cursorY = cursorY;
-    }
-
     public int cursorX;
     public int cursorY;
     float velocityX;
     float velocityY;
     float accelerationX;
     float accelerationY;
-
     Camera camera;
     Keyboard keyboard;
     int tileSize;
-
     public CursorCamera(Camera camera, Keyboard keyboard, int tileSize) {
         this.camera = camera;
         this.keyboard = keyboard;
@@ -103,10 +93,18 @@ public class CursorCamera {
     }
 
     public int getCursorX() {
-return cursorX;
+        return cursorX;
+    }
+
+    public void setCursorX(int cursorX) {
+        this.cursorX = cursorX;
     }
 
     public int getCursorY() {
-return cursorY;
+        return cursorY;
+    }
+
+    public void setCursorY(int cursorY) {
+        this.cursorY = cursorY;
     }
 }

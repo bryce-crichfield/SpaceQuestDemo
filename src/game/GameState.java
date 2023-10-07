@@ -4,7 +4,7 @@ import java.awt.*;
 import java.time.Duration;
 
 public abstract class GameState {
-    private Game game;
+    private final Game game;
 
 
     public GameState(Game game) {
@@ -16,8 +16,12 @@ public abstract class GameState {
     }
 
     public abstract void onUpdate(Duration delta);
+
     public abstract void onRender(Graphics2D graphics);
 
-    public void onEnter() {}
-    public void onExit() {}
+    public void onEnter() {
+    }
+
+    public void onExit() {
+    }
 }

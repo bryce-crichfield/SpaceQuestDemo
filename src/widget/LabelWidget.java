@@ -7,6 +7,7 @@ import java.awt.*;
 
 public class LabelWidget extends Widget {
     private String label = "";
+
     public LabelWidget(String text, Game game) {
         super(text, game);
     }

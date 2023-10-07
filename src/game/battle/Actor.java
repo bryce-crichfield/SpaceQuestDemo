@@ -15,13 +15,7 @@ public class Actor {
     float targetY;
     List<Tile> path = List.of();
     float walkTime;
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
     boolean selected = false;
-
 
     public Actor(int x, int y, Color color) {
         this.x = x;
@@ -29,6 +23,10 @@ public class Actor {
         this.targetX = x;
         this.targetY = y;
         this.color = color;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public float getX() {

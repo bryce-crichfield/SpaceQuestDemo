@@ -2,7 +2,6 @@ package game;
 
 import java.awt.*;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Stack;
 
 public class Game {
@@ -50,12 +49,8 @@ public class Game {
     }
 
     void onRender(Graphics2D graphics) {
-        Instant start = Instant.now();
         if (!stateStack.isEmpty()) {
             stateStack.peek().onRender(graphics);
         }
-        Duration elapsed = Duration.between(start, Instant.now());
-        float millis = elapsed.toNanos() / 1e6f;
-//        System.out.println("Game.onRender() took " + millis + "ms");
     }
 }

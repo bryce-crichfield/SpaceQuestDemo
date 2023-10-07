@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.*;
 import java.time.Duration;
 import java.util.Random;
 
@@ -27,7 +26,7 @@ public class Util {
         float mid = min + range / 2.0f;
         float unitGaussian = (float) new Random().nextGaussian();
         float biasFactor = (float) Math.exp(bias);
-        float retval = (float) (mid+(range*(biasFactor/(biasFactor+Math.exp(-unitGaussian/skew))-0.5)));
+        float retval = (float) (mid + (range * (biasFactor / (biasFactor + Math.exp(-unitGaussian / skew)) - 0.5)));
         return retval;
     }
 
@@ -40,7 +39,7 @@ public class Util {
     }
 
     public static float distance(float x1, float y1, float x2, float y2) {
-        return (float) Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+        return (float) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     public static float lerp(float a, float b, float t) {

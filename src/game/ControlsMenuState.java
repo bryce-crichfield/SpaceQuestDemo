@@ -45,7 +45,7 @@ public class ControlsMenuState extends GameState {
         graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
         UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
+                getGame().TILE_SIZE
         );
 
         int menuWidth = 11 * ui.tileSize;

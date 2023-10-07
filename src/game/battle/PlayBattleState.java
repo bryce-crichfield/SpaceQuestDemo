@@ -184,7 +184,7 @@ public class PlayBattleState extends GameState {
 
         if (actionMenuOpen) {
             UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                                 getGame().TILE_SIZE
+                    getGame().TILE_SIZE
             );
 
             int menuWidth = 5 * ui.tileSize;

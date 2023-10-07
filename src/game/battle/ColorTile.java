@@ -2,7 +2,7 @@ package game.battle;
 
 import java.awt.*;
 
-public class ColorTile extends Tile{
+public class ColorTile extends Tile {
     private final Color color;
     private final int size;
 

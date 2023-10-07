@@ -6,11 +6,10 @@ import java.awt.font.GlyphVector;
 public class UserInterface {
     public static Color background = new Color(0, 0, 18);
     public static Color highlight = new Color(196, 149, 0);
-    private final Graphics2D graphics;
     public final int screenWidth;
     public final int screenHeight;
     public final int tileSize;
-
+    private final Graphics2D graphics;
     public Color textColor = Color.WHITE;
     public int textSize = 12;
 
@@ -70,7 +69,7 @@ public class UserInterface {
         Stroke stroke = graphics.getStroke();
         Composite composite = graphics.getComposite();
 
-        Shape shape = textToShape(value, x , y, size);
+        Shape shape = textToShape(value, x, y, size);
 
         graphics.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.setColor(Color.BLACK);
@@ -94,7 +93,7 @@ public class UserInterface {
         // FILLED RECTANGLE
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
-        graphics.setPaint(new GradientPaint(width/2f, 0, Color.DARK_GRAY, width/2f, height, Color.BLACK));
+        graphics.setPaint(new GradientPaint(width / 2f, 0, Color.DARK_GRAY, width / 2f, height, Color.BLACK));
         graphics.fillRoundRect(x, y, width, height, roundness, roundness);
         graphics.setComposite(composite);
 
@@ -144,8 +143,7 @@ public class UserInterface {
         // FILLED RECTANGLE
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
-        if (selected)
-        {
+        if (selected) {
             graphics.setColor(Color.WHITE);
             graphics.fillOval(x, y, radius, radius);
             graphics.setComposite(composite);

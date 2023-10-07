@@ -1,10 +1,10 @@
 package widget;
 
-import java.awt.*;
-import java.time.Duration;
-
 import game.Game;
 import game.UserInterface;
+
+import java.awt.*;
+import java.time.Duration;
 
 public class Widget {
     Game game;

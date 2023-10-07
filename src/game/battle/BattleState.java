@@ -34,7 +34,7 @@ public class BattleState extends GameState implements EventListener {
 
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
 
-        cursorCamera.getEmitter().addListener(this);
+        cursorCamera.addListener(this);
     }
 
     @Override

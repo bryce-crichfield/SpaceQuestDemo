@@ -1,6 +1,8 @@
-package game;
+package game.battle;
 
-import game.battle.World;
+import game.Camera;
+import game.Keyboard;
+import game.Util;
 import game.event.Event;
 import game.event.EventEmitter;
 import game.event.EventSource;
@@ -92,7 +94,7 @@ public class CursorCamera implements EventSource {
 
 
         if (cursorChanged) {
-            getEmitter().fireEvent(new CursorMovedEvent(this));
+            fireEvent(new CursorMovedEvent(this));
         }
     }
 

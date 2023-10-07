@@ -3,6 +3,7 @@ package game.battle;
 import game.*;
 import game.event.Event;
 import game.event.EventListener;
+import game.event.Property;
 import game.title.StarBackground;
 
 import java.awt.*;
@@ -18,8 +19,8 @@ public class BattleState extends GameState implements EventListener {
     CursorCamera cursorCamera;
     World world;
     List<Tile> path;
+    Property<Optional<Actor>> selectedActor = new Property<>(Optional.empty());
 
-    Optional<Actor> selectedActor = Optional.empty();
     List<Tile> possiblePath = new ArrayList<>();
 
     boolean actionMenuOpen = true;
@@ -61,31 +62,32 @@ public class BattleState extends GameState implements EventListener {
         });
 
         if (secondaryPressed) {
-            selectedActor.ifPresent(actor -> actor.setSelected(false));
-            selectedActor = Optional.empty();
+            selectedActor.get().ifPresent(actor -> actor.setSelected(false));
+            selectedActor.set(Optional.empty());
             possiblePath = new ArrayList<>();
         }
 
         boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
-        boolean hoveredOnOtherActor = hoveredActor.isPresent() && (selectedActor.isEmpty() || !selectedActor.get().equals(
+
+        boolean hoveredOnOtherActor = hoveredActor.isPresent() && (selectedActor.get().isEmpty() || !selectedActor.get().equals(
                 hoveredActor.get()));
 
         if (hoveredOnOtherActor && primaryPressed) {
-            selectedActor.ifPresent(actor -> actor.setSelected(false));
+            selectedActor.get().ifPresent(actor -> actor.setSelected(false));
 
             hoveredActor.get().setSelected(true);
-            selectedActor = hoveredActor;
+            selectedActor.set(hoveredActor);
         }
 
-        if (selectedActor.isPresent() && hoveredOnEmptyTile && primaryPressed) {
+        if (selectedActor.get().isPresent() && hoveredOnEmptyTile && primaryPressed) {
             // submit the possible path to the actor and deselect
-            selectedActor.get().setSelected(false);
-            selectedActor.get().setPath(possiblePath);
-            selectedActor = Optional.empty();
+            selectedActor.get().get().setSelected(false);
+            selectedActor.get().get().setPath(possiblePath);
+            selectedActor.set(Optional.empty());
             possiblePath = new ArrayList<>();
         }
 
-        if (selectedActor.isPresent() && hoveredOnOtherActor) {
+        if (selectedActor.get().isPresent() && hoveredOnOtherActor) {
             possiblePath = new ArrayList<>();
         }
     }
@@ -100,11 +102,11 @@ public class BattleState extends GameState implements EventListener {
         });
         boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
 
-        if (selectedActor.isPresent() && hoveredOnEmptyTile) {
+        if (selectedActor.get().isPresent() && hoveredOnEmptyTile) {
             // do pathfinding
             Pathfinder pathfinder = new Pathfinder(world);
-            int actorX = (int) selectedActor.get().getX();
-            int actorY = (int) selectedActor.get().getY();
+            int actorX = (int) selectedActor.get().get().getX();
+            int actorY = (int) selectedActor.get().get().getY();
             System.out.println("Recalculating path from " + actorX + ", " + actorY + " to " + cursorX + ", " + cursorY);
             Tile start = world.getTile(actorX, actorY);
             Tile end = world.getTile(cursorX, cursorY);

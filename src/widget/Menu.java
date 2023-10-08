@@ -4,12 +4,14 @@ import game.Game;
 import game.Keyboard;
 import game.UserInterface;
 import game.Util;
+import game.event.EventEmitter;
+import game.event.EventSource;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class Menu {
+public class Menu implements EventSource<CloseEvent> {
     private final Game game;
     private final int x;
     private final int y;
@@ -19,6 +21,7 @@ public class Menu {
     private List<Widget> widgets;
     private int itemDistance;
     private int textSize;
+    private boolean visible = true;
 
     public Menu(Game game, int x, int y, int width, int height) {
         this.game = game;
@@ -31,6 +34,14 @@ public class Menu {
         textSize = 12;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
     public void setItemDistance(int itemDistance) {
         this.itemDistance = itemDistance;
     }
@@ -39,15 +50,20 @@ public class Menu {
         this.textSize = textSize;
     }
 
-    public Game getGame() {
-        return game;
-    }
-
     public void setWidgets(Widget... widgets) {
         this.widgets = List.of(widgets);
     }
 
     public void onUpdate(Duration delta) {
+        if (getGame().getKeyboard().pressed(Keyboard.SECONDARY)) {
+            setVisible(false);
+            getEmitter().fireEvent(new CloseEvent());
+        }
+
+        if (!isVisible()) {
+            return;
+        }
+
         if (getGame().getKeyboard().pressed(Keyboard.UP)) {
             caret--;
             getGame().getAudio().play("caret.wav");
@@ -63,8 +79,18 @@ public class Menu {
         currentWidget.onUpdate(delta);
     }
 
+    public Game getGame() {
+        return game;
+    }
+
     public void onRender(Graphics2D graphics) {
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT, getGame().TILE_SIZE);
+        if (!isVisible()) {
+            return;
+        }
+
+        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
+                                             getGame().TILE_SIZE
+        );
 
         int menuWidth = width;
         int menuX = x;
@@ -86,5 +112,12 @@ public class Menu {
 
         int caretY = optionsStartY + caret * itemDistance;
         ui.drawTextRightJustified(">", menuX, caretY, menuWidth, 32, 12);
+    }
+
+    private final EventEmitter<CloseEvent> emitter = new EventEmitter<>();
+
+    @Override
+    public EventEmitter<CloseEvent> getEmitter() {
+        return emitter;
     }
 }

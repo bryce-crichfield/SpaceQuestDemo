@@ -69,7 +69,7 @@ public class SelectionManager implements EventSource<SelectionEvent> {
         emitter.fireEvent(new SelectedEvent(currentlySelectedActor.get()));
     }
 
-    private void deselectActor() {
+    public void deselectActor() {
         currentlySelectedActor.ifPresent(actor -> {
             emitter.fireEvent(new DeselectedEvent(actor));
         });

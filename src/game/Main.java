@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         Game game = new Game();
-        Window window = new Window(640, 480, game);
+        Window window = new Window(640*3, 480*3, game);
         game.pushState(new MainMenuState(game));
 
         Instant lastUpdate = Instant.now();

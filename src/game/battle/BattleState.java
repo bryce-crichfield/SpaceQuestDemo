@@ -4,22 +4,25 @@ import game.Camera;
 import game.Game;
 import game.GameState;
 import game.battle.cursor.CursorCamera;
-import game.battle.cursor.CursorEvent;
 import game.battle.pathfinding.PathfindingManager;
+import game.battle.selection.DeselectedEvent;
+import game.battle.selection.SelectedEvent;
+import game.battle.selection.SelectionEvent;
 import game.battle.selection.SelectionManager;
 import game.battle.world.Actor;
 import game.battle.world.Tile;
 import game.battle.world.World;
-import game.event.Event;
 import game.event.EventListener;
 import game.title.StarBackground;
+import widget.ButtonWidget;
+import widget.Menu;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 public class BattleState extends GameState {
     StarBackground starBackground;
@@ -27,22 +30,51 @@ public class BattleState extends GameState {
     CursorCamera cursorCamera;
     World world;
     List<Tile> path;
-
     SelectionManager selectionManager;
     PathfindingManager pathfindingManager;
-
+    Menu actionMenu;
+    EventListener<SelectionEvent> menuSelectionEventListener;
+    ActionMode currentActionMode = new ObserverMode();
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
         cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32);
-        world = new World(8, 8);
+        world = new World(16, 16);
         path = new ArrayList<>();
 
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
 
+        int menuWidth = 3 * getGame().TILE_SIZE;
+        int menuHeight = 3 * getGame().TILE_SIZE;
+        int menuX = getGame().SCREEN_WIDTH - menuWidth - getGame().TILE_SIZE;
+        int menuY = getGame().SCREEN_HEIGHT - menuHeight - getGame().TILE_SIZE;
+        actionMenu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
+        actionMenu.setWidgets(new ButtonWidget("Attack", getGame(), () -> {
+            currentActionMode = new AttackActionMode();
+        }), new ButtonWidget("Move", getGame(), () -> {
+            currentActionMode = new MoveActionMode();
+        }));
+
+        menuSelectionEventListener = event -> {
+            if (event instanceof SelectedEvent selectedEvent) {
+                currentActionMode = new SelectActionMode();
+                actionMenu.setVisible(true);
+            }
+
+            if (event instanceof DeselectedEvent deselectedEvent) {
+                currentActionMode = new ObserverMode();
+            }
+        };
+
+        actionMenu.getEmitter().addListener(closeEvent -> {
+            currentActionMode = new ObserverMode();
+            selectionManager.deselectActor();
+        });
+
         // Set up the selection manager and register the actors as listeners
         selectionManager = new SelectionManager(game.getKeyboard(), world);
         cursorCamera.addListener(selectionManager.getCursorEventListener());
+        selectionManager.addListener(menuSelectionEventListener);
         for (Actor actor : world.getActors()) {
             selectionManager.addListener(actor.getSelectionEventListener());
         }
@@ -56,13 +88,19 @@ public class BattleState extends GameState {
         }
     }
 
+    public void drawWithCamera(Graphics2D graphics, Consumer<Graphics2D> draw) {
+        AffineTransform restore = graphics.getTransform();
+        AffineTransform transform = camera.getTransform();
+        graphics.setTransform(transform);
+        draw.accept(graphics);
+        graphics.setTransform(restore);
+    }
+
     @Override
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
 
-        cursorCamera.onUpdate(delta, world);
-        pathfindingManager.onUpdate();
-        selectionManager.onUpdate();
+        currentActionMode.onUpdate(delta);
 
         world.onUpdate(delta);
     }
@@ -77,13 +115,73 @@ public class BattleState extends GameState {
         AffineTransform restore = graphics.getTransform();
         AffineTransform transform = camera.getTransform();
         graphics.setTransform(transform);
-
         world.onRender(graphics);
-        cursorCamera.onRender(graphics);
-        pathfindingManager.onRender(graphics);
-
         graphics.setTransform(restore);
 
-        // TODO: Draw the action menu
+        currentActionMode.onRender(graphics);
+    }
+    interface ActionMode {
+        void onUpdate(Duration delta);
+
+        void onRender(Graphics2D graphics);
+    }
+
+    class ObserverMode implements ActionMode {
+        @Override
+        public void onUpdate(Duration delta) {
+            cursorCamera.onUpdate(delta, world);
+            selectionManager.onUpdate();
+        }
+
+        @Override
+        public void onRender(Graphics2D graphics) {
+            drawWithCamera(graphics, camera -> {
+                cursorCamera.onRender(camera);
+            });
+        }
+    }
+
+    class SelectActionMode implements ActionMode {
+        @Override
+        public void onUpdate(Duration delta) {
+            actionMenu.onUpdate(delta);
+        }
+
+        @Override
+        public void onRender(Graphics2D graphics) {
+            actionMenu.onRender(graphics);
+        }
+    }
+
+    class AttackActionMode implements ActionMode {
+        @Override
+        public void onUpdate(Duration delta) {
+            cursorCamera.onUpdate(delta, world);
+            selectionManager.onUpdate();
+        }
+
+        @Override
+        public void onRender(Graphics2D graphics) {
+            drawWithCamera(graphics, camera -> {
+                cursorCamera.onRender(camera);
+            });
+        }
+    }
+
+    class MoveActionMode implements ActionMode {
+        @Override
+        public void onUpdate(Duration delta) {
+            cursorCamera.onUpdate(delta, world);
+            pathfindingManager.onUpdate();
+            selectionManager.onUpdate();
+        }
+
+        @Override
+        public void onRender(Graphics2D graphics) {
+            drawWithCamera(graphics, camera -> {
+                cursorCamera.onRender(camera);
+                pathfindingManager.onRender(camera);
+            });
+        }
     }
 }

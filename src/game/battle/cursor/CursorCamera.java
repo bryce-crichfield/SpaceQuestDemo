@@ -1,9 +1,9 @@
-package game.battle;
+package game.battle.cursor;
 
 import game.Camera;
 import game.Keyboard;
 import game.Util;
-import game.event.Event;
+import game.battle.world.World;
 import game.event.EventEmitter;
 import game.event.EventSource;
 
@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 
-public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> {
+public class CursorCamera implements EventSource<CursorEvent> {
     public int cursorX;
     public int cursorY;
     float velocityX;
@@ -21,7 +21,7 @@ public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> 
     Camera camera;
     Keyboard keyboard;
     int tileSize;
-    EventEmitter<CursorMovedEvent> emitter;
+    EventEmitter<CursorEvent> emitter;
 
     public CursorCamera(Camera camera, Keyboard keyboard, int tileSize) {
         this.camera = camera;
@@ -35,7 +35,7 @@ public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> 
         accelerationX = 0;
         accelerationY = 0;
 
-        emitter = new EventEmitter();
+        emitter = new EventEmitter<>();
     }
 
     public void onUpdate(Duration duration, World world) {
@@ -94,7 +94,7 @@ public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> 
 
 
         if (cursorChanged) {
-            fireEvent(new CursorMovedEvent(this));
+            fireEvent(new CursorEvent(this));
         }
     }
 
@@ -108,16 +108,8 @@ public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> 
         return cursorX;
     }
 
-    public void setCursorX(int cursorX) {
-        this.cursorX = cursorX;
-    }
-
     public int getCursorY() {
         return cursorY;
-    }
-
-    public void setCursorY(int cursorY) {
-        this.cursorY = cursorY;
     }
 
     @Override
@@ -125,11 +117,4 @@ public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> 
         return emitter;
     }
 
-    public class CursorMovedEvent extends Event {
-        public final CursorCamera cursorCamera;
-
-        public CursorMovedEvent(CursorCamera cursorCamera) {
-            this.cursorCamera = cursorCamera;
-        }
-    }
 }

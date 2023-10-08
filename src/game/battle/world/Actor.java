@@ -1,18 +1,17 @@
-package game.battle;
+package game.battle.world;
 
 import game.Util;
-import game.battle.selection.SelectionEvent;
+import game.battle.pathfinding.PathfindingEvent;
 import game.battle.selection.DeselectedEvent;
 import game.battle.selection.SelectedEvent;
-
+import game.battle.selection.SelectionEvent;
 import game.event.EventListener;
-
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class Actor implements EventListener<SelectionEvent> {
+public class Actor {
     final float stepDuration = 0.35f;
     private final Color color;
     float x;
@@ -20,8 +19,22 @@ public class Actor implements EventListener<SelectionEvent> {
     float targetX;
     float targetY;
     List<Tile> path = List.of();
-    float walkTime;
-    boolean selected = false;
+    private final EventListener<PathfindingEvent> pathfindingEventListener = event -> {
+        if (event.actor.equals(Actor.this)) {
+            path = event.movePath;
+        }
+    };
+    private float walkTime;
+    private boolean selected = false;
+    private final EventListener<SelectionEvent> selectionEventListener = event -> {
+        if (event instanceof DeselectedEvent deselected && deselected.actor.equals(this)) {
+            selected = false;
+        }
+
+        if (event instanceof SelectedEvent selectedEvent && selectedEvent.actor.equals(this)) {
+            selected = true;
+        }
+    };
 
     public Actor(int x, int y, Color color) {
         this.x = x;
@@ -29,10 +42,6 @@ public class Actor implements EventListener<SelectionEvent> {
         this.targetX = x;
         this.targetY = y;
         this.color = color;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 
     public float getX() {
@@ -80,23 +89,11 @@ public class Actor implements EventListener<SelectionEvent> {
         graphics.drawOval((int) (x * 32), (int) (y * 32), 32, 32);
     }
 
-    public List<Tile> getPath() {
-        return path;
+    public EventListener<PathfindingEvent> getPathfindingListener() {
+        return pathfindingEventListener;
     }
 
-    public void setPath(List<Tile> path) {
-        this.path = path;
-    }
-
-
-    @Override
-    public void onEvent(SelectionEvent event) {
-        if (event instanceof DeselectedEvent deselected && deselected.actor.equals(this)) {
-            selected = false;
-        }
-
-        if (event instanceof SelectedEvent selectedEvent && selectedEvent.actor.equals(this)) {
-            selected = true;
-        }
+    public EventListener<SelectionEvent> getSelectionEventListener() {
+        return selectionEventListener;
     }
 }

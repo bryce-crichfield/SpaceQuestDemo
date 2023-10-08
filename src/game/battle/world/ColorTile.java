@@ -1,4 +1,4 @@
-package game.battle;
+package game.battle.world;
 
 import java.awt.*;
 

@@ -1,6 +1,8 @@
-package game.battle;
+package game.battle.pathfinding;
 
 import game.Util;
+import game.battle.world.Tile;
+import game.battle.world.World;
 
 import java.util.*;
 

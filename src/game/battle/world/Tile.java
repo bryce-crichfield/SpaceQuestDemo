@@ -1,4 +1,4 @@
-package game.battle;
+package game.battle.world;
 
 import java.awt.*;
 
@@ -21,7 +21,7 @@ public abstract class Tile {
         return y;
     }
 
-    boolean isPassable() {
+    public boolean isPassable() {
         return passable;
     }
 

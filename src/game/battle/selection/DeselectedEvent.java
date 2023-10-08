@@ -1,8 +1,6 @@
 package game.battle.selection;
 
-import game.battle.Actor;
-
-import java.util.Optional;
+import game.battle.world.Actor;
 
 public class DeselectedEvent extends SelectionEvent {
     public final Actor actor;

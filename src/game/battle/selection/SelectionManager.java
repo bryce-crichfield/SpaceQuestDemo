@@ -1,21 +1,20 @@
 package game.battle.selection;
 
 import game.Keyboard;
-import game.battle.Actor;
-import game.battle.CursorCamera;
-import game.battle.World;
+import game.battle.cursor.CursorEvent;
+import game.battle.world.Actor;
+import game.battle.world.World;
 import game.event.EventEmitter;
 import game.event.EventListener;
 import game.event.EventSource;
 
 import java.util.Optional;
 
-public class SelectionManager implements EventSource<SelectionEvent>, EventListener<CursorCamera.CursorMovedEvent> {
+public class SelectionManager implements EventSource<SelectionEvent>, EventListener<CursorEvent> {
     private final EventEmitter<SelectionEvent> emitter;
     private final Keyboard keyboard;
     private final World world;
     private Optional<Actor> currentlySelectedActor;
-
     private int cursorX = 0;
     private int cursorY = 0;
 
@@ -27,58 +26,35 @@ public class SelectionManager implements EventSource<SelectionEvent>, EventListe
     }
 
     public void onUpdate() {
-
         Optional<Actor> hovered = world.getActorByPosition(cursorX, cursorY);
 
         boolean primaryPressed = keyboard.pressed(Keyboard.PRIMARY);
         boolean secondaryPressed = keyboard.pressed(Keyboard.SECONDARY);
 
+        // Selection is concerned with 4 conditions
+        // 1. Secondary pressed and an actor is selected -> deselect
+        boolean secondaryPressedWithActorSelected = secondaryPressed && currentlySelectedActor.isPresent();
+        // 2. Primary pressed and no actor is selected, and we clicked on an actor -> select
+        boolean primaryPressedWithNoActorSelectedAndHovered = primaryPressed && currentlySelectedActor.isEmpty() && hovered.isPresent();
+        // 3. Primary pressed and an actor is selected, and we clicked on the same actor -> deselect
+        boolean primaryPressedWithActorSelectedAndHovered = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() == currentlySelectedActor.get();
+        // 4. Primary pressed and an actor is selected, and we clicked on a different actor -> deselect and select
+        boolean primaryPressedWithActorSelectedAndHoveredDifferent = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() != currentlySelectedActor.get();
+        // 5. Primary pressed and an actor is selected, and we clicked on an empty tile -> deselect
+        boolean primaryPressedWithActorSelectedAndHoveredEmpty = primaryPressed && currentlySelectedActor.isPresent() && hovered.isEmpty();
 
-
-        // Handle deselection by secondary click
-        if (secondaryPressed && currentlySelectedActor.isPresent()) {
-            emitter.fireEvent(new DeselectedEvent(currentlySelectedActor.get()));
-            currentlySelectedActor = Optional.empty();
-        }
-
-        if (!primaryPressed) {
-            return;
-        }
-
-        // Handle selection by primary click (3 cases)
-        // 1. There is no actor selected, and we clicked on an actor
-        boolean clickedOnActorWithNoActorSelected = hovered.isPresent() && currentlySelectedActor.isEmpty();
-        if (clickedOnActorWithNoActorSelected) {
-            selectActor(hovered.get());
-            return;
-        }
-        // 2. There is an actor selected, and we clicked on the same actor
-        boolean clickedOnSameActor = currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() == currentlySelectedActor.get();
-        if (clickedOnSameActor) {
+        if (secondaryPressedWithActorSelected) {
             deselectActor();
-            return;
-        }
-
-        // 3. There is an actor selected, and we clicked on a different actor
-        boolean clickedOnDifferentActorWithActorSelected = hovered.isPresent();
-        if (clickedOnDifferentActorWithActorSelected) {
+        } else if (primaryPressedWithNoActorSelectedAndHovered) {
+            selectActor(hovered.get());
+        } else if (primaryPressedWithActorSelectedAndHovered) {
+            deselectActor();
+        } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
             deselectActor();
             selectActor(hovered.get());
-            return;
+        } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
+            deselectActor();
         }
-
-        return;
-    }
-
-    @Override
-    public EventEmitter<SelectionEvent> getEmitter() {
-        return emitter;
-    }
-
-    @Override
-    public void onEvent(CursorCamera.CursorMovedEvent event) {
-        cursorX = event.cursorCamera.getCursorX();
-        cursorY = event.cursorCamera.getCursorY();
     }
 
     private void selectActor(Actor actor) {
@@ -91,5 +67,20 @@ public class SelectionManager implements EventSource<SelectionEvent>, EventListe
             emitter.fireEvent(new DeselectedEvent(actor));
         });
         currentlySelectedActor = Optional.empty();
+    }
+
+    public Optional<Actor> getCurrentlySelectedActor() {
+        return currentlySelectedActor;
+    }
+
+    @Override
+    public EventEmitter<SelectionEvent> getEmitter() {
+        return emitter;
+    }
+
+    @Override
+    public void onEvent(CursorEvent event) {
+        cursorX = event.cursorCamera.getCursorX();
+        cursorY = event.cursorCamera.getCursorY();
     }
 }

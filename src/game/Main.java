@@ -26,7 +26,6 @@ public class Main {
 
             float dtUpdate = Util.perSecond(deltaUpdate);
             float dtRender = Util.perSecond(deltaRender);
-            System.out.println(dtUpdate + " " + dtRender);
 
             if (dtUpdate > 1f / targetUps) {
                 lastUpdate = currentTime;

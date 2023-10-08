@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 
-public class CursorCamera implements EventSource {
+public class CursorCamera implements EventSource<CursorCamera.CursorMovedEvent> {
     public int cursorX;
     public int cursorY;
     float velocityX;
@@ -21,7 +21,7 @@ public class CursorCamera implements EventSource {
     Camera camera;
     Keyboard keyboard;
     int tileSize;
-    EventEmitter emitter;
+    EventEmitter<CursorMovedEvent> emitter;
 
     public CursorCamera(Camera camera, Keyboard keyboard, int tileSize) {
         this.camera = camera;

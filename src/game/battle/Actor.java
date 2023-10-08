@@ -1,12 +1,18 @@
 package game.battle;
 
 import game.Util;
+import game.battle.selection.SelectionEvent;
+import game.battle.selection.DeselectedEvent;
+import game.battle.selection.SelectedEvent;
+
+import game.event.EventListener;
+
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class Actor {
+public class Actor implements EventListener<SelectionEvent> {
     final float stepDuration = 0.35f;
     private final Color color;
     float x;
@@ -80,5 +86,17 @@ public class Actor {
 
     public void setPath(List<Tile> path) {
         this.path = path;
+    }
+
+
+    @Override
+    public void onEvent(SelectionEvent event) {
+        if (event instanceof DeselectedEvent deselected && deselected.actor.equals(this)) {
+            selected = false;
+        }
+
+        if (event instanceof SelectedEvent selectedEvent && selectedEvent.actor.equals(this)) {
+            selected = true;
+        }
     }
 }

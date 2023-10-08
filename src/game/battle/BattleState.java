@@ -1,9 +1,11 @@
 package game.battle;
 
-import game.*;
+import game.Camera;
+import game.Game;
+import game.GameState;
+import game.battle.selection.SelectionManager;
 import game.event.Event;
 import game.event.EventListener;
-import game.event.Property;
 import game.title.StarBackground;
 
 import java.awt.*;
@@ -19,12 +21,11 @@ public class BattleState extends GameState implements EventListener {
     CursorCamera cursorCamera;
     World world;
     List<Tile> path;
-    Property<Optional<Actor>> selectedActor = new Property<>(Optional.empty());
-
     List<Tile> possiblePath = new ArrayList<>();
 
     boolean actionMenuOpen = true;
 
+    SelectionManager selectionManager;
 
     public BattleState(Game game) {
         super(game);
@@ -36,82 +37,21 @@ public class BattleState extends GameState implements EventListener {
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
 
         cursorCamera.addListener(this);
+        selectionManager = new SelectionManager(game.getKeyboard(), world);
+        cursorCamera.addListener(selectionManager);
+
+        for (Actor actor : world.getActors()) {
+            selectionManager.addListener(actor);
+        }
     }
 
     @Override
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
-
         cursorCamera.onUpdate(delta, world);
-
-        updateActorSelection();
+        selectionManager.onUpdate();
 
         world.onUpdate(delta);
-    }
-
-    private void updateActorSelection() {
-        int cursorX = cursorCamera.getCursorX();
-        int cursorY = cursorCamera.getCursorY();
-
-        boolean primaryPressed = getGame().getKeyboard().pressed(Keyboard.PRIMARY);
-        boolean secondaryPressed = getGame().getKeyboard().pressed(Keyboard.SECONDARY);
-        Optional<Actor> hoveredActor = world.findActor(actor -> {
-            int actorX = (int) actor.getX();
-            int actorY = (int) actor.getY();
-            return actorX == cursorX && actorY == cursorY;
-        });
-
-        if (secondaryPressed) {
-            selectedActor.get().ifPresent(actor -> actor.setSelected(false));
-            selectedActor.set(Optional.empty());
-            possiblePath = new ArrayList<>();
-        }
-
-        boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
-
-        boolean hoveredOnOtherActor = hoveredActor.isPresent() && (selectedActor.get().isEmpty() || !selectedActor.get().equals(
-                hoveredActor.get()));
-
-        if (hoveredOnOtherActor && primaryPressed) {
-            selectedActor.get().ifPresent(actor -> actor.setSelected(false));
-
-            hoveredActor.get().setSelected(true);
-            selectedActor.set(hoveredActor);
-        }
-
-        if (selectedActor.get().isPresent() && hoveredOnEmptyTile && primaryPressed) {
-            // submit the possible path to the actor and deselect
-            selectedActor.get().get().setSelected(false);
-            selectedActor.get().get().setPath(possiblePath);
-            selectedActor.set(Optional.empty());
-            possiblePath = new ArrayList<>();
-        }
-
-        if (selectedActor.get().isPresent() && hoveredOnOtherActor) {
-            possiblePath = new ArrayList<>();
-        }
-    }
-
-    private void updatePossiblePath() {
-        int cursorX = cursorCamera.getCursorX();
-        int cursorY = cursorCamera.getCursorY();
-        Optional<Actor> hoveredActor = world.findActor(actor -> {
-            int actorX = (int) actor.getX();
-            int actorY = (int) actor.getY();
-            return actorX == cursorX && actorY == cursorY;
-        });
-        boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
-
-        if (selectedActor.get().isPresent() && hoveredOnEmptyTile) {
-            // do pathfinding
-            Pathfinder pathfinder = new Pathfinder(world);
-            int actorX = (int) selectedActor.get().get().getX();
-            int actorY = (int) selectedActor.get().get().getY();
-            System.out.println("Recalculating path from " + actorX + ", " + actorY + " to " + cursorX + ", " + cursorY);
-            Tile start = world.getTile(actorX, actorY);
-            Tile end = world.getTile(cursorX, cursorY);
-            possiblePath = pathfinder.find(start, end);
-        }
     }
 
     @Override
@@ -178,21 +118,21 @@ public class BattleState extends GameState implements EventListener {
         graphics.setTransform(restore);
 
 
-        if (actionMenuOpen) {
-            UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                    getGame().TILE_SIZE
-            );
-
-            int menuWidth = 5 * ui.tileSize;
-            int menuHeight = 7 * ui.tileSize;
-            int menuX = ui.screenWidth - menuWidth - ui.tileSize;
-            int menuY = (ui.screenHeight / 2) - (menuHeight / 2);
-
-            ui.textSize = 16;
-            ui.textColor = Color.WHITE;
-
-            ui.drawPanel(menuX, menuY, menuWidth, menuHeight);
-        }
+//        if (actionMenuOpen) {
+//            UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
+//                    getGame().TILE_SIZE
+//            );
+//
+//            int menuWidth = 5 * ui.tileSize;
+//            int menuHeight = 7 * ui.tileSize;
+//            int menuX = ui.screenWidth - menuWidth - ui.tileSize;
+//            int menuY = (ui.screenHeight / 2) - (menuHeight / 2);
+//
+//            ui.textSize = 16;
+//            ui.textColor = Color.WHITE;
+//
+//            ui.drawPanel(menuX, menuY, menuWidth, menuHeight);
+//        }
     }
 
     @Override
@@ -200,5 +140,27 @@ public class BattleState extends GameState implements EventListener {
         if (event instanceof CursorCamera.CursorMovedEvent moved) {
             updatePossiblePath();
         }
+    }
+
+    private void updatePossiblePath() {
+        int cursorX = cursorCamera.getCursorX();
+        int cursorY = cursorCamera.getCursorY();
+        Optional<Actor> hoveredActor = world.findActor(actor -> {
+            int actorX = (int) actor.getX();
+            int actorY = (int) actor.getY();
+            return actorX == cursorX && actorY == cursorY;
+        });
+        boolean hoveredOnEmptyTile = hoveredActor.isEmpty();
+
+//        if (selectedActor.get().isPresent() && hoveredOnEmptyTile) {
+//            // do pathfinding
+//            Pathfinder pathfinder = new Pathfinder(world);
+//            int actorX = (int) selectedActor.get().get().getX();
+//            int actorY = (int) selectedActor.get().get().getY();
+//            System.out.println("Recalculating path from " + actorX + ", " + actorY + " to " + cursorX + ", " + cursorY);
+//            Tile start = world.getTile(actorX, actorY);
+//            Tile end = world.getTile(cursorX, cursorY);
+//            possiblePath = pathfinder.find(start, end);
+//        }
     }
 }

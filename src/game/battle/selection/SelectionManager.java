@@ -10,19 +10,26 @@ import game.event.EventSource;
 
 import java.util.Optional;
 
-public class SelectionManager implements EventSource<SelectionEvent>, EventListener<CursorEvent> {
+public class SelectionManager implements EventSource<SelectionEvent> {
     private final EventEmitter<SelectionEvent> emitter;
     private final Keyboard keyboard;
     private final World world;
     private Optional<Actor> currentlySelectedActor;
     private int cursorX = 0;
     private int cursorY = 0;
-
+    private final EventListener<CursorEvent> cursorEventListener = event -> {
+        cursorX = event.cursorCamera.getCursorX();
+        cursorY = event.cursorCamera.getCursorY();
+    };
     public SelectionManager(Keyboard keyboard, World world) {
         this.keyboard = keyboard;
         this.world = world;
         this.emitter = new EventEmitter<>();
         this.currentlySelectedActor = Optional.empty();
+    }
+
+    public EventListener<CursorEvent> getCursorEventListener() {
+        return cursorEventListener;
     }
 
     public void onUpdate() {
@@ -76,11 +83,5 @@ public class SelectionManager implements EventSource<SelectionEvent>, EventListe
     @Override
     public EventEmitter<SelectionEvent> getEmitter() {
         return emitter;
-    }
-
-    @Override
-    public void onEvent(CursorEvent event) {
-        cursorX = event.cursorCamera.getCursorX();
-        cursorY = event.cursorCamera.getCursorY();
     }
 }

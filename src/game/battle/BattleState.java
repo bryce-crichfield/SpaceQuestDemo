@@ -42,7 +42,7 @@ public class BattleState extends GameState {
 
         // Set up the selection manager and register the actors as listeners
         selectionManager = new SelectionManager(game.getKeyboard(), world);
-        cursorCamera.addListener(selectionManager);
+        cursorCamera.addListener(selectionManager.getCursorEventListener());
         for (Actor actor : world.getActors()) {
             selectionManager.addListener(actor.getSelectionEventListener());
         }

@@ -5,6 +5,7 @@ import game.state.GameState;
 import game.state.battle.BattleState;
 import game.state.options.OptionsMenuState;
 import game.state.overworld.PlayOverworldState;
+import game.widget.Blank;
 import game.widget.ButtonWidget;
 import game.widget.Menu;
 import game.widget.UserInterface;
@@ -39,6 +40,9 @@ public class MainMenuState extends GameState {
                 new ButtonWidget("Options", getGame(), () -> {
                     getGame().pushState(new OptionsMenuState(getGame()));
                 }),
+
+                new Blank(getGame()),
+                new Blank(getGame()),
 
                 new ButtonWidget("Exit", getGame(), () -> {
                     System.exit(0);

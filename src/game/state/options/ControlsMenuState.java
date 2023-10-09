@@ -2,10 +2,8 @@ package game.state.options;
 
 import game.Game;
 import game.state.GameState;
-import game.widget.ButtonWidget;
-import game.widget.LabelWidget;
+import game.widget.*;
 import game.widget.Menu;
-import game.widget.UserInterface;
 
 import java.awt.*;
 import java.time.Duration;
@@ -31,6 +29,9 @@ public class ControlsMenuState extends GameState {
                 new LabelWidget("Attack", "Space", getGame()),
                 new LabelWidget("Use Item", "E", getGame()),
                 new LabelWidget("Pause", "P", getGame()),
+                new Blank(getGame()),
+                new Blank(getGame()),
+                new Blank(getGame()),
                 new ButtonWidget("Back", getGame(), () -> {
                     getGame().popState();
                 })

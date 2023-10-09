@@ -59,12 +59,18 @@ public class Menu {
         }
 
         if (getGame().getKeyboard().pressed(Keyboard.UP)) {
-            caret--;
+            // advance the caret so long as the widget is hoverable
+            do {
+                caret--;
+            } while (caret >= 0 && !widgets.get(caret).hoverable);
             getGame().getAudio().play("caret.wav");
         }
 
         if (getGame().getKeyboard().pressed(Keyboard.DOWN)) {
-            caret++;
+            // advance the caret so long as the widget is hoverable
+            do {
+                caret++;
+            } while (caret < widgets.size() && !widgets.get(caret).hoverable);
             getGame().getAudio().play("caret.wav");
         }
         caret = Util.wrap(caret, 0, widgets.size());

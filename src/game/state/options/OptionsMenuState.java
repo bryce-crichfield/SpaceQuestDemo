@@ -34,7 +34,7 @@ public class OptionsMenuState extends GameState {
         int menuX = (getGame().SCREEN_WIDTH / 2) - (menuWidth / 2);
         int menuY = (getGame().SCREEN_HEIGHT / 2) - (menuHeight / 2);
         menu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
-        menu.setWidgets(musicVolume, soundVolume, fullscreen, controls, back);
+        menu.setWidgets(musicVolume, soundVolume, fullscreen, controls, new Blank(getGame()), back);
     }
 
     @Override

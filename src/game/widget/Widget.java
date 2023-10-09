@@ -8,6 +8,7 @@ import java.time.Duration;
 public class Widget {
     Game game;
     String text;
+    public boolean hoverable = true;
 
     public Widget(String text, Game game) {
         this.text = text;

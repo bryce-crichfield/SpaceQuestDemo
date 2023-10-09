@@ -122,4 +122,8 @@ public class World {
 
         return Optional.empty();
     }
+
+    public Raycast raycast(int startX, int startY, int endX, int endY) {
+        return new Raycast(tiles, startX, startY, endX, endY);
+    }
 }

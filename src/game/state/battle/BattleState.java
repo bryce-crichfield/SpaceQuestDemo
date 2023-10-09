@@ -1,5 +1,6 @@
 package game.state.battle;
 
+import game.state.battle.world.Raycast;
 import game.util.Camera;
 import game.Game;
 import game.state.GameState;
@@ -191,16 +192,65 @@ public class BattleState extends GameState {
     }
 
     class AttackActionMode implements ActionMode {
+        Raycast raycast;
+
+
         @Override
         public void onUpdate(Duration delta) {
             cursorCamera.onUpdate(delta, world);
             selectionManager.onUpdate();
+
+            if (selectionManager.getCurrentlySelectedActor().isPresent()) {
+                Actor actor = selectionManager.getCurrentlySelectedActor().get();
+                raycast = world.raycast(cursorCamera.getCursorX(), cursorCamera.getCursorY(), (int) actor.getX(),
+                                        (int) actor.getY()
+                );
+            }
         }
 
         @Override
         public void onRender(Graphics2D graphics) {
             drawWithCamera(graphics, camera -> {
                 cursorCamera.onRender(camera);
+
+                if (raycast == null) {
+                    return;
+                }
+                // Draw the raycast
+                List<Tile> tiles = raycast.getTiles();
+                for (Tile tile : tiles) {
+                    boolean hasImmediateNeighborAbove = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() && t.getY() == tile.getY() - 1).isPresent();
+                    boolean hasImmediateNeighborBelow = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() && t.getY() == tile.getY() + 1).isPresent();
+                    boolean hasImmediateNeighborLeft = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() - 1 && t.getY() == tile.getY()).isPresent();
+                    boolean hasImmediateNeighborRight = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() + 1 && t.getY() == tile.getY()).isPresent();
+
+                    Stroke stroke = graphics.getStroke();
+                    graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    graphics.setColor(Color.RED);
+                    int tileX = tile.getX() * 32;
+                    int tileY = tile.getY() * 32;
+                    int tileSize = 32;
+
+                    if (!hasImmediateNeighborAbove) {
+                        graphics.drawLine(tileX, tileY, tileX + tileSize, tileY);
+                    }
+
+                    if (!hasImmediateNeighborBelow) {
+                        graphics.drawLine(tileX, tileY + tileSize, tileX + tileSize, tileY + tileSize);
+                    }
+
+                    if (!hasImmediateNeighborLeft) {
+                        graphics.drawLine(tileX, tileY, tileX, tileY + tileSize);
+                    }
+
+                    if (!hasImmediateNeighborRight) {
+                        graphics.drawLine(tileX + tileSize, tileY, tileX + tileSize, tileY + tileSize);
+                    }
+
+                    graphics.setStroke(stroke);
+                }
+
+
             });
         }
     }

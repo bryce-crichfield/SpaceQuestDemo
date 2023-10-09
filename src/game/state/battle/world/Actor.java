@@ -1,9 +1,9 @@
 package game.state.battle.world;
 
 import game.event.EventListener;
-import game.state.battle.pathfinding.MoveActorEvent;
-import game.state.battle.selection.DeselectedEvent;
-import game.state.battle.selection.SelectedEvent;
+import game.state.battle.event.ActorMoved;
+import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorSelected;
 import game.util.Util;
 
 import java.awt.*;
@@ -19,7 +19,7 @@ public class Actor {
     float targetY;
     float health = 50;
     List<Tile> path = List.of();
-    private final EventListener<MoveActorEvent> moveActorEventListener = event -> {
+    private final EventListener<ActorMoved> moveActorEventListener = event -> {
         System.out.println("Actor received pathfinding event");
         if (event.actor.equals(Actor.this)) {
             path = event.movePath;
@@ -28,12 +28,12 @@ public class Actor {
     private float walkTime;
     private boolean selected = false;
 
-    private final EventListener<SelectedEvent> selectedEventListener = event -> {
+    private final EventListener<ActorSelected> selectedEventListener = event -> {
         if (event.actor.equals(Actor.this)) {
             selected = true;
         }
     };
-    private final EventListener<DeselectedEvent> deselectedEventListener = event -> {
+    private final EventListener<ActorDeselected> deselectedEventListener = event -> {
         if (event.actor.equals(Actor.this)) {
             selected = false;
         }
@@ -47,11 +47,11 @@ public class Actor {
         this.color = color;
     }
 
-    public EventListener<SelectedEvent> getSelectedEventListener() {
+    public EventListener<ActorSelected> getSelectedEventListener() {
         return selectedEventListener;
     }
 
-    public EventListener<DeselectedEvent> getDeselectedEventListener() {
+    public EventListener<ActorDeselected> getDeselectedEventListener() {
         return deselectedEventListener;
     }
 
@@ -114,7 +114,7 @@ public class Actor {
         graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
     }
 
-    public EventListener<MoveActorEvent> getMoveActorEventListener() {
+    public EventListener<ActorMoved> getMoveActorEventListener() {
         return moveActorEventListener;
     }
 }

@@ -4,6 +4,7 @@ import game.Game;
 import game.event.Event;
 import game.event.EventListener;
 import game.io.Keyboard;
+import game.state.battle.event.CursorMoved;
 import game.state.battle.world.World;
 import game.util.Camera;
 import game.util.Util;
@@ -13,10 +14,8 @@ import java.awt.event.KeyEvent;
 import java.time.Duration;
 
 public class CursorCamera {
-
-    final float timerMax = .75f;
-    private final Event<CursorEvent> onCursorEvent = new Event<>();
     private final Game game;
+    private final float timerMax = .75f;
     public int cursorX;
     public int cursorY;
     float velocityX;
@@ -29,46 +28,44 @@ public class CursorCamera {
         switch (keyCode) {
             case Keyboard.LEFT -> {
                 cursorX--;
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
             }
             case Keyboard.RIGHT -> {
                 cursorX++;
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
 
             }
             case Keyboard.UP -> {
                 cursorY--;
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
             }
             case Keyboard.DOWN -> {
                 cursorY++;
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
 
             }
             case KeyEvent.VK_MINUS -> {
                 float zoom = camera.getZoom();
                 zoom = Math.max(zoom - 0.25f, 0.25f);
                 camera.setZoom(zoom);
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
             }
             case KeyEvent.VK_EQUALS -> {
                 float zoom = camera.getZoom();
                 zoom = Math.min(zoom + 0.25f, 2);
                 camera.setZoom(zoom);
-                onCursorEvent.fire(new CursorEvent(this));
+                CursorMoved.event.fire(new CursorMoved(this));
             }
         }
     };
-    Keyboard keyboard;
     int tileSize;
-    Event<CursorEvent> emitter;
+    Event<CursorMoved> emitter;
     Mode mode = Mode.NORMAL;
     Color color = Color.RED;
     float timer = 0;
-    public CursorCamera(Camera camera, Keyboard keyboard, int tileSize, Game game, World world) {
+    public CursorCamera(Camera camera, Game game, World world) {
         this.camera = camera;
-        this.keyboard = keyboard;
-        this.tileSize = tileSize;
+        this.tileSize = game.TILE_SIZE;
         this.game = game;
 
         cursorX = 0;
@@ -78,7 +75,7 @@ public class CursorCamera {
         accelerationX = 0;
         accelerationY = 0;
 
-        onCursorEvent.listenWith(event -> {
+        CursorMoved.event.listenWith(event -> {
             cursorX = Util.clamp(cursorX, 0, world.getWidth() - 1);
             cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
             game.getAudio().play("beep.wav");
@@ -87,10 +84,6 @@ public class CursorCamera {
 
     public EventListener<Integer> getOnKeyPressEventListener() {
         return onKeyPressEventListener;
-    }
-
-    public Event<CursorEvent> getOnCursorEvent() {
-        return onCursorEvent;
     }
 
     public void setColor(Color color) {
@@ -166,5 +159,4 @@ public class CursorCamera {
         DILATED,
         NORMAL
     }
-
 }

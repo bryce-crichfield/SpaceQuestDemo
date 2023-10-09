@@ -5,9 +5,11 @@ import game.event.EventListener;
 import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.cursor.CursorCamera;
+import game.state.battle.event.CursorMoved;
+import game.state.battle.event.ActorMoved;
 import game.state.battle.pathfinding.PathfindingManager;
-import game.state.battle.selection.DeselectedEvent;
-import game.state.battle.selection.SelectedEvent;
+import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorSelected;
 import game.state.battle.selection.SelectionManager;
 import game.state.battle.world.Actor;
 import game.state.battle.world.Raycast;
@@ -56,12 +58,12 @@ public class BattleState extends GameState {
                 new ButtonWidget("Move", getGame(), this::enterMoveMode)
         );
 
-        EventListener<SelectedEvent> onSelectedEventListener = event -> {
+        EventListener<ActorSelected> onSelectedEventListener = event -> {
             game.getAudio().play("select.wav");
             enterSelectMode();
         };
 
-        EventListener<DeselectedEvent> onDeselectedEventListener = event -> {
+        EventListener<ActorDeselected> onDeselectedEventListener = event -> {
             enterObserverMode();
         };
 
@@ -71,32 +73,32 @@ public class BattleState extends GameState {
         });
 
         // Set up the cursor camera and register its listneer
-        cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32, game, world);
+        cursorCamera = new CursorCamera(camera, game, world);
 
         // Set up the selection manager and register the actors as listeners
         selectionManager = new SelectionManager(game.getKeyboard(), world);
-        cursorCamera.getOnCursorEvent().listenWith(selectionManager.getCursorEventListener());
-        selectionManager.getOnSelectedEvent().listenWith(event -> {
+        CursorMoved.event.listenWith(selectionManager.getCursorEventListener());
+        ActorSelected.event.listenWith(event -> {
             game.getAudio().play("select.wav");
             enterSelectMode();
         });
 
-        selectionManager.getOnDeselectedEvent().listenWith(event -> {
+        ActorDeselected.event.listenWith(event -> {
             enterObserverMode();
         });
 
         for (Actor actor : world.getActors()) {
-            selectionManager.getOnSelectedEvent().listenWith(actor.getSelectedEventListener());
-            selectionManager.getOnDeselectedEvent().listenWith(actor.getDeselectedEventListener());
+            ActorSelected.event.listenWith(actor.getSelectedEventListener());
+            ActorDeselected.event.listenWith(actor.getDeselectedEventListener());
         }
 
         // Set up the pathfinding manager and register the actors as listeners
-        pathfindingManager = new PathfindingManager(selectionManager, game.getKeyboard(), world, game);
-        cursorCamera.getOnCursorEvent().listenWith(pathfindingManager.getCursorEventListener());
-        selectionManager.getOnSelectedEvent().listenWith(pathfindingManager.getSelectedEventListener());
-        selectionManager.getOnDeselectedEvent().listenWith(pathfindingManager.getDeselectedEventListener());
+        pathfindingManager = new PathfindingManager(game.getKeyboard(), world, game);
+        CursorMoved.event.listenWith(pathfindingManager.getCursorEventListener());
+        ActorSelected.event.listenWith(pathfindingManager.getSelectedEventListener());
+        ActorDeselected.event.listenWith(pathfindingManager.getDeselectedEventListener());
         for (Actor actor : world.getActors()) {
-            pathfindingManager.getOnMoveActorEvent().listenWith(actor.getMoveActorEventListener());
+            ActorMoved.event.listenWith(actor.getMoveActorEventListener());
         }
 
         this.enterObserverMode();

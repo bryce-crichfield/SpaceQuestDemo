@@ -3,21 +3,21 @@ package game.state.battle.selection;
 import game.event.Event;
 import game.event.EventListener;
 import game.io.Keyboard;
-import game.state.battle.cursor.CursorEvent;
+import game.state.battle.event.CursorMoved;
+import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorSelected;
 import game.state.battle.world.Actor;
 import game.state.battle.world.World;
 
 import java.util.Optional;
 
 public class SelectionManager {
-    private final Event<SelectedEvent> onSelectedEvent = new Event<>();
-    private final Event<DeselectedEvent> onDeselectionEvent = new Event<>();
     private final Keyboard keyboard;
     private final World world;
     private Optional<Actor> currentlySelectedActor;
     private int cursorX = 0;
     private int cursorY = 0;
-    private final EventListener<CursorEvent> cursorEventListener = event -> {
+    private final EventListener<CursorMoved> cursorEventListener = event -> {
         cursorX = event.cursorCamera.getCursorX();
         cursorY = event.cursorCamera.getCursorY();
     };
@@ -28,15 +28,7 @@ public class SelectionManager {
         this.currentlySelectedActor = Optional.empty();
     }
 
-    public Event<SelectedEvent> getOnSelectedEvent() {
-        return onSelectedEvent;
-    }
-
-    public Event<DeselectedEvent> getOnDeselectedEvent() {
-        return onDeselectionEvent;
-    }
-
-    public EventListener<CursorEvent> getCursorEventListener() {
+    public EventListener<CursorMoved> getCursorEventListener() {
         return cursorEventListener;
     }
 
@@ -74,12 +66,12 @@ public class SelectionManager {
 
     private void selectActor(Actor actor) {
         currentlySelectedActor = Optional.of(actor);
-        onSelectedEvent.fire(new SelectedEvent(currentlySelectedActor.get()));
+        ActorSelected.event.fire(new ActorSelected(currentlySelectedActor.get()));
     }
 
     public void deselectActor() {
         currentlySelectedActor.ifPresent(actor -> {
-            onDeselectionEvent.fire(new DeselectedEvent(actor));
+            ActorDeselected.event.fire(new ActorDeselected(actor));
         });
         currentlySelectedActor = Optional.empty();
     }

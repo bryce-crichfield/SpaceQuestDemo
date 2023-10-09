@@ -2,11 +2,10 @@ package game.state.battle.pathfinding;
 
 import game.state.battle.world.Actor;
 import game.state.battle.world.Tile;
-import game.event.Event;
 
 import java.util.List;
 
-public class PathfindingEvent extends Event {
+public class PathfindingEvent {
     public final Actor actor;
     public final List<Tile> movePath;
 

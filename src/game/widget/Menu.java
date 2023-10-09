@@ -3,14 +3,18 @@ package game.widget;
 import game.Game;
 import game.io.Keyboard;
 import game.util.Util;
-import game.event.EventEmitter;
-import game.event.EventSource;
+import game.event.Event;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class Menu implements EventSource<CloseEvent> {
+public class Menu {
+    public Event<CloseEvent> getOnCloseEvent() {
+        return onCloseEvent;
+    }
+
+    private final Event<CloseEvent> onCloseEvent = new Event<>();
     private final Game game;
     private final int x;
     private final int y;
@@ -56,7 +60,7 @@ public class Menu implements EventSource<CloseEvent> {
     public void onUpdate(Duration delta) {
         if (getGame().getKeyboard().pressed(Keyboard.SECONDARY)) {
             setVisible(false);
-            getEmitter().fireEvent(new CloseEvent());
+            onCloseEvent.fire(new CloseEvent());
         }
 
         if (!isVisible()) {
@@ -111,12 +115,5 @@ public class Menu implements EventSource<CloseEvent> {
 
         int caretY = optionsStartY + caret * itemDistance;
         ui.drawTextRightJustified(">", menuX, caretY, menuWidth, 32, 12);
-    }
-
-    private final EventEmitter<CloseEvent> emitter = new EventEmitter<>();
-
-    @Override
-    public EventEmitter<CloseEvent> getEmitter() {
-        return emitter;
     }
 }

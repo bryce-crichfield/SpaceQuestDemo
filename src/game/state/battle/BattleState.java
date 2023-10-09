@@ -1,5 +1,7 @@
 package game.state.battle;
 
+import game.event.Event;
+import game.event.EventListener;
 import game.state.battle.world.Raycast;
 import game.util.Camera;
 import game.Game;
@@ -8,12 +10,10 @@ import game.state.battle.cursor.CursorCamera;
 import game.state.battle.pathfinding.PathfindingManager;
 import game.state.battle.selection.DeselectedEvent;
 import game.state.battle.selection.SelectedEvent;
-import game.state.battle.selection.SelectionEvent;
 import game.state.battle.selection.SelectionManager;
 import game.state.battle.world.Actor;
 import game.state.battle.world.Tile;
 import game.state.battle.world.World;
-import game.event.EventListener;
 import game.state.title.StarBackground;
 import game.widget.ButtonWidget;
 import game.widget.Menu;
@@ -35,7 +35,6 @@ public class BattleState extends GameState {
     SelectionManager selectionManager;
     PathfindingManager pathfindingManager;
     Menu actionMenu;
-    EventListener<SelectionEvent> menuSelectionEventListener;
     ActionMode currentActionMode = new ObserverMode();
 
     void enterObserverMode() {
@@ -82,41 +81,47 @@ public class BattleState extends GameState {
                 new ButtonWidget("Move", getGame(), this::enterMoveMode)
         );
 
-        menuSelectionEventListener = event -> {
-            if (event instanceof SelectedEvent selectedEvent) {
-                game.getAudio().play("select.wav");
-                enterSelectMode();
-            }
-
-            if (event instanceof DeselectedEvent deselectedEvent) {
-                enterObserverMode();
-            }
+        EventListener<SelectedEvent> onSelectedEventListener = event -> {
+            game.getAudio().play("select.wav");
+            enterSelectMode();
         };
 
-        actionMenu.getEmitter().addListener(closeEvent -> {
+        EventListener<DeselectedEvent> onDeselectedEventListener = event -> {
+            enterObserverMode();
+        };
+
+        actionMenu.getOnCloseEvent().listenWith(closeEvent -> {
             currentActionMode = new ObserverMode();
             selectionManager.deselectActor();
         });
 
         // Set up the selection manager and register the actors as listeners
         selectionManager = new SelectionManager(game.getKeyboard(), world);
-        cursorCamera.addListener(selectionManager.getCursorEventListener());
-        selectionManager.addListener(menuSelectionEventListener);
+        cursorCamera.getOnCursorEvent().listenWith(selectionManager.getCursorEventListener());
+        selectionManager.getOnSelectedEvent().listenWith(event -> {
+            game.getAudio().play("select.wav");
+            enterSelectMode();
+        });
+
+        selectionManager.getOnDeselectedEvent().listenWith(event -> {
+            enterObserverMode();
+        });
+
         for (Actor actor : world.getActors()) {
-            selectionManager.addListener(actor.getSelectionEventListener());
+            selectionManager.getOnSelectedEvent().listenWith(actor.getSelectedEventListener());
+            selectionManager.getOnDeselectedEvent().listenWith(actor.getDeselectedEventListener());
         }
 
         // Set up the pathfinding manager and register the actors as listeners
         pathfindingManager = new PathfindingManager(selectionManager, game.getKeyboard(), world, game);
-        cursorCamera.addListener(pathfindingManager.getCursorEventListener());
-        selectionManager.addListener(pathfindingManager.getSelectionEventListener());
+        cursorCamera.getOnCursorEvent().listenWith(pathfindingManager.getCursorEventListener());
+        selectionManager.getOnSelectedEvent().listenWith(pathfindingManager.getSelectedEventListener());
+        selectionManager.getOnDeselectedEvent().listenWith(pathfindingManager.getDeselectedEventListener());
         for (Actor actor : world.getActors()) {
-            pathfindingManager.addListener(actor.getPathfindingListener());
+            pathfindingManager.getOnPathfindingEvent().listenWith(actor.getPathfindingListener());
         }
 
         this.enterObserverMode();
-
-
     }
 
     public void drawWithCamera(Graphics2D graphics, Consumer<Graphics2D> draw) {

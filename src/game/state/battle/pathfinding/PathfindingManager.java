@@ -1,25 +1,23 @@
 package game.state.battle.pathfinding;
 
 import game.Game;
+import game.event.Event;
+import game.event.EventListener;
 import game.io.Keyboard;
 import game.state.battle.cursor.CursorEvent;
 import game.state.battle.selection.DeselectedEvent;
 import game.state.battle.selection.SelectedEvent;
-import game.state.battle.selection.SelectionEvent;
 import game.state.battle.selection.SelectionManager;
 import game.state.battle.world.Actor;
 import game.state.battle.world.Tile;
 import game.state.battle.world.World;
-import game.event.EventEmitter;
-import game.event.EventListener;
-import game.event.EventSource;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathfindingManager implements EventSource<PathfindingEvent> {
-    private final EventEmitter<PathfindingEvent> emitter;
+public class PathfindingManager {
+    private final Event<PathfindingEvent> onPathfindingEvent = new Event<>();
     private final SelectionManager selectionManager;
     private final Keyboard keyboard;
     private final World world;
@@ -31,26 +29,31 @@ public class PathfindingManager implements EventSource<PathfindingEvent> {
         cursorY = event.cursorCamera.getCursorY();
     };
     private List<Tile> possiblePath;
-    private final EventListener<SelectionEvent> selectionEventListener = event -> {
-        if (event instanceof SelectedEvent selectedEvent) {
-            possiblePath = new ArrayList<>();
-        }
-
-        if (event instanceof DeselectedEvent deselectedEvent) {
-            possiblePath = new ArrayList<>();
-        }
+    private final EventListener<SelectedEvent> selectedEventListener = event -> {
+        possiblePath = new ArrayList<>();
     };
+    private final EventListener<DeselectedEvent> deselectedEventListener = event -> {
+        possiblePath = new ArrayList<>();
+    };
+
     public PathfindingManager(SelectionManager selectionManager, Keyboard keyboard, World world, Game game) {
         this.selectionManager = selectionManager;
         this.keyboard = keyboard;
         this.world = world;
         this.game = game;
         possiblePath = new ArrayList<>();
-        emitter = new EventEmitter<>();
     }
 
-    public EventListener<SelectionEvent> getSelectionEventListener() {
-        return selectionEventListener;
+    public Event<PathfindingEvent> getOnPathfindingEvent() {
+        return onPathfindingEvent;
+    }
+
+    public EventListener<SelectedEvent> getSelectedEventListener() {
+        return selectedEventListener;
+    }
+
+    public EventListener<DeselectedEvent> getDeselectedEventListener() {
+        return deselectedEventListener;
     }
 
     public EventListener<CursorEvent> getCursorEventListener() {
@@ -72,7 +75,7 @@ public class PathfindingManager implements EventSource<PathfindingEvent> {
             if (primaryPressed) {
                 // TODO: This should really be a move command
                 game.getAudio().play("select.wav");
-                emitter.fireEvent(new PathfindingEvent(actor, possiblePath));
+                onPathfindingEvent.fire(new PathfindingEvent(actor, possiblePath));
                 possiblePath = new ArrayList<>();
             }
         }
@@ -124,10 +127,5 @@ public class PathfindingManager implements EventSource<PathfindingEvent> {
             turtleTileY = tileY;
         }
         graphics.setStroke(stroke);
-    }
-
-    @Override
-    public EventEmitter<PathfindingEvent> getEmitter() {
-        return emitter;
     }
 }

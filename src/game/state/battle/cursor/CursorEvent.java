@@ -1,8 +1,6 @@
 package game.state.battle.cursor;
 
-import game.event.Event;
-
-public class CursorEvent extends Event {
+public class CursorEvent {
     public final CursorCamera cursorCamera;
 
     public CursorEvent(CursorCamera cursorCamera) {

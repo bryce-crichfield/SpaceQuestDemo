@@ -5,14 +5,18 @@ import game.Game;
 import game.io.Keyboard;
 import game.util.Util;
 import game.state.battle.world.World;
-import game.event.EventEmitter;
-import game.event.EventSource;
+import game.event.Event;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 
-public class CursorCamera implements EventSource<CursorEvent> {
+public class CursorCamera {
+    public Event<CursorEvent> getOnCursorEvent() {
+        return onCursorEvent;
+    }
+
+    private final Event<CursorEvent> onCursorEvent = new Event<>();
     public int cursorX;
     public int cursorY;
     float velocityX;
@@ -22,7 +26,7 @@ public class CursorCamera implements EventSource<CursorEvent> {
     Camera camera;
     Keyboard keyboard;
     int tileSize;
-    EventEmitter<CursorEvent> emitter;
+    Event<CursorEvent> emitter;
 
     enum Mode {
         BLINKING,
@@ -67,7 +71,7 @@ public class CursorCamera implements EventSource<CursorEvent> {
         accelerationX = 0;
         accelerationY = 0;
 
-        emitter = new EventEmitter<>();
+        emitter = new Event<>();
     }
 
     public void onUpdate(Duration duration, World world) {
@@ -131,7 +135,7 @@ public class CursorCamera implements EventSource<CursorEvent> {
 
 
         if (cursorChanged) {
-            fireEvent(new CursorEvent(this));
+            onCursorEvent.fire(new CursorEvent(this));
             game.getAudio().play("beep.wav");
         }
     }
@@ -161,11 +165,6 @@ public class CursorCamera implements EventSource<CursorEvent> {
 
     public int getCursorY() {
         return cursorY;
-    }
-
-    @Override
-    public EventEmitter getEmitter() {
-        return emitter;
     }
 
 }

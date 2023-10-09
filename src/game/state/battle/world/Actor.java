@@ -1,11 +1,10 @@
 package game.state.battle.world;
 
-import game.util.Util;
+import game.event.EventListener;
 import game.state.battle.pathfinding.PathfindingEvent;
 import game.state.battle.selection.DeselectedEvent;
 import game.state.battle.selection.SelectedEvent;
-import game.state.battle.selection.SelectionEvent;
-import game.event.EventListener;
+import game.util.Util;
 
 import java.awt.*;
 import java.time.Duration;
@@ -21,19 +20,22 @@ public class Actor {
     float health = 50;
     List<Tile> path = List.of();
     private final EventListener<PathfindingEvent> pathfindingEventListener = event -> {
+        System.out.println("Actor received pathfinding event");
         if (event.actor.equals(Actor.this)) {
             path = event.movePath;
         }
     };
     private float walkTime;
     private boolean selected = false;
-    private final EventListener<SelectionEvent> selectionEventListener = event -> {
-        if (event instanceof DeselectedEvent deselected && deselected.actor.equals(this)) {
-            selected = false;
-        }
 
-        if (event instanceof SelectedEvent selectedEvent && selectedEvent.actor.equals(this)) {
+    private final EventListener<SelectedEvent> selectedEventListener = event -> {
+        if (event.actor.equals(Actor.this)) {
             selected = true;
+        }
+    };
+    private final EventListener<DeselectedEvent> deselectedEventListener = event -> {
+        if (event.actor.equals(Actor.this)) {
+            selected = false;
         }
     };
 
@@ -43,6 +45,14 @@ public class Actor {
         this.targetX = x;
         this.targetY = y;
         this.color = color;
+    }
+
+    public EventListener<SelectedEvent> getSelectedEventListener() {
+        return selectedEventListener;
+    }
+
+    public EventListener<DeselectedEvent> getDeselectedEventListener() {
+        return deselectedEventListener;
     }
 
     public float getX() {
@@ -93,7 +103,7 @@ public class Actor {
         float healthPercentage = health / 100;
         graphics.setColor(Color.RED);
         int healthWidth = (int) ((32 - 10) * healthPercentage);
-        int healthHeight = (int) (5);
+        int healthHeight = 5;
         int healthX = (int) ((x * 32) + 5);
         int healthY = (int) ((y * 32) + 32 - 5);
 
@@ -107,9 +117,5 @@ public class Actor {
 
     public EventListener<PathfindingEvent> getPathfindingListener() {
         return pathfindingEventListener;
-    }
-
-    public EventListener<SelectionEvent> getSelectionEventListener() {
-        return selectionEventListener;
     }
 }

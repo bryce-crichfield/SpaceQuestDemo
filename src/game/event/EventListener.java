@@ -1,5 +1,5 @@
 package game.event;
 
-public interface EventListener<T extends Event> {
+public interface EventListener<T> {
     void onEvent(T event);
 }

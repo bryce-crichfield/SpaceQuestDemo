@@ -1,17 +1,17 @@
 package game.state.battle.selection;
 
+import game.event.Event;
+import game.event.EventListener;
 import game.io.Keyboard;
 import game.state.battle.cursor.CursorEvent;
 import game.state.battle.world.Actor;
 import game.state.battle.world.World;
-import game.event.EventEmitter;
-import game.event.EventListener;
-import game.event.EventSource;
 
 import java.util.Optional;
 
-public class SelectionManager implements EventSource<SelectionEvent> {
-    private final EventEmitter<SelectionEvent> emitter;
+public class SelectionManager {
+    private final Event<SelectedEvent> onSelectedEvent = new Event<>();
+    private final Event<DeselectedEvent> onDeselectionEvent = new Event<>();
     private final Keyboard keyboard;
     private final World world;
     private Optional<Actor> currentlySelectedActor;
@@ -24,8 +24,15 @@ public class SelectionManager implements EventSource<SelectionEvent> {
     public SelectionManager(Keyboard keyboard, World world) {
         this.keyboard = keyboard;
         this.world = world;
-        this.emitter = new EventEmitter<>();
         this.currentlySelectedActor = Optional.empty();
+    }
+
+    public Event<SelectedEvent> getOnSelectedEvent() {
+        return onSelectedEvent;
+    }
+
+    public Event<DeselectedEvent> getOnDeselectedEvent() {
+        return onDeselectionEvent;
     }
 
     public EventListener<CursorEvent> getCursorEventListener() {
@@ -66,12 +73,12 @@ public class SelectionManager implements EventSource<SelectionEvent> {
 
     private void selectActor(Actor actor) {
         currentlySelectedActor = Optional.of(actor);
-        emitter.fireEvent(new SelectedEvent(currentlySelectedActor.get()));
+        onSelectedEvent.fire(new SelectedEvent(currentlySelectedActor.get()));
     }
 
     public void deselectActor() {
         currentlySelectedActor.ifPresent(actor -> {
-            emitter.fireEvent(new DeselectedEvent(actor));
+            onDeselectionEvent.fire(new DeselectedEvent(actor));
         });
         currentlySelectedActor = Optional.empty();
     }
@@ -80,8 +87,4 @@ public class SelectionManager implements EventSource<SelectionEvent> {
         return currentlySelectedActor;
     }
 
-    @Override
-    public EventEmitter<SelectionEvent> getEmitter() {
-        return emitter;
-    }
 }

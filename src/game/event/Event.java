@@ -1,17 +1,26 @@
 package game.event;
 
-public abstract class Event {
-    private boolean handled;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Event<T> {
+    private final List<EventListener<T>> listeners;
 
     public Event() {
-        handled = false;
+        listeners = new ArrayList<>();
     }
 
-    public void setHandled() {
-        handled = true;
+    public void listenWith(EventListener<T> listener) {
+        listeners.add(listener);
     }
 
-    public boolean isHandled() {
-        return handled;
+    public void remove(EventListener<T> listener) {
+        listeners.remove(listener);
+    }
+
+    public void fire(T event) {
+        for (EventListener<T> listener : listeners) {
+            listener.onEvent(event);
+        }
     }
 }

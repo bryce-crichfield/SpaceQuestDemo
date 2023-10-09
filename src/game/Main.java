@@ -1,6 +1,7 @@
 package game;
 
-import game.title.MainMenuState;
+import game.state.title.MainMenuState;
+import game.util.Util;
 
 import java.time.Duration;
 import java.time.Instant;

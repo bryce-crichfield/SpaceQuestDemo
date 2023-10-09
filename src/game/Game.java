@@ -1,5 +1,9 @@
 package game;
 
+import game.io.Audio;
+import game.io.Keyboard;
+import game.state.GameState;
+
 import java.awt.*;
 import java.time.Duration;
 import java.util.Stack;

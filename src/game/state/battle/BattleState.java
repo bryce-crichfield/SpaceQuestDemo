@@ -266,8 +266,6 @@ public class BattleState extends GameState {
 
                     graphics.setStroke(stroke);
                 }
-
-
             });
         }
     }

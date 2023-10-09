@@ -50,14 +50,12 @@ public class CursorCamera {
                 zoom = Math.max(zoom - 0.25f, 0.25f);
                 camera.setZoom(zoom);
                 onCursorEvent.fire(new CursorEvent(this));
-
             }
             case KeyEvent.VK_EQUALS -> {
                 float zoom = camera.getZoom();
                 zoom = Math.min(zoom + 0.25f, 2);
                 camera.setZoom(zoom);
                 onCursorEvent.fire(new CursorEvent(this));
-
             }
         }
     };

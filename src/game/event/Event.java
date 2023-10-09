@@ -11,6 +11,9 @@ public class Event<T> {
     }
 
     public void listenWith(EventListener<T> listener) {
+        if (listeners.contains(listener)) {
+            return;
+        }
         listeners.add(listener);
     }
 

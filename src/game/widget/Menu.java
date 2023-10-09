@@ -1,19 +1,15 @@
 package game.widget;
 
 import game.Game;
+import game.event.Event;
 import game.io.Keyboard;
 import game.util.Util;
-import game.event.Event;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
 public class Menu {
-    public Event<CloseEvent> getOnCloseEvent() {
-        return onCloseEvent;
-    }
-
     private final Event<CloseEvent> onCloseEvent = new Event<>();
     private final Game game;
     private final int x;
@@ -25,7 +21,6 @@ public class Menu {
     private int itemDistance;
     private int textSize;
     private boolean visible = true;
-
     public Menu(Game game, int x, int y, int width, int height) {
         this.game = game;
         this.x = x;
@@ -37,12 +32,8 @@ public class Menu {
         textSize = 12;
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public Event<CloseEvent> getOnCloseEvent() {
+        return onCloseEvent;
     }
 
     public void setItemDistance(int itemDistance) {
@@ -80,6 +71,14 @@ public class Menu {
 
         Widget currentWidget = widgets.get(caret);
         currentWidget.onUpdate(delta);
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public Game getGame() {

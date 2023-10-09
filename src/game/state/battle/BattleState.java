@@ -1,9 +1,8 @@
 package game.state.battle;
 
-import game.event.EventListener;
-import game.state.battle.world.Raycast;
-import game.util.Camera;
 import game.Game;
+import game.event.EventListener;
+import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.cursor.CursorCamera;
 import game.state.battle.pathfinding.PathfindingManager;
@@ -11,9 +10,11 @@ import game.state.battle.selection.DeselectedEvent;
 import game.state.battle.selection.SelectedEvent;
 import game.state.battle.selection.SelectionManager;
 import game.state.battle.world.Actor;
+import game.state.battle.world.Raycast;
 import game.state.battle.world.Tile;
 import game.state.battle.world.World;
 import game.state.title.StarBackground;
+import game.util.Camera;
 import game.widget.ButtonWidget;
 import game.widget.Menu;
 
@@ -36,36 +37,11 @@ public class BattleState extends GameState {
     Menu actionMenu;
     ActionMode currentActionMode = new ObserverMode();
 
-    void enterObserverMode() {
-        currentActionMode = new ObserverMode();
-        cursorCamera.enterDilatedMode();
-        cursorCamera.setColor(Color.WHITE);
-    }
-
-    void enterSelectMode() {
-        currentActionMode = new SelectActionMode();
-        actionMenu.setVisible(true);
-        cursorCamera.enterBlinkingMode();
-        cursorCamera.setColor(Color.WHITE);
-    }
-
-    void enterAttackMode() {
-        currentActionMode = new AttackActionMode();
-        cursorCamera.enterBlinkingMode();
-        cursorCamera.setColor(Color.RED);
-    }
-
-    void enterMoveMode() {
-        currentActionMode = new MoveActionMode();
-        cursorCamera.enterBlinkingMode();
-        cursorCamera.setColor(Color.ORANGE);
-    }
-
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
-        cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32, game);
         world = new World(16, 16);
+
         path = new ArrayList<>();
 
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
@@ -94,6 +70,9 @@ public class BattleState extends GameState {
             selectionManager.deselectActor();
         });
 
+        // Set up the cursor camera and register its listneer
+        cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32, game, world);
+
         // Set up the selection manager and register the actors as listeners
         selectionManager = new SelectionManager(game.getKeyboard(), world);
         cursorCamera.getOnCursorEvent().listenWith(selectionManager.getCursorEventListener());
@@ -121,6 +100,35 @@ public class BattleState extends GameState {
         }
 
         this.enterObserverMode();
+    }
+
+    void enterObserverMode() {
+        currentActionMode = new ObserverMode();
+        cursorCamera.enterDilatedMode();
+        cursorCamera.setColor(Color.WHITE);
+        Keyboard.onKeyPressed.listenWith(cursorCamera.getOnKeyPressEventListener());
+    }
+
+    void enterSelectMode() {
+        currentActionMode = new SelectActionMode();
+        actionMenu.setVisible(true);
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.WHITE);
+        Keyboard.onKeyPressed.remove(cursorCamera.getOnKeyPressEventListener());
+    }
+
+    void enterAttackMode() {
+        currentActionMode = new AttackActionMode();
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.RED);
+        Keyboard.onKeyPressed.listenWith(cursorCamera.getOnKeyPressEventListener());
+    }
+
+    void enterMoveMode() {
+        currentActionMode = new MoveActionMode();
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.ORANGE);
+        Keyboard.onKeyPressed.listenWith(cursorCamera.getOnKeyPressEventListener());
     }
 
     public void drawWithCamera(Graphics2D graphics, Consumer<Graphics2D> draw) {
@@ -159,6 +167,7 @@ public class BattleState extends GameState {
 
         currentActionMode.onRender(graphics);
     }
+
     interface ActionMode {
         void onUpdate(Duration delta);
 
@@ -168,7 +177,7 @@ public class BattleState extends GameState {
     class ObserverMode implements ActionMode {
         @Override
         public void onUpdate(Duration delta) {
-            cursorCamera.onUpdate(delta, world);
+            cursorCamera.onUpdate(delta);
             selectionManager.onUpdate();
         }
 
@@ -201,7 +210,7 @@ public class BattleState extends GameState {
 
         @Override
         public void onUpdate(Duration delta) {
-            cursorCamera.onUpdate(delta, world);
+            cursorCamera.onUpdate(delta);
             selectionManager.onUpdate();
 
             if (selectionManager.getCurrentlySelectedActor().isPresent()) {
@@ -223,10 +232,14 @@ public class BattleState extends GameState {
                 // Draw the raycast
                 List<Tile> tiles = raycast.getTiles();
                 for (Tile tile : tiles) {
-                    boolean hasImmediateNeighborAbove = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() && t.getY() == tile.getY() - 1).isPresent();
-                    boolean hasImmediateNeighborBelow = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() && t.getY() == tile.getY() + 1).isPresent();
-                    boolean hasImmediateNeighborLeft = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() - 1 && t.getY() == tile.getY()).isPresent();
-                    boolean hasImmediateNeighborRight = tiles.stream().findAny().filter(t -> t.getX() == tile.getX() + 1 && t.getY() == tile.getY()).isPresent();
+                    boolean hasImmediateNeighborAbove = tiles.stream().findAny().filter(
+                            t -> t.getX() == tile.getX() && t.getY() == tile.getY() - 1).isPresent();
+                    boolean hasImmediateNeighborBelow = tiles.stream().findAny().filter(
+                            t -> t.getX() == tile.getX() && t.getY() == tile.getY() + 1).isPresent();
+                    boolean hasImmediateNeighborLeft = tiles.stream().findAny().filter(
+                            t -> t.getX() == tile.getX() - 1 && t.getY() == tile.getY()).isPresent();
+                    boolean hasImmediateNeighborRight = tiles.stream().findAny().filter(
+                            t -> t.getX() == tile.getX() + 1 && t.getY() == tile.getY()).isPresent();
 
                     Stroke stroke = graphics.getStroke();
                     graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -262,7 +275,7 @@ public class BattleState extends GameState {
     class MoveActionMode implements ActionMode {
         @Override
         public void onUpdate(Duration delta) {
-            cursorCamera.onUpdate(delta, world);
+            cursorCamera.onUpdate(delta);
             pathfindingManager.onUpdate();
             selectionManager.onUpdate();
         }

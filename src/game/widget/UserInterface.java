@@ -36,31 +36,6 @@ public class UserInterface {
         drawText(value, textX, y, size);
     }
 
-    public void drawTextRightJustified(String value, int x, int y, int width, int size, int padding) {
-        Shape shape = textToShape(value, x, y, size);
-        Rectangle bounds = shape.getBounds();
-
-        int textWidth = bounds.width;
-        int textHeight = bounds.height;
-
-        int textX = x + padding;
-
-        drawText(value, textX, y, size);
-    }
-
-    public void drawTextLeftJustified(String value, int x, int y, int width, int size, int padding) {
-        Shape shape = textToShape(value, x, y, size);
-        Rectangle bounds = shape.getBounds();
-
-        int textWidth = bounds.width;
-        int textHeight = bounds.height;
-
-        int textX = x + width - textWidth - padding;
-
-        drawText(value, textX, y, size);
-    }
-
-
     public Shape textToShape(String value, int x, int y, int size) {
         Font font = new Font("White Rabbit", Font.PLAIN, textSize);
         GlyphVector glyphVector = font.createGlyphVector(graphics.getFontRenderContext(), value);
@@ -86,6 +61,30 @@ public class UserInterface {
         graphics.fill(shape);
 
         graphics.setStroke(stroke);
+    }
+
+    public void drawTextRightJustified(String value, int x, int y, int width, int size, int padding) {
+        Shape shape = textToShape(value, x, y, size);
+        Rectangle bounds = shape.getBounds();
+
+        int textWidth = bounds.width;
+        int textHeight = bounds.height;
+
+        int textX = x + padding;
+
+        drawText(value, textX, y, size);
+    }
+
+    public void drawTextLeftJustified(String value, int x, int y, int width, int size, int padding) {
+        Shape shape = textToShape(value, x, y, size);
+        Rectangle bounds = shape.getBounds();
+
+        int textWidth = bounds.width;
+        int textHeight = bounds.height;
+
+        int textX = x + width - textWidth - padding;
+
+        drawText(value, textX, y, size);
     }
 
     public void drawPanel(int x, int y, int width, int height) {

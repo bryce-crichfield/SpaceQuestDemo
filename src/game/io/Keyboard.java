@@ -1,5 +1,7 @@
 package game.io;
 
+import game.event.Event;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -10,8 +12,9 @@ public class Keyboard implements KeyListener {
     public static final int RIGHT = KeyEvent.VK_D;
     public static final int PRIMARY = KeyEvent.VK_SPACE;
     public static final int SECONDARY = KeyEvent.VK_SHIFT;
-
-
+    public static Event<Integer> onKeyPressed = new Event<>();
+    public static Event<Integer> onKeyReleased = new Event<>();
+    public static Event<Integer> onKeyTyped = new Event<>();
     private final boolean[] oldKeys;
     private final boolean[] newKeys;
 
@@ -25,11 +28,6 @@ public class Keyboard implements KeyListener {
         }
     }
 
-
-    public boolean pressed(int keyCode) {
-        return newKeys[keyCode] && !oldKeys[keyCode];
-    }
-
     public boolean anyPressed(int... keyCodes) {
         for (int keyCode : keyCodes) {
             if (pressed(keyCode)) {
@@ -37,6 +35,10 @@ public class Keyboard implements KeyListener {
             }
         }
         return false;
+    }
+
+    public boolean pressed(int keyCode) {
+        return newKeys[keyCode] && !oldKeys[keyCode];
     }
 
     public boolean held(int keyCode) {
@@ -57,7 +59,7 @@ public class Keyboard implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-
+        onKeyTyped.fire(e.getKeyCode());
     }
 
     @Override
@@ -65,6 +67,7 @@ public class Keyboard implements KeyListener {
         boolean currentKey = newKeys[e.getKeyCode()];
         newKeys[e.getKeyCode()] = true;
         oldKeys[e.getKeyCode()] = currentKey;
+        onKeyPressed.fire(e.getKeyCode());
     }
 
     @Override
@@ -72,5 +75,6 @@ public class Keyboard implements KeyListener {
         boolean currentKey = newKeys[e.getKeyCode()];
         newKeys[e.getKeyCode()] = false;
         oldKeys[e.getKeyCode()] = currentKey;
+        onKeyReleased.fire(e.getKeyCode());
     }
 }

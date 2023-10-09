@@ -2,12 +2,12 @@ package game.state.title;
 
 import game.Game;
 import game.state.GameState;
-import game.state.options.OptionsMenuState;
-import game.widget.UserInterface;
 import game.state.battle.BattleState;
+import game.state.options.OptionsMenuState;
 import game.state.overworld.PlayOverworldState;
 import game.widget.ButtonWidget;
 import game.widget.Menu;
+import game.widget.UserInterface;
 
 import java.awt.*;
 import java.time.Duration;
@@ -62,7 +62,7 @@ public class MainMenuState extends GameState {
         starBackground.onRender(graphics);
 
         UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                getGame().TILE_SIZE
+                                             getGame().TILE_SIZE
         );
 
         ui.textSize = 32;

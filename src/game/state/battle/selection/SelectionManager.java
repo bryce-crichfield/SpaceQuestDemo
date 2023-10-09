@@ -21,6 +21,7 @@ public class SelectionManager {
         cursorX = event.cursorCamera.getCursorX();
         cursorY = event.cursorCamera.getCursorY();
     };
+
     public SelectionManager(Keyboard keyboard, World world) {
         this.keyboard = keyboard;
         this.world = world;

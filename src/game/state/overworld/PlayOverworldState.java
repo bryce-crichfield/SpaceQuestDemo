@@ -1,10 +1,10 @@
 package game.state.overworld;
 
-import game.util.Camera;
 import game.Game;
 import game.state.GameState;
-import game.util.Util;
 import game.state.title.StarBackground;
+import game.util.Camera;
+import game.util.Util;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

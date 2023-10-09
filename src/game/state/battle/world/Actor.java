@@ -77,7 +77,6 @@ public class Actor {
             }
         }
 
-
         // Otherwise ease towards the target, and if we are close enough, snap to the target
         x = Util.easeIn(x, targetX, stepDuration, walkTime);
         y = Util.easeIn(y, targetY, stepDuration, walkTime);

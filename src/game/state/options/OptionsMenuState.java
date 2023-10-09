@@ -2,11 +2,8 @@ package game.state.options;
 
 import game.Game;
 import game.state.GameState;
-import game.widget.UserInterface;
-import game.widget.ButtonWidget;
 import game.widget.Menu;
-import game.widget.RadioButtonWidget;
-import game.widget.SliderWidget;
+import game.widget.*;
 
 import java.awt.*;
 import java.time.Duration;
@@ -50,7 +47,9 @@ public class OptionsMenuState extends GameState {
         graphics.setColor(UserInterface.background);
         graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT, getGame().TILE_SIZE);
+        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
+                                             getGame().TILE_SIZE
+        );
         ui.textSize = 24;
         ui.textColor = UserInterface.highlight;
         ui.drawTextCentered("Options Menu", 0, 16, ui.screenWidth, 32);

@@ -2,10 +2,10 @@ package game.state.options;
 
 import game.Game;
 import game.state.GameState;
-import game.widget.UserInterface;
 import game.widget.ButtonWidget;
 import game.widget.LabelWidget;
 import game.widget.Menu;
+import game.widget.UserInterface;
 
 import java.awt.*;
 import java.time.Duration;
@@ -50,7 +50,7 @@ public class ControlsMenuState extends GameState {
         graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
         UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                getGame().TILE_SIZE
+                                             getGame().TILE_SIZE
         );
 
         ui.textSize = 24;

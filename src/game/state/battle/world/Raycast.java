@@ -11,6 +11,7 @@ public class Raycast {
 
     Tile[][] tiles;
     List<Tile> foundTiles;
+
     public Raycast(Tile[][] tiles, int startX, int startY, int endX, int endY) {
         this.tiles = tiles;
         this.startX = startX;
@@ -19,10 +20,6 @@ public class Raycast {
         this.endY = endY;
 
         foundTiles = calculate();
-    }
-
-    public List<Tile> getTiles() {
-        return foundTiles;
     }
 
     private List<Tile> calculate() {
@@ -59,6 +56,10 @@ public class Raycast {
             }
         }
 
+        return foundTiles;
+    }
+
+    public List<Tile> getTiles() {
         return foundTiles;
     }
 

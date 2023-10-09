@@ -5,5 +5,6 @@ import game.util.Camera;
 
 public interface Range {
     void onUpdate(World world);
+
     void onRender(Camera camera);
 }

@@ -20,7 +20,7 @@ public class ButtonWidget extends Widget {
         super.onUpdate(delta);
 
         if (game.getKeyboard().pressed(Keyboard.PRIMARY)) {
-            game.getAudio().play("caret.wav");
+            game.getAudio().play("button.wav");
             action.run();
         }
     }

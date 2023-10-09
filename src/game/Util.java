@@ -13,7 +13,15 @@ public class Util {
         return Math.floorMod(value - lower, upper - lower) + lower;
     }
 
+    public static float wrap(float value, float lower, float upper) {
+        return (value - lower) % (upper - lower) + lower;
+    }
+
     public static int clamp(int value, int lower, int upper) {
+        return Math.max(lower, Math.min(value, upper));
+    }
+
+    public static float clamp(float value, float lower, float upper) {
         return Math.max(lower, Math.min(value, upper));
     }
 

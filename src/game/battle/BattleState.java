@@ -18,6 +18,7 @@ import widget.ButtonWidget;
 import widget.Menu;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -35,10 +36,36 @@ public class BattleState extends GameState {
     Menu actionMenu;
     EventListener<SelectionEvent> menuSelectionEventListener;
     ActionMode currentActionMode = new ObserverMode();
+
+    void enterObserverMode() {
+        currentActionMode = new ObserverMode();
+        cursorCamera.enterDilatedMode();
+        cursorCamera.setColor(Color.WHITE);
+    }
+
+    void enterSelectMode() {
+        currentActionMode = new SelectActionMode();
+        actionMenu.setVisible(true);
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.WHITE);
+    }
+
+    void enterAttackMode() {
+        currentActionMode = new AttackActionMode();
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.RED);
+    }
+
+    void enterMoveMode() {
+        currentActionMode = new MoveActionMode();
+        cursorCamera.enterBlinkingMode();
+        cursorCamera.setColor(Color.ORANGE);
+    }
+
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
-        cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32);
+        cursorCamera = new CursorCamera(camera, game.getKeyboard(), 32, game);
         world = new World(16, 16);
         path = new ArrayList<>();
 
@@ -49,20 +76,19 @@ public class BattleState extends GameState {
         int menuX = getGame().SCREEN_WIDTH - menuWidth - getGame().TILE_SIZE;
         int menuY = getGame().SCREEN_HEIGHT - menuHeight - getGame().TILE_SIZE;
         actionMenu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
-        actionMenu.setWidgets(new ButtonWidget("Attack", getGame(), () -> {
-            currentActionMode = new AttackActionMode();
-        }), new ButtonWidget("Move", getGame(), () -> {
-            currentActionMode = new MoveActionMode();
-        }));
+        actionMenu.setWidgets(
+                new ButtonWidget("Attack", getGame(), this::enterAttackMode),
+                new ButtonWidget("Move", getGame(), this::enterMoveMode)
+        );
 
         menuSelectionEventListener = event -> {
             if (event instanceof SelectedEvent selectedEvent) {
-                currentActionMode = new SelectActionMode();
-                actionMenu.setVisible(true);
+                game.getAudio().play("select.wav");
+                enterSelectMode();
             }
 
             if (event instanceof DeselectedEvent deselectedEvent) {
-                currentActionMode = new ObserverMode();
+                enterObserverMode();
             }
         };
 
@@ -86,6 +112,10 @@ public class BattleState extends GameState {
         for (Actor actor : world.getActors()) {
             pathfindingManager.addListener(actor.getPathfindingListener());
         }
+
+        this.enterObserverMode();
+
+
     }
 
     public void drawWithCamera(Graphics2D graphics, Consumer<Graphics2D> draw) {
@@ -103,11 +133,15 @@ public class BattleState extends GameState {
         currentActionMode.onUpdate(delta);
 
         world.onUpdate(delta);
+
+        if (getGame().getKeyboard().pressed(KeyEvent.VK_ESCAPE)) {
+            getGame().popState();
+        }
     }
 
     @Override
     public void onRender(Graphics2D graphics) {
-        graphics.setColor(Color.DARK_GRAY.darker().darker().darker());
+        graphics.setColor(new Color(0x0A001A));
         graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
         starBackground.onRender(graphics);
@@ -149,6 +183,9 @@ public class BattleState extends GameState {
 
         @Override
         public void onRender(Graphics2D graphics) {
+            drawWithCamera(graphics, camera -> {
+                cursorCamera.onRender(camera);
+            });
             actionMenu.onRender(graphics);
         }
     }

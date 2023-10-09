@@ -70,6 +70,7 @@ public class PathfindingManager implements EventSource<PathfindingEvent> {
             possiblePath = pathfinder.find(start, end);
 
             if (primaryPressed) {
+                game.getAudio().play("select.wav");
                 emitter.fireEvent(new PathfindingEvent(actor, possiblePath));
                 possiblePath = new ArrayList<>();
             }

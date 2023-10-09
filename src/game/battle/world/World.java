@@ -22,11 +22,7 @@ public class World {
         // Initialize the tiles
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if ((x + y) % 2 == 0) {
-                    tiles[x][y] = new ColorTile(x, y, true, Color.WHITE);
-                } else {
-                    tiles[x][y] = new ColorTile(x, y, true, Color.BLACK);
-                }
+                tiles[x][y] = new ColorTile(x, y, true, Color.CYAN);
             }
         }
 

@@ -18,6 +18,7 @@ public class Actor {
     float y;
     float targetX;
     float targetY;
+    float health = 50;
     List<Tile> path = List.of();
     private final EventListener<PathfindingEvent> pathfindingEventListener = event -> {
         if (event.actor.equals(Actor.this)) {
@@ -87,6 +88,21 @@ public class Actor {
         graphics.fillOval((int) (x * 32), (int) (y * 32), 32, 32);
         graphics.setColor(Color.BLACK);
         graphics.drawOval((int) (x * 32), (int) (y * 32), 32, 32);
+
+        // draw the health bar
+        float healthPercentage = health / 100;
+        graphics.setColor(Color.RED);
+        int healthWidth = (int) ((32 - 10) * healthPercentage);
+        int healthHeight = (int) (5);
+        int healthX = (int) ((x * 32) + 5);
+        int healthY = (int) ((y * 32) + 32 - 5);
+
+        graphics.setColor(Color.BLACK);
+        graphics.fillRect(healthX, healthY, 32 - 10, healthHeight);
+        graphics.setColor(Color.RED);
+        graphics.fillRect(healthX, healthY, healthWidth, healthHeight);
+        graphics.setColor(Color.BLACK);
+        graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
     }
 
     public EventListener<PathfindingEvent> getPathfindingListener() {

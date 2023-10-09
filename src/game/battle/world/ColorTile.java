@@ -16,8 +16,11 @@ public class ColorTile extends Tile {
     public void onRender(Graphics2D graphics) {
         graphics.setColor(color);
         Composite oldComposite = graphics.getComposite();
-        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
+        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.15f));
         graphics.fillRect(getX() * size, getY() * size, size, size);
         graphics.setComposite(oldComposite);
+        graphics.setColor(color.darker().darker());
+        graphics.drawRect(getX() * size, getY() * size, size, size);
+
     }
 }

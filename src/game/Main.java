@@ -9,7 +9,7 @@ public class Main {
     public final static long targetUps = 60;
     public final static long targetFps = 60;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Game game = new Game();
         Window window = new Window(640*3, 480*3, game);
         game.pushState(new MainMenuState(game));

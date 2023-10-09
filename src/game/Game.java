@@ -20,6 +20,18 @@ public class Game {
         return keyboard;
     }
 
+    Game() throws Exception {
+        // set volume
+        // set volume
+        audio.load("resources/Shapeforms Audio Free Sound Effects/Dystopia – Ambience and Drone Preview/AUDIO/AMBIENCE_SPACECRAFT_HOLD_LOOP.wav", "drone.wav");
+        audio.loopPlayForever("drone.wav", 0.1f);
+
+        audio.load("resources/Shapeforms Audio Free Sound Effects/Cassette Preview/AUDIO/button.wav", "button.wav");
+        audio.load("resources/Shapeforms Audio Free Sound Effects/future_ui/beep.wav", "caret.wav");
+        audio.load("resources/Shapeforms Audio Free Sound Effects/type_preview/swipe.wav", "beep.wav");
+        audio.load("resources/Shapeforms Audio Free Sound Effects/sci_fi_weapons/lock_on.wav", "select.wav");
+    }
+
     public void pushState(GameState state) {
         if (!stateStack.isEmpty()) {
             stateStack.peek().onExit();

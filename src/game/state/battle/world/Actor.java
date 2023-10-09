@@ -1,7 +1,7 @@
 package game.state.battle.world;
 
 import game.event.EventListener;
-import game.state.battle.pathfinding.PathfindingEvent;
+import game.state.battle.pathfinding.MoveActorEvent;
 import game.state.battle.selection.DeselectedEvent;
 import game.state.battle.selection.SelectedEvent;
 import game.util.Util;
@@ -19,7 +19,7 @@ public class Actor {
     float targetY;
     float health = 50;
     List<Tile> path = List.of();
-    private final EventListener<PathfindingEvent> pathfindingEventListener = event -> {
+    private final EventListener<MoveActorEvent> moveActorEventListener = event -> {
         System.out.println("Actor received pathfinding event");
         if (event.actor.equals(Actor.this)) {
             path = event.movePath;
@@ -115,7 +115,7 @@ public class Actor {
         graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
     }
 
-    public EventListener<PathfindingEvent> getPathfindingListener() {
-        return pathfindingEventListener;
+    public EventListener<MoveActorEvent> getMoveActorEventListener() {
+        return moveActorEventListener;
     }
 }

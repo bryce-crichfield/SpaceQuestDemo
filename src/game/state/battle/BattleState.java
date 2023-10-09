@@ -1,6 +1,5 @@
 package game.state.battle;
 
-import game.event.Event;
 import game.event.EventListener;
 import game.state.battle.world.Raycast;
 import game.util.Camera;
@@ -118,7 +117,7 @@ public class BattleState extends GameState {
         selectionManager.getOnSelectedEvent().listenWith(pathfindingManager.getSelectedEventListener());
         selectionManager.getOnDeselectedEvent().listenWith(pathfindingManager.getDeselectedEventListener());
         for (Actor actor : world.getActors()) {
-            pathfindingManager.getOnPathfindingEvent().listenWith(actor.getPathfindingListener());
+            pathfindingManager.getOnMoveActorEvent().listenWith(actor.getMoveActorEventListener());
         }
 
         this.enterObserverMode();

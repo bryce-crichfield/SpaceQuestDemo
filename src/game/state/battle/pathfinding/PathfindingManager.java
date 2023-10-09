@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathfindingManager {
-    private final Event<PathfindingEvent> onPathfindingEvent = new Event<>();
+    private final Event<MoveActorEvent> onMoveActorEvent = new Event<>();
     private final SelectionManager selectionManager;
     private final Keyboard keyboard;
     private final World world;
@@ -44,8 +44,8 @@ public class PathfindingManager {
         possiblePath = new ArrayList<>();
     }
 
-    public Event<PathfindingEvent> getOnPathfindingEvent() {
-        return onPathfindingEvent;
+    public Event<MoveActorEvent> getOnMoveActorEvent() {
+        return onMoveActorEvent;
     }
 
     public EventListener<SelectedEvent> getSelectedEventListener() {
@@ -75,7 +75,7 @@ public class PathfindingManager {
             if (primaryPressed) {
                 // TODO: This should really be a move command
                 game.getAudio().play("select.wav");
-                onPathfindingEvent.fire(new PathfindingEvent(actor, possiblePath));
+                onMoveActorEvent.fire(new MoveActorEvent(actor, possiblePath));
                 possiblePath = new ArrayList<>();
             }
         }

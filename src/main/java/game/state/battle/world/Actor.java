@@ -1,6 +1,5 @@
 package game.state.battle.world;
 
-import game.event.EventListener;
 import game.state.battle.event.ActorMoved;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ActorSelected;
@@ -19,25 +18,28 @@ public class Actor {
     float targetY;
     float health = 50;
     List<Tile> path = List.of();
-    private final EventListener<ActorMoved> moveActorEventListener = event -> {
-        System.out.println("Actor received pathfinding event");
-        if (event.actor.equals(Actor.this)) {
+
+    public void onActorMoved(ActorMoved event) {
+        if (event.actor.equals(this)) {
             path = event.movePath;
         }
-    };
+    }
+
     private float walkTime;
     private boolean selected = false;
 
-    private final EventListener<ActorSelected> selectedEventListener = event -> {
-        if (event.actor.equals(Actor.this)) {
+    public void onActorSelected(ActorSelected event) {
+        if (event.actor.equals(this)) {
             selected = true;
         }
-    };
-    private final EventListener<ActorDeselected> deselectedEventListener = event -> {
-        if (event.actor.equals(Actor.this)) {
+    }
+
+    public void onActorDeselected(ActorDeselected event) {
+        if (event.actor.equals(this)) {
             selected = false;
         }
-    };
+    }
+
 
     public Actor(int x, int y, Color color) {
         this.x = x;
@@ -47,13 +49,6 @@ public class Actor {
         this.color = color;
     }
 
-    public EventListener<ActorSelected> getSelectedEventListener() {
-        return selectedEventListener;
-    }
-
-    public EventListener<ActorDeselected> getDeselectedEventListener() {
-        return deselectedEventListener;
-    }
 
     public float getX() {
         return x;
@@ -112,9 +107,5 @@ public class Actor {
         graphics.fillRect(healthX, healthY, healthWidth, healthHeight);
         graphics.setColor(Color.BLACK);
         graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
-    }
-
-    public EventListener<ActorMoved> getMoveActorEventListener() {
-        return moveActorEventListener;
     }
 }

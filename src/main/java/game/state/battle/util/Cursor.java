@@ -1,4 +1,4 @@
-package game.state.battle.cursor;
+package game.state.battle.util;
 
 import game.Game;
 import game.event.Event;
@@ -13,7 +13,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 
-public class CursorCamera {
+public class Cursor {
+
     private final Game game;
     private final float timerMax = .75f;
     public int cursorX;
@@ -23,7 +24,8 @@ public class CursorCamera {
     float accelerationX;
     float accelerationY;
     Camera camera;
-    private final EventListener<Integer> onKeyPressEventListener = keyCode -> {
+
+    public void onKeyPressed(Integer keyCode) {
         System.out.println("Keyboard Pressed");
         switch (keyCode) {
             case Keyboard.LEFT -> {
@@ -57,13 +59,13 @@ public class CursorCamera {
                 CursorMoved.event.fire(new CursorMoved(this));
             }
         }
-    };
+    }
+
     int tileSize;
-    Event<CursorMoved> emitter;
     Mode mode = Mode.NORMAL;
     Color color = Color.RED;
     float timer = 0;
-    public CursorCamera(Camera camera, Game game, World world) {
+    public Cursor(Camera camera, Game game, World world) {
         this.camera = camera;
         this.tileSize = game.TILE_SIZE;
         this.game = game;
@@ -80,10 +82,6 @@ public class CursorCamera {
             cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
             game.getAudio().play("beep.wav");
         });
-    }
-
-    public EventListener<Integer> getOnKeyPressEventListener() {
-        return onKeyPressEventListener;
     }
 
     public void setColor(Color color) {

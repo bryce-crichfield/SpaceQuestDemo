@@ -1,6 +1,9 @@
 package game.state.battle.world;
-
+import java.util.Arrays;
+import java.util.List;
 import java.awt.*;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class Tile {
     private final int x;
@@ -26,4 +29,13 @@ public abstract class Tile {
     }
 
     public abstract void onRender(Graphics2D graphics);
+
+    public List<Tile> getNeighbors(List<Tile> tiles) {
+        Optional<Tile> above = tiles.stream().filter(tile -> tile.getX() == x && tile.getY() == y - 1).findFirst();
+        Optional<Tile> below = tiles.stream().filter(tile -> tile.getX() == x && tile.getY() == y + 1).findFirst();
+        Optional<Tile> left = tiles.stream().filter(tile -> tile.getX() == x - 1 && tile.getY() == y).findFirst();
+        Optional<Tile> right = tiles.stream().filter(tile -> tile.getX() == x + 1 && tile.getY() == y).findFirst();
+        return Arrays.asList(above, below, left, right).stream().filter(Optional::isPresent).map(Optional::get).collect(
+                Collectors.toList());
+    }
 }

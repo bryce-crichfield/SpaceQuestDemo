@@ -12,7 +12,7 @@ public class Keyboard implements KeyListener {
     public static final int RIGHT = KeyEvent.VK_D;
     public static final int PRIMARY = KeyEvent.VK_SPACE;
     public static final int SECONDARY = KeyEvent.VK_SHIFT;
-    public static final Event<Integer> onKeyPressed = new Event<>();
+    public static final Event<Integer> keyPressed = new Event<>();
     public static final Event<Integer> onKeyReleased = new Event<>();
     public static final Event<Integer> onKeyTyped = new Event<>();
     private final boolean[] oldKeys;
@@ -67,7 +67,7 @@ public class Keyboard implements KeyListener {
         boolean currentKey = newKeys[e.getKeyCode()];
         newKeys[e.getKeyCode()] = true;
         oldKeys[e.getKeyCode()] = currentKey;
-        onKeyPressed.fire(e.getKeyCode());
+        keyPressed.fire(e.getKeyCode());
     }
 
     @Override

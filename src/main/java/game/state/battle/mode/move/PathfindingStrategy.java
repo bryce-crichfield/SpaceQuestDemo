@@ -1,4 +1,4 @@
-package game.state.battle.pathfinding;
+package game.state.battle.mode.move;
 
 import game.state.battle.world.Tile;
 import game.state.battle.world.World;
@@ -6,12 +6,12 @@ import game.util.Util;
 
 import java.util.*;
 
-public class Pathfinder {
+public class PathfindingStrategy {
     World world;
     Queue<Node> open;
     Set<Node> closed;
 
-    public Pathfinder(World world) {
+    public PathfindingStrategy(World world) {
         this.world = world;
         open = new PriorityQueue<>(Comparator.comparingInt(n -> n.gScore + n.hScore));
         closed = new HashSet<>();

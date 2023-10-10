@@ -63,42 +63,22 @@ public class AttackActionMode extends ActionMode {
         if (raycast == null) {
             return;
         }
-        // Draw the raycast
-        List<Tile> tiles = raycast.getTiles();
-        for (Tile tile : tiles) {
-            List<Tile> neighbors = tile.getNeighbors(tiles);
-            boolean hasAbove = neighbors.stream().anyMatch(neighbor -> neighbor.getY() < tile.getY());
-            boolean hasBelow = neighbors.stream().anyMatch(neighbor -> neighbor.getY() > tile.getY());
-            boolean hasLeft = neighbors.stream().anyMatch(neighbor -> neighbor.getX() < tile.getX());
-            boolean hasRight = neighbors.stream().anyMatch(neighbor -> neighbor.getX() > tile.getX());
+        List<Tile> possiblePath = raycast.getTiles();
 
-            Stroke oldStroke = graphics.getStroke();
-            graphics.setStroke(new BasicStroke(2));
-            graphics.setColor(Color.RED);
+        Tile.drawOutline(possiblePath, graphics, Color.RED);
 
-            int tileX = tile.getX() * getBattleState().getGame().TILE_SIZE;
-            int tileY = tile.getY() * getBattleState().getGame().TILE_SIZE;
-            int tileWidth = getBattleState().getGame().TILE_SIZE;
-            int tileHeight = getBattleState().getGame().TILE_SIZE;
+        List<Tile> inRange = getBattleState().getWorld().getTilesInRange((int) actor.getX(), (int) actor.getY(), actor.getAttackDistance());
 
-            if (!hasAbove) {
-                graphics.drawLine(tileX, tileY, tileX + tileWidth, tileY);
-            }
-
-            if (!hasBelow) {
-                graphics.drawLine(tileX, tileY + tileHeight, tileX + tileWidth, tileY + tileHeight);
-            }
-
-            if (!hasLeft) {
-                graphics.drawLine(tileX, tileY, tileX, tileY + tileHeight);
-            }
-
-            if (!hasRight) {
-                graphics.drawLine(tileX + tileWidth, tileY, tileX + tileWidth, tileY + tileHeight);
-            }
-
-            graphics.setStroke(oldStroke);
+        Composite originalComposite = graphics.getComposite();
+        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+        for (Tile tile : inRange) {
+            graphics.setColor(Color.RED.darker().darker());
+            graphics.fillRect(tile.getX() * 32, tile.getY() * 32, 32, 32);
         }
+        graphics.setComposite(originalComposite);
+
+        Tile.drawOutline(inRange, graphics, Color.RED);
+
     }
 
     public void onCursorMoved(CursorMoved event) {

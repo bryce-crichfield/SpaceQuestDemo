@@ -1,6 +1,7 @@
 package game.state.battle.mode.move;
 
 import game.io.Keyboard;
+import game.state.battle.BattleState;
 import game.state.battle.event.ActorMoved;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.world.Actor;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pathfinder {
-
+    private final BattleState battleState;
     private final World world;
     private final Actor actor;
     int cursorX = 0;
@@ -20,7 +21,8 @@ public class Pathfinder {
 
     private List<Tile> possiblePath;
 
-    public Pathfinder(World world, Actor actor) {
+    public Pathfinder(BattleState state, World world, Actor actor) {
+        this.battleState = state;
         this.world = world;
         this.actor = actor;
         possiblePath = new ArrayList<>();
@@ -36,7 +38,7 @@ public class Pathfinder {
             return;
         }
 
-        PathfindingStrategy pathfindingStrategy = new PathfindingStrategy(world);
+        PathfindingStrategy pathfindingStrategy = new PathfindingStrategy(world, actor);
         Tile start = world.getTile((int) actor.getX(), (int) actor.getY());
         Tile end = world.getTile(cursorX, cursorY);
         possiblePath = pathfindingStrategy.find(start, end);
@@ -48,57 +50,30 @@ public class Pathfinder {
 
         if (hoveringOnEmptyTile && primaryPressed) {
             // TODO: This should really be a move command
-//                    game.getAudio().play("select.wav");
+            battleState.getGame().getAudio().play("select.wav");
+            if (possiblePath.isEmpty()) {
+                return;
+            }
             ActorMoved.event.fire(new ActorMoved(actor, possiblePath));
             possiblePath = new ArrayList<>();
         }
     }
 
     public void onRender(Graphics2D graphics) {
-        if (possiblePath.isEmpty()) {
-            return;
+        List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), actor.getWalkDistance());
+
+        Composite originalComposite = graphics.getComposite();
+        graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+        for (Tile tile : inRange) {
+            graphics.setColor(Color.ORANGE.darker().darker());
+            graphics.fillRect(tile.getX() * 32, tile.getY() * 32, 32, 32);
         }
+        graphics.setComposite(originalComposite);
 
-        int tileSize = 32;
-        // Draw the path
-        Stroke stroke = graphics.getStroke();
-        graphics.setColor(Color.ORANGE);
-        graphics.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        Tile.drawOutline(inRange, graphics, Color.ORANGE);
 
-        Tile start = possiblePath.get(0);
 
-        float turtleTileX = start.getX();
-        float turtleTileY = start.getY();
+        Tile.drawTurtle(possiblePath, graphics, Color.ORANGE);
 
-        for (Tile tile : possiblePath) {
-            int tileX = tile.getX();
-            int tileY = tile.getY();
-
-            boolean isVertical = turtleTileX == tileX;
-            boolean isHorizontal = turtleTileY == tileY;
-
-            int turtleX = (int) (turtleTileX * tileSize);
-            int turtleY = (int) (turtleTileY * tileSize);
-
-            if (isVertical) {
-                int centerX = turtleX + (tileSize / 2);
-                int startY = turtleY + (tileSize / 2);
-                int endY = (tileY * tileSize) + (tileSize / 2);
-
-                graphics.drawLine(centerX, startY, centerX, endY);
-            }
-
-            if (isHorizontal) {
-                int centerY = turtleY + (tileSize / 2);
-                int startX = turtleX + (tileSize / 2);
-                int endX = (tileX * tileSize) + (tileSize / 2);
-
-                graphics.drawLine(startX, centerY, endX, centerY);
-            }
-
-            turtleTileX = tileX;
-            turtleTileY = tileY;
-        }
-        graphics.setStroke(stroke);
     }
 }

@@ -27,7 +27,7 @@ public class MoveActionMode extends ActionMode {
         this.actor = actor;
         this.world = battleState.getWorld();
         this.selector = new Selector(world);
-        this.pathfinder = new Pathfinder(world, actor);
+        this.pathfinder = new Pathfinder(battleState, world, actor);
     }
 
     @Override

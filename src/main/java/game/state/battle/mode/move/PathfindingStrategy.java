@@ -1,5 +1,6 @@
 package game.state.battle.mode.move;
 
+import game.state.battle.world.Actor;
 import game.state.battle.world.Tile;
 import game.state.battle.world.World;
 import game.util.Util;
@@ -10,15 +11,22 @@ public class PathfindingStrategy {
     World world;
     Queue<Node> open;
     Set<Node> closed;
+    Actor actor;
 
-    public PathfindingStrategy(World world) {
+    public PathfindingStrategy(World world, Actor actor) {
         this.world = world;
+        this.actor = actor;
         open = new PriorityQueue<>(Comparator.comparingInt(n -> n.gScore + n.hScore));
         closed = new HashSet<>();
     }
 
     public List<Tile> find(Tile start, Tile end) {
         if (!start.isPassable() || !end.isPassable()) {
+            return List.of();
+        }
+
+        float distance = Util.distance(start.getX(), start.getY(), end.getX(), end.getY());
+        if (distance > actor.getWalkDistance()) {
             return List.of();
         }
 
@@ -35,7 +43,7 @@ public class PathfindingStrategy {
             if (current.x == end.getX() && current.y == end.getY()) {
                 return reconstruct(current);
             } else {
-                expand(current, end);
+                expand(start, current, end);
                 closed.add(current);
             }
         }
@@ -54,7 +62,7 @@ public class PathfindingStrategy {
         return path;
     }
 
-    public void expand(Node current, Tile end) {
+    public void expand(Tile start, Node current, Tile end) {
         // Add the neighbors to the open list
         for (Tile neighbor : world.getNeighbors(current.x, current.y)) {
             if (!neighbor.isPassable() || actorOccupies(neighbor.getX(), neighbor.getY())) {

@@ -1,5 +1,7 @@
 package game.state.battle.world;
 
+import game.util.Util;
+
 import java.awt.*;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -125,5 +127,19 @@ public class World {
 
     public Raycast raycast(int startX, int startY, int endX, int endY) {
         return new Raycast(tiles, startX, startY, endX, endY);
+    }
+
+    public List<Tile> getTilesInRange(int x, int y, int walkDistance) {
+        List<Tile> found = new ArrayList<>();
+
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (Util.distance(x, y, tile.getX(), tile.getY()) <= walkDistance) {
+                    found.add(tile);
+                }
+            }
+        }
+
+        return found;
     }
 }

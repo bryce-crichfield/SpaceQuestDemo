@@ -10,6 +10,13 @@ import java.util.List;
 public class Actor {
     final float stepDuration = 0.35f;
     private final Color color;
+    private final int walkDistance = 5;
+
+    public int getAttackDistance() {
+        return attackDistance;
+    }
+
+    private final int attackDistance = 3;
     float x;
     float y;
     float targetX;
@@ -18,12 +25,21 @@ public class Actor {
     List<Tile> path = List.of();
     private float walkTime;
     private boolean selected = false;
+
     public Actor(int x, int y, Color color) {
         this.x = x;
         this.y = y;
         this.targetX = x;
         this.targetY = y;
         this.color = color;
+    }
+
+    public void setWalkTime(float walkTime) {
+        this.walkTime = walkTime;
+    }
+
+    public int getWalkDistance() {
+        return walkDistance;
     }
 
     public void onActorMoved(ActorMoved event) {

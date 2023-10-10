@@ -3,6 +3,7 @@ package game.state.battle.mode.attack;
 import game.event.SubscriptionManager;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
+import game.state.battle.event.ActorAttacked;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ModeChanged;
 import game.state.battle.mode.ActionMode;
@@ -13,6 +14,7 @@ import game.state.battle.world.Raycast;
 import game.state.battle.world.Tile;
 
 import java.awt.*;
+import java.security.Key;
 import java.time.Duration;
 import java.util.List;
 
@@ -28,6 +30,13 @@ public class AttackActionMode extends ActionMode {
         this.selector = new Selector(battleState.getWorld());
     }
 
+    public void onKeyPressed(Integer keyCode) {
+        if (keyCode == Keyboard.PRIMARY) {
+            ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
+            ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
+        }
+    }
+
 
     @Override
     public void onEnter() {
@@ -37,6 +46,8 @@ public class AttackActionMode extends ActionMode {
         on(BattleState.onWorldRender).run(this::onRender);
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(CursorMoved.event).run(this::onCursorMoved);
+
+        on(Keyboard.keyPressed).run(this::onKeyPressed);
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
@@ -60,12 +71,6 @@ public class AttackActionMode extends ActionMode {
             boolean hasBelow = neighbors.stream().anyMatch(neighbor -> neighbor.getY() > tile.getY());
             boolean hasLeft = neighbors.stream().anyMatch(neighbor -> neighbor.getX() < tile.getX());
             boolean hasRight = neighbors.stream().anyMatch(neighbor -> neighbor.getX() > tile.getX());
-
-            System.out.println("hasAbove = " + hasAbove);
-            System.out.println("hasBelow = " + hasBelow);
-            System.out.println("hasLeft = " + hasLeft);
-            System.out.println("hasRight = " + hasRight);
-            System.out.println();
 
             Stroke oldStroke = graphics.getStroke();
             graphics.setStroke(new BasicStroke(2));

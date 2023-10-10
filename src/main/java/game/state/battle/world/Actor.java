@@ -1,8 +1,6 @@
 package game.state.battle.world;
 
-import game.state.battle.event.ActorDeselected;
-import game.state.battle.event.ActorMoved;
-import game.state.battle.event.ActorSelected;
+import game.state.battle.event.*;
 import game.util.Util;
 
 import java.awt.*;
@@ -43,6 +41,23 @@ public class Actor {
     public void onActorDeselected(ActorDeselected event) {
         if (event.actor.equals(this)) {
             selected = false;
+        }
+    }
+
+    public void onActorAttacked(ActorAttacked attack) {
+        if (attack.getAttacker().equals(this)) {
+            return;
+        }
+
+        for (Tile tile : attack.getTargets()) {
+            if (tile.getX() == x && tile.getY() == y) {
+                System.out.println("Actor hit!");
+                health -= 10;
+
+                if (health <= 0) {
+                    ActorKilled.event.fire(new ActorKilled(this));
+                }
+            }
         }
     }
 

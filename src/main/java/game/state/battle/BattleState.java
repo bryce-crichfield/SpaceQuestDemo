@@ -4,10 +4,7 @@ import game.Game;
 import game.event.Event;
 import game.event.SubscriptionManager;
 import game.state.GameState;
-import game.state.battle.event.ActorDeselected;
-import game.state.battle.event.ActorMoved;
-import game.state.battle.event.ActorSelected;
-import game.state.battle.event.ModeChanged;
+import game.state.battle.event.*;
 import game.state.battle.mode.ActionMode;
 import game.state.battle.mode.ObserverMode;
 import game.state.battle.util.Cursor;
@@ -46,6 +43,10 @@ public class BattleState extends GameState {
             subscriptions.on(ActorMoved.event).run(actor::onActorMoved);
             subscriptions.on(ActorSelected.event).run(actor::onActorSelected);
             subscriptions.on(ActorDeselected.event).run(actor::onActorDeselected);
+            subscriptions.on(ActorAttacked.event).run(actor::onActorAttacked);
+            subscriptions.on(ActorKilled.event).run(killed -> {
+                world.removeActor(killed.getDead());
+            });
         }
     }
 

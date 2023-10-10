@@ -54,7 +54,6 @@ public class Cursor {
     }
 
     public void onKeyPressed(Integer keyCode) {
-        System.out.println("Keyboard Pressed");
         switch (keyCode) {
             case Keyboard.LEFT -> {
                 cursorX--;

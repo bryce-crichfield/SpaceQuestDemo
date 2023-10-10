@@ -21,6 +21,7 @@ public class Menu {
     private int itemDistance;
     private int textSize;
     private boolean visible = true;
+
     public Menu(Game game, int x, int y, int width, int height) {
         this.game = game;
         this.x = x;

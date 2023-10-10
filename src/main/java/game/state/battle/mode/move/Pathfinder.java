@@ -8,7 +8,6 @@ import game.state.battle.world.Tile;
 import game.state.battle.world.World;
 
 import java.awt.*;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +19,12 @@ public class Pathfinder {
     int cursorY = 0;
 
     private List<Tile> possiblePath;
+
+    public Pathfinder(World world, Actor actor) {
+        this.world = world;
+        this.actor = actor;
+        possiblePath = new ArrayList<>();
+    }
 
     public void onCursorMoved(CursorMoved event) {
         cursorX = event.cursor.getCursorX();
@@ -42,18 +47,11 @@ public class Pathfinder {
         boolean hoveringOnEmptyTile = world.getActorByPosition(cursorX, cursorY).isEmpty();
 
         if (hoveringOnEmptyTile && primaryPressed) {
-                // TODO: This should really be a move command
+            // TODO: This should really be a move command
 //                    game.getAudio().play("select.wav");
-                ActorMoved.event.fire(new ActorMoved(actor, possiblePath));
-                possiblePath = new ArrayList<>();
+            ActorMoved.event.fire(new ActorMoved(actor, possiblePath));
+            possiblePath = new ArrayList<>();
         }
-    }
-
-
-    public Pathfinder(World world, Actor actor) {
-        this.world = world;
-        this.actor = actor;
-        possiblePath = new ArrayList<>();
     }
 
     public void onRender(Graphics2D graphics) {

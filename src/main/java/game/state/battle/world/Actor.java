@@ -1,7 +1,7 @@
 package game.state.battle.world;
 
-import game.state.battle.event.ActorMoved;
 import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorMoved;
 import game.state.battle.event.ActorSelected;
 import game.util.Util;
 
@@ -18,15 +18,21 @@ public class Actor {
     float targetY;
     float health = 50;
     List<Tile> path = List.of();
+    private float walkTime;
+    private boolean selected = false;
+    public Actor(int x, int y, Color color) {
+        this.x = x;
+        this.y = y;
+        this.targetX = x;
+        this.targetY = y;
+        this.color = color;
+    }
 
     public void onActorMoved(ActorMoved event) {
         if (event.actor.equals(this)) {
             path = event.movePath;
         }
     }
-
-    private float walkTime;
-    private boolean selected = false;
 
     public void onActorSelected(ActorSelected event) {
         if (event.actor.equals(this)) {
@@ -39,16 +45,6 @@ public class Actor {
             selected = false;
         }
     }
-
-
-    public Actor(int x, int y, Color color) {
-        this.x = x;
-        this.y = y;
-        this.targetX = x;
-        this.targetY = y;
-        this.color = color;
-    }
-
 
     public float getX() {
         return x;

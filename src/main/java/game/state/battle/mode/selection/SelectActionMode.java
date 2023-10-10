@@ -3,11 +3,11 @@ package game.state.battle.mode.selection;
 import game.Game;
 import game.event.SubscriptionManager;
 import game.io.Keyboard;
-import game.state.battle.event.ActorDeselected;
-import game.state.battle.mode.ActionMode;
 import game.state.battle.BattleState;
-import game.state.battle.mode.ObserverMode;
+import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ModeChanged;
+import game.state.battle.mode.ActionMode;
+import game.state.battle.mode.ObserverMode;
 import game.state.battle.world.Actor;
 
 import java.time.Duration;
@@ -28,12 +28,13 @@ public class SelectActionMode extends ActionMode {
         int menuX = game.SCREEN_WIDTH - menuWidth - game.TILE_SIZE;
         int menuY = game.SCREEN_HEIGHT - menuHeight - game.TILE_SIZE;
         actionSelectMenu = new ActionSelectMenu(game, menuX, menuY, menuWidth, menuHeight, battleState, actor);
+        getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
     }
 
     @Override
     public void onEnter() {
         on(BattleState.onGuiRender).run(actionSelectMenu::onRender);
-        on(Keyboard.keyPressed).run( keyCode -> {
+        on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
                 ActorDeselected.event.fire(new ActorDeselected(actor));
                 ModeChanged.event.fire(new ObserverMode(battleState));
@@ -43,6 +44,7 @@ public class SelectActionMode extends ActionMode {
 
     @Override
     public void onUpdate(Duration delta) {
+        battleState.getCursor().onUpdate(delta);
         actionSelectMenu.onUpdate(delta);
     }
 }

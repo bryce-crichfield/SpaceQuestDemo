@@ -2,8 +2,8 @@ package game.state.options;
 
 import game.Game;
 import game.state.GameState;
-import game.widget.*;
 import game.widget.Menu;
+import game.widget.*;
 
 import java.awt.*;
 import java.time.Duration;

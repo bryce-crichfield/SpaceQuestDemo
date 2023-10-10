@@ -1,8 +1,6 @@
 package game.state.battle.util;
 
 import game.Game;
-import game.event.Event;
-import game.event.EventListener;
 import game.io.Keyboard;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.world.World;
@@ -24,6 +22,36 @@ public class Cursor {
     float accelerationX;
     float accelerationY;
     Camera camera;
+    int tileSize;
+    Mode mode = Mode.NORMAL;
+    Color color = Color.RED;
+    float timer = 0;
+    public Cursor(Camera camera, Game game, World world) {
+        this.camera = camera;
+        this.tileSize = game.TILE_SIZE;
+        this.game = game;
+
+        cursorX = 0;
+        cursorY = 0;
+        velocityX = 0;
+        velocityY = 0;
+        accelerationX = 0;
+        accelerationY = 0;
+
+
+        // TODO: Should this be in the constructor?
+        CursorMoved.event.listenWith(event -> {
+            cursorX = Util.clamp(cursorX, 0, world.getWidth() - 1);
+            cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
+            game.getAudio().play("beep.wav");
+        });
+    }
+
+    public void setPosition(int x, int y) {
+        cursorX = x;
+        cursorY = y;
+        CursorMoved.event.fire(new CursorMoved(this));
+    }
 
     public void onKeyPressed(Integer keyCode) {
         System.out.println("Keyboard Pressed");
@@ -35,7 +63,6 @@ public class Cursor {
             case Keyboard.RIGHT -> {
                 cursorX++;
                 CursorMoved.event.fire(new CursorMoved(this));
-
             }
             case Keyboard.UP -> {
                 cursorY--;
@@ -61,43 +88,12 @@ public class Cursor {
         }
     }
 
-    int tileSize;
-    Mode mode = Mode.NORMAL;
-    Color color = Color.RED;
-    float timer = 0;
-    public Cursor(Camera camera, Game game, World world) {
-        this.camera = camera;
-        this.tileSize = game.TILE_SIZE;
-        this.game = game;
-
-        cursorX = 0;
-        cursorY = 0;
-        velocityX = 0;
-        velocityY = 0;
-        accelerationX = 0;
-        accelerationY = 0;
-
-        CursorMoved.event.listenWith(event -> {
-            cursorX = Util.clamp(cursorX, 0, world.getWidth() - 1);
-            cursorY = Util.clamp(cursorY, 0, world.getHeight() - 1);
-            game.getAudio().play("beep.wav");
-        });
-    }
-
     public void setColor(Color color) {
         this.color = color;
     }
 
     public void enterBlinkingMode() {
         mode = Mode.BLINKING;
-    }
-
-    public void enterDilatedMode() {
-        mode = Mode.DILATED;
-    }
-
-    public void enterNormalMode() {
-        mode = Mode.NORMAL;
     }
 
     public void onUpdate(Duration duration) {

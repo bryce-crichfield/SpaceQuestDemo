@@ -4,21 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionManager {
-    public class SubscriptionBuilderRunClause<T> {
-        Event <T> event;
-
-        public SubscriptionBuilderRunClause(Event<T> event) {
-            this.event = event;
-        }
-
-        public void run(EventListener<T> listener) {
-            event.listenWith(listener);
-            subscriptions.add(() -> event.remove(listener));
-        }
-    }
-
-
     private final List<Runnable> subscriptions;
+
 
     public SubscriptionManager() {
         this.subscriptions = new ArrayList<>();
@@ -33,5 +20,18 @@ public class SubscriptionManager {
             subscription.run();
         }
         subscriptions.clear();
+    }
+
+    public class SubscriptionBuilderRunClause<T> {
+        Event<T> event;
+
+        public SubscriptionBuilderRunClause(Event<T> event) {
+            this.event = event;
+        }
+
+        public void run(EventListener<T> listener) {
+            event.listenWith(listener);
+            subscriptions.add(() -> event.remove(listener));
+        }
     }
 }

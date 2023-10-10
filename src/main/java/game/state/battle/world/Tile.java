@@ -1,7 +1,8 @@
 package game.state.battle.world;
+
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import java.awt.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,14 +15,6 @@ public abstract class Tile {
         this.x = x;
         this.y = y;
         this.passable = passable;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     public boolean isPassable() {
@@ -37,5 +30,13 @@ public abstract class Tile {
         Optional<Tile> right = tiles.stream().filter(tile -> tile.getX() == x + 1 && tile.getY() == y).findFirst();
         return Arrays.asList(above, below, left, right).stream().filter(Optional::isPresent).map(Optional::get).collect(
                 Collectors.toList());
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

@@ -3,8 +3,8 @@ package game.state.battle.mode.selection;
 import game.Game;
 import game.state.battle.BattleState;
 import game.state.battle.event.ModeChanged;
-import game.state.battle.mode.move.MoveActionMode;
 import game.state.battle.mode.attack.AttackActionMode;
+import game.state.battle.mode.move.MoveActionMode;
 import game.state.battle.world.Actor;
 import game.widget.ButtonWidget;
 import game.widget.Menu;
@@ -18,7 +18,7 @@ public class ActionSelectMenu extends Menu {
         super(game, x, y, width, height);
 
         attackButton = new ButtonWidget("Attack", game, () -> {
-            ModeChanged.event.fire(new AttackActionMode(state));
+            ModeChanged.event.fire(new AttackActionMode(state, actor));
         });
 
         moveButton = new ButtonWidget("Move", game, () -> {

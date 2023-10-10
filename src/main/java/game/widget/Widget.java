@@ -6,9 +6,9 @@ import java.awt.*;
 import java.time.Duration;
 
 public class Widget {
+    public boolean hoverable = true;
     Game game;
     String text;
-    public boolean hoverable = true;
 
     public Widget(String text, Game game) {
         this.text = text;

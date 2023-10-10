@@ -3,7 +3,6 @@ package game.state.battle.mode;
 import game.event.SubscriptionManager;
 import game.state.battle.BattleState;
 
-
 import java.time.Duration;
 
 public abstract class ActionMode extends SubscriptionManager {
@@ -18,7 +17,9 @@ public abstract class ActionMode extends SubscriptionManager {
     }
 
     public abstract void onEnter();
+
     public abstract void onUpdate(Duration delta);
+
     public void onExit() {
         unsubscribeAll();
     }

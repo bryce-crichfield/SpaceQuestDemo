@@ -10,6 +10,7 @@ import game.state.battle.event.ActorSelected;
 import game.state.battle.event.ModeChanged;
 import game.state.battle.mode.ActionMode;
 import game.state.battle.mode.ObserverMode;
+import game.state.battle.util.Cursor;
 import game.state.battle.world.Actor;
 import game.state.battle.world.World;
 import game.state.title.StarBackground;
@@ -21,21 +22,21 @@ import java.awt.geom.AffineTransform;
 import java.time.Duration;
 
 public class BattleState extends GameState {
-    private final SubscriptionManager subscriptions = new SubscriptionManager();
-
     public static Event<Graphics2D> onWorldRender = new Event<>();
     public static Event<Graphics2D> onGuiRender = new Event<>();
-
+    private final SubscriptionManager subscriptions = new SubscriptionManager();
     private final StarBackground starBackground;
     private final Camera camera;
     private final World world;
     private ActionMode mode;
+    private final Cursor cursor;
 
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
         world = new World(16, 16);
         starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        cursor = new Cursor(camera, game, world);
 
         subscriptions.on(ModeChanged.event).run(this::onActionModeEvent);
         ModeChanged.event.fire(new ObserverMode(this));
@@ -106,5 +107,9 @@ public class BattleState extends GameState {
 
     public World getWorld() {
         return world;
+    }
+
+    public Cursor getCursor() {
+        return cursor;
     }
 }

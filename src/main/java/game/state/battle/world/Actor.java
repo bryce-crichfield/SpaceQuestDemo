@@ -21,7 +21,7 @@ public class Actor {
     float y;
     float targetX;
     float targetY;
-    float health = 50;
+    float health = 100;
     List<Tile> path = List.of();
     private float walkTime;
     private boolean selected = false;
@@ -68,7 +68,7 @@ public class Actor {
         for (Tile tile : attack.getTargets()) {
             if (tile.getX() == x && tile.getY() == y) {
                 System.out.println("Actor hit!");
-                health -= 10;
+                health -= 15;
 
                 if (health <= 0) {
                     ActorKilled.event.fire(new ActorKilled(this));
@@ -122,7 +122,8 @@ public class Actor {
 
         // draw the health bar
         float healthPercentage = health / 100;
-        graphics.setColor(Color.RED);
+        Color healthColor = healthPercentage > 0.5 ? Color.GREEN : healthPercentage > 0.25 ? Color.YELLOW : Color.RED;
+        graphics.setColor(healthColor);
         int healthWidth = (int) ((32 - 10) * healthPercentage);
         int healthHeight = 5;
         int healthX = (int) ((x * 32) + 5);
@@ -130,7 +131,7 @@ public class Actor {
 
         graphics.setColor(Color.BLACK);
         graphics.fillRect(healthX, healthY, 32 - 10, healthHeight);
-        graphics.setColor(Color.RED);
+        graphics.setColor(healthColor);
         graphics.fillRect(healthX, healthY, healthWidth, healthHeight);
         graphics.setColor(Color.BLACK);
         graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);

@@ -32,6 +32,7 @@ public class AttackActionMode extends ActionMode {
 
     public void onKeyPressed(Integer keyCode) {
         if (keyCode == Keyboard.PRIMARY) {
+            getBattleState().getGame().getAudio().play("select.wav");
             ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
             ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
         }

@@ -13,7 +13,7 @@ public class Window extends JFrame {
 
     public Window(int width, int height, Game game) {
         this.game = game;
-        this.buffer = new BufferedImage(game.SCREEN_WIDTH, game.SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        this.buffer = new BufferedImage(Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(width, height);
         this.setVisible(true);

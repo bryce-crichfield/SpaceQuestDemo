@@ -11,8 +11,13 @@ public class LabelWidget extends Widget {
         super(text, game);
     }
 
+
     public LabelWidget(String text, String label, Game game) {
         super(text, game);
+        this.label = label;
+    }
+
+    public void setLabel(String label) {
         this.label = label;
     }
 
@@ -22,9 +27,9 @@ public class LabelWidget extends Widget {
 
         int sliderX = (int) (menuX + (menuWidth / 2f));
         int sliderY = y + 16;
-        int sliderWidth = (int) ((menuWidth / 2f) - game.TILE_SIZE);
+        int sliderWidth = (int) ((menuWidth / 2f) - Game.TILE_SIZE);
         int sliderHeight = ui.tileSize / 2;
-        Color border = hovered ? UserInterface.highlight : Color.WHITE;
+        Color border = hovered ? ui.highlight : Color.WHITE;
         ui.drawTextRightJustified(label, sliderX, sliderY, menuWidth, sliderHeight, 32);
     }
 }

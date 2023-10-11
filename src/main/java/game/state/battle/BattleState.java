@@ -3,11 +3,17 @@ package game.state.battle;
 import game.Game;
 import game.event.Event;
 import game.event.SubscriptionManager;
+import game.form.element.FormLabel;
+import game.form.element.FormMenu;
+import game.form.properties.FormAlignment;
+import game.form.properties.FormText;
+import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.event.*;
 import game.state.battle.mode.ActionMode;
 import game.state.battle.mode.ObserverMode;
 import game.state.battle.util.Cursor;
+import game.state.battle.util.Hoverer;
 import game.state.battle.world.Actor;
 import game.state.battle.world.World;
 import game.state.title.StarBackground;
@@ -19,35 +25,36 @@ import java.awt.geom.AffineTransform;
 import java.time.Duration;
 
 public class BattleState extends GameState {
-    public static Event<Graphics2D> onWorldRender = new Event<>();
-    public static Event<Graphics2D> onGuiRender = new Event<>();
-    private final SubscriptionManager subscriptions = new SubscriptionManager();
     private final StarBackground starBackground;
     private final Camera camera;
     private final World world;
-    private ActionMode mode;
     private final Cursor cursor;
+    private final Hoverer hoverer;
+    private ActionMode mode;
 
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
         world = new World(16, 16);
-        starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
         cursor = new Cursor(camera, game, world);
+        hoverer = new Hoverer(world);
 
-        subscriptions.on(ModeChanged.event).run(this::onActionModeEvent);
+        getSubscriptions().on(ModeChanged.event).run(this::onActionModeEvent);
         ModeChanged.event.fire(new ObserverMode(this));
         ModeChanged.event.flush();
 
         for (Actor actor : world.getActors()) {
-            subscriptions.on(ActorMoved.event).run(actor::onActorMoved);
-            subscriptions.on(ActorSelected.event).run(actor::onActorSelected);
-            subscriptions.on(ActorDeselected.event).run(actor::onActorDeselected);
-            subscriptions.on(ActorAttacked.event).run(actor::onActorAttacked);
-            subscriptions.on(ActorKilled.event).run(killed -> {
+            getSubscriptions().on(ActorMoved.event).run(actor::onActorMoved);
+            getSubscriptions().on(ActorSelected.event).run(actor::onActorSelected);
+            getSubscriptions().on(ActorDeselected.event).run(actor::onActorDeselected);
+            getSubscriptions().on(ActorAttacked.event).run(actor::onActorAttacked);
+            getSubscriptions().on(ActorKilled.event).run(killed -> {
                 world.removeActor(killed.getDead());
             });
         }
+
+        getSubscriptions().on(CursorMoved.event).run(hoverer::onCursorMoved);
     }
 
     private void onActionModeEvent(ActionMode newMode) {
@@ -55,6 +62,11 @@ public class BattleState extends GameState {
             mode.onExit();
         mode = newMode;
         mode.onEnter();
+    }
+
+    @Override
+    public void onEnter() {
+
     }
 
     @Override
@@ -73,17 +85,10 @@ public class BattleState extends GameState {
     }
 
     @Override
-    public void onExit() {
-        onGuiRender.clear();
-        onWorldRender.clear();
-        subscriptions.unsubscribeAll();
-    }
-
-    @Override
     public void onRender(Graphics2D graphics) {
         // Clear the screen
         graphics.setColor(new Color(0x0A001A));
-        graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
+        graphics.fillRect(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 
         // Render the star background
         starBackground.onRender(graphics);
@@ -94,12 +99,12 @@ public class BattleState extends GameState {
         graphics.setTransform(transform);
         {
             world.onRender(graphics);
-            onWorldRender.fire(graphics);
+            getOnWorldRender().fire(graphics);
         }
         graphics.setTransform(restore);
 
         // Restore the transform and render the cursor camera
-        onGuiRender.fire(graphics);
+        getOnGuiRender().fire(graphics);
     }
 
     public Camera getCamera() {

@@ -1,78 +1,94 @@
 package game.state.title;
 
 import game.Game;
+import game.form.element.FormLabel;
+import game.form.element.FormMenu;
+import game.form.properties.FormAlignment;
+import game.form.properties.FormFill;
+import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.BattleState;
-import game.state.options.OptionsMenuState;
 import game.state.overworld.PlayOverworldState;
-import game.widget.Blank;
-import game.widget.ButtonWidget;
-import game.widget.Menu;
-import game.widget.UserInterface;
 
 import java.awt.*;
 import java.time.Duration;
+import java.util.Optional;
 
 public class MainMenuState extends GameState {
-    private final Menu menu;
     StarBackground starBackground;
-
+    FormMenu menu;
 
     public MainMenuState(Game game) {
         super(game);
-        starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+        menu = new FormMenu(25, 25, 50, 50);
+        menu.elementAlignment.set(FormAlignment.CENTER);
+        int menuX = (int) menu.getAbsoluteBounds().getX();
+        int menuWidth = (int) menu.getAbsoluteBounds().getWidth();
+        int menuY = (int) menu.getAbsoluteBounds().getY();
+        int menuHeight = (int) menu.getAbsoluteBounds().getHeight();
 
-        int menuWidth = 5 * getGame().TILE_SIZE;
-        int menuHeight = 7 * getGame().TILE_SIZE;
-        int menuX = (getGame().SCREEN_WIDTH / 2) - (menuWidth / 2);
-        int menuY = (getGame().SCREEN_HEIGHT / 2) - (menuHeight / 2);
-
-        menu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
-        menu.setWidgets(
-                new ButtonWidget("Overworld", getGame(), () -> {
-                    getGame().pushState(new PlayOverworldState(getGame()));
-                }),
-
-                new ButtonWidget("Battle", getGame(), () -> {
-                    getGame().pushState(new BattleState(getGame()));
-                }),
-
-                new ButtonWidget("Options", getGame(), () -> {
-                    getGame().pushState(new OptionsMenuState(getGame()));
-                }),
-
-                new Blank(getGame()),
-                new Blank(getGame()),
-
-                new ButtonWidget("Exit", getGame(), () -> {
-                    System.exit(0);
-                })
+        Paint paint = new GradientPaint(menuX, menuY, Color.BLACK, menuX + menuWidth, menuY + menuHeight,
+                                        Color.DARK_GRAY
         );
+        menu.fill.set(Optional.of(new FormFill(paint)));
 
-        menu.setItemDistance(32);
-        menu.setTextSize(16);
+        FormLabel title = new FormLabel(100, 25);
+        title.text.set(text -> text.withValue("Space Quest"));
+        title.text.set(text -> text.withSize(32));
+        menu.addChild(title);
+
+        String textPadding = "   ";
+
+        FormLabel overworld = createMenuOption(textPadding + "Overworld", () -> {
+            game.deferred().fire(g -> g.pushState(new PlayOverworldState(g)));
+        });
+        menu.addCaretChild(overworld);
+
+        FormLabel battle = createMenuOption(textPadding + "Battle", () -> {
+            game.deferred().fire(g -> g.pushState(new BattleState(g)));
+        });
+        menu.addCaretChild(battle);
+
+
+        FormLabel quit = createMenuOption(textPadding + "Quit", () -> {
+            System.exit(0);
+        });
+        menu.addCaretChild(quit);
+    }
+
+    private FormLabel createMenuOption(String text, Runnable action) {
+        FormLabel option = new FormLabel(100, 25);
+        option.text.set(textValue -> textValue.withValue(text));
+        option.text.set(textValue -> textValue.withSize(16));
+        option.horizontalTextAlignment.set(FormAlignment.START);
+        option.onPrimary.listenWith((event) -> {
+            action.run();
+        });
+        menu.onCaretHighlight.listenWith(element -> {
+            if (element.equals(option)) {
+                option.text.set(t -> t.withFill(Color.ORANGE));
+            } else {
+                option.text.set(t -> t.withFill(Color.WHITE));
+            }
+        });
+        return option;
+    }
+
+    @Override
+    public void onEnter() {
+        getSubscriptions().on(getOnGuiRender()).run(starBackground::onRender);
+        getSubscriptions().on(getOnGuiRender()).run(menu::onRender);
+        getSubscriptions().on(Keyboard.keyPressed).run(menu::onKeyPressed);
     }
 
     @Override
     public void onUpdate(Duration delta) {
-        menu.onUpdate(delta);
         starBackground.onUpdate(delta);
     }
 
     @Override
     public void onRender(Graphics2D graphics) {
-        graphics.setColor(UserInterface.background);
-        graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
-        starBackground.onRender(graphics);
-
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
-        );
-
-        ui.textSize = 32;
-        ui.textColor = UserInterface.highlight;
-        ui.drawTextCentered("Space Quest", 0, 16, ui.screenWidth, 32);
-
-        menu.onRender(graphics);
+        getOnGuiRender().fire(graphics);
     }
 }

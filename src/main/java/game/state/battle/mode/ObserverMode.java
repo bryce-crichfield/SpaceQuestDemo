@@ -29,7 +29,7 @@ public class ObserverMode extends ActionMode {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.WHITE);
 
-        on(BattleState.onWorldRender).run(this::onRender);
+        on(getBattleState().getOnWorldRender()).run(this::onRender);
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(CursorMoved.event).run(selector::onCursorMoved);
         on(Keyboard.keyPressed).run(selector::onKeyPressed);

@@ -1,17 +1,26 @@
 package game;
 
+import game.event.LazyEvent;
+import game.event.Event;
 import game.io.Audio;
 import game.io.Keyboard;
 import game.state.GameState;
 
+
 import java.awt.*;
 import java.time.Duration;
 import java.util.Stack;
+import java.util.function.Consumer;
 
 public class Game {
-    public final int SCREEN_WIDTH = 480;
-    public final int SCREEN_HEIGHT = 320;
-    public final int TILE_SIZE = 32;
+    public Event<Consumer<Game>> deferred() {
+        return endOfUpdate;
+    }
+
+    private final LazyEvent<Consumer<Game>> endOfUpdate = new LazyEvent<>();
+    public static final int SCREEN_WIDTH = 480;
+    public static final int SCREEN_HEIGHT = 320;
+    public static final int TILE_SIZE = 32;
     private final Keyboard keyboard = new Keyboard();
     private final Audio audio = new Audio();
     private final Stack<GameState> stateStack = new Stack<>();
@@ -29,6 +38,11 @@ public class Game {
         audio.load("resources/Shapeforms Audio Free Sound Effects/future_ui/beep.wav", "caret.wav");
         audio.load("resources/Shapeforms Audio Free Sound Effects/type_preview/swipe.wav", "beep.wav");
         audio.load("resources/Shapeforms Audio Free Sound Effects/sci_fi_weapons/lock_on.wav", "select.wav");
+
+        endOfUpdate.listenWith(consumer -> {
+            System.out.println("End of update heard");
+            consumer.accept(this);
+        });
     }
 
     public Audio getAudio() {
@@ -65,11 +79,25 @@ public class Game {
         }
 
         keyboard.onUpdate();
+
+        endOfUpdate.flush();
     }
 
     void onRender(Graphics2D graphics) {
         if (!stateStack.isEmpty()) {
             stateStack.peek().onRender(graphics);
         }
+    }
+
+    public int getScreenWidth() {
+        return SCREEN_WIDTH;
+    }
+
+    public int getScreenHeight() {
+        return SCREEN_HEIGHT;
+    }
+
+    public int getTileSize() {
+        return TILE_SIZE;
     }
 }

@@ -21,7 +21,7 @@ public class Widget {
 
     public void onRender(UserInterface ui, int menuX, int y, int menuWidth, boolean hovered) {
         if (hovered) {
-            ui.setTextColor(UserInterface.highlight);
+            ui.setTextColor(ui.highlight);
         }
 
         ui.drawTextRightJustified(text, menuX, y, menuWidth, 32, 32);

@@ -46,8 +46,8 @@ public class Camera {
         transform.scale(zoom, zoom);
 
         // center the camera on the screen
-        float screenWidth = game.SCREEN_WIDTH / zoom;
-        float screenHeight = game.SCREEN_HEIGHT / zoom;
+        float screenWidth = Game.SCREEN_WIDTH / zoom;
+        float screenHeight = Game.SCREEN_HEIGHT / zoom;
         int cameraX = (int) (x - (screenWidth / 2));
         int cameraY = (int) (y - (screenHeight / 2));
         transform.translate(-cameraX, -cameraY);

@@ -35,9 +35,9 @@ public class SliderWidget extends Widget {
 
         int sliderX = (int) (menuX + (menuWidth / 2f));
         int sliderY = y + 20;
-        int sliderWidth = (int) ((menuWidth / 2f) - game.TILE_SIZE);
+        int sliderWidth = (int) ((menuWidth / 2f) - Game.TILE_SIZE);
         int sliderHeight = ui.tileSize / 2;
-        Color border = hovered ? UserInterface.highlight : Color.WHITE;
+        Color border = hovered ? ui.highlight : Color.WHITE;
         ui.drawSlider(sliderX, sliderY, sliderWidth, sliderHeight, percent, border);
     }
 }

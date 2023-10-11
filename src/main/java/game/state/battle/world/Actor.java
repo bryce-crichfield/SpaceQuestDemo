@@ -11,16 +11,13 @@ public class Actor {
     final float stepDuration = 0.35f;
     private final Color color;
     private final int walkDistance = 5;
-
-    public int getAttackDistance() {
-        return attackDistance;
-    }
-
     private final int attackDistance = 3;
     float x;
     float y;
     float targetX;
     float targetY;
+    String name = "Actor";
+    float attack = 10;
     float health = 100;
     List<Tile> path = List.of();
     private float walkTime;
@@ -32,6 +29,22 @@ public class Actor {
         this.targetX = x;
         this.targetY = y;
         this.color = color;
+    }
+
+    public int getAttackDistance() {
+        return attackDistance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public float getAttack() {
+        return attack;
+    }
+
+    public float getHealth() {
+        return health;
     }
 
     public void setWalkTime(float walkTime) {

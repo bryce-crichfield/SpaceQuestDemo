@@ -24,7 +24,12 @@ public class PlayOverworldState extends GameState {
         player = new Player(0, 0, game);
         entity = new Player(10, 10, game);
 
-        starBackground = new StarBackground(this, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+    }
+
+    @Override
+    public void onEnter() {
+
     }
 
     @Override
@@ -50,7 +55,7 @@ public class PlayOverworldState extends GameState {
     @Override
     public void onRender(Graphics2D graphics) {
         graphics.setColor(new Color(0x0A001A));
-        graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
+        graphics.fillRect(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 
         starBackground.onRender(graphics);
 

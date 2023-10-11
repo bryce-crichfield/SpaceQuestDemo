@@ -29,12 +29,17 @@ public class OptionsMenuState extends GameState {
         });
 
 
-        int menuWidth = 11 * getGame().TILE_SIZE;
-        int menuHeight = 7 * getGame().TILE_SIZE;
-        int menuX = (getGame().SCREEN_WIDTH / 2) - (menuWidth / 2);
-        int menuY = (getGame().SCREEN_HEIGHT / 2) - (menuHeight / 2);
+        int menuWidth = 11 * Game.TILE_SIZE;
+        int menuHeight = 7 * Game.TILE_SIZE;
+        int menuX = (Game.SCREEN_WIDTH / 2) - (menuWidth / 2);
+        int menuY = (Game.SCREEN_HEIGHT / 2) - (menuHeight / 2);
         menu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
         menu.setWidgets(musicVolume, soundVolume, fullscreen, controls, new Blank(getGame()), back);
+    }
+
+    @Override
+    public void onEnter() {
+
     }
 
     @Override
@@ -44,14 +49,15 @@ public class OptionsMenuState extends GameState {
 
     @Override
     public void onRender(Graphics2D graphics) {
-        graphics.setColor(UserInterface.background);
-        graphics.fillRect(0, 0, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT);
 
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
+
+        UserInterface ui = new UserInterface(graphics, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT,
+                                             Game.TILE_SIZE
         );
+        graphics.setColor(ui.background);
+        graphics.fillRect(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
         ui.textSize = 24;
-        ui.textColor = UserInterface.highlight;
+        ui.textColor = ui.highlight;
         ui.drawTextCentered("Options Menu", 0, 16, ui.screenWidth, 32);
 
         menu.onRender(graphics);

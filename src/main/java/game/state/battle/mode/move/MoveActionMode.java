@@ -40,7 +40,7 @@ public class MoveActionMode extends ActionMode {
             ModeChanged.event.fire(new ObserverMode(getBattleState()));
         });
 
-        on(BattleState.onWorldRender).run(this::onWorldRender);
+        on(getBattleState().getOnWorldRender()).run(this::onWorldRender);
 
         on(CursorMoved.event).run(pathfinder::onCursorMoved);
         on(CursorMoved.event).run(selector::onCursorMoved);
@@ -57,8 +57,9 @@ public class MoveActionMode extends ActionMode {
     }
 
     public void onWorldRender(Graphics2D graphics) {
-        getBattleState().getCursor().onRender(graphics);
         pathfinder.onRender(graphics);
+        getBattleState().getCursor().onRender(graphics);
+
     }
 
     @Override

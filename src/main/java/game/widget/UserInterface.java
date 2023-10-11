@@ -1,26 +1,35 @@
 package game.widget;
 
+import game.Game;
 import game.util.Util;
 
 import java.awt.*;
 import java.awt.font.GlyphVector;
 
 public class UserInterface {
-    public static Color background = new Color(0, 0, 18);
-    public static Color highlight = new Color(196, 149, 0);
     public final int screenWidth;
     public final int screenHeight;
     public final int tileSize;
     private final Graphics2D graphics;
+    public Color background = new Color(0, 0, 18);
+    public Color highlight = new Color(196, 149, 0);
+    public Color border = new Color(255, 255, 255);
     public Color textColor = Color.WHITE;
     public int textSize = 12;
+
+    public UserInterface(Graphics2D graphics, Game game) {
+        this(graphics, game.getScreenWidth(), game.getScreenHeight(), game.getTileSize());
+    }
 
     public UserInterface(Graphics2D graphics, int screenWidth, int screenHeight, int tileSize) {
         this.graphics = graphics;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.tileSize = tileSize;
+    }
 
+    public UserInterface(Graphics2D graphics) {
+        this(graphics, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, Game.TILE_SIZE);
     }
 
 
@@ -37,16 +46,26 @@ public class UserInterface {
     }
 
     public Shape textToShape(String value, int x, int y, int size) {
-        Font font = new Font("White Rabbit", Font.PLAIN, textSize);
+        Font font = new Font("White Rabbit", Font.PLAIN, size);
         GlyphVector glyphVector = font.createGlyphVector(graphics.getFontRenderContext(), value);
         return glyphVector.getOutline(x, y + size);
     }
+
 
     public void drawText(String value, int x, int y, int size) {
         Stroke stroke = graphics.getStroke();
         Composite composite = graphics.getComposite();
 
+
         Shape shape = textToShape(value, x, y, size);
+        Shape outline = textToShape(value, x - 1, y - 1, size);
+
+        drawText(value, shape, outline);
+    }
+
+    public void drawText(String value, Shape shape, Shape outline) {
+        Stroke stroke = graphics.getStroke();
+        Composite composite = graphics.getComposite();
 
         graphics.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.setColor(Color.BLACK);
@@ -56,9 +75,8 @@ public class UserInterface {
 
         graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.setColor(textColor);
-        shape = textToShape(value, x - 1, y - 1, size);
-        graphics.fill(shape);
-        graphics.fill(shape);
+        graphics.fill(outline);
+        graphics.fill(outline);
 
         graphics.setStroke(stroke);
     }
@@ -88,13 +106,18 @@ public class UserInterface {
     }
 
     public void drawPanel(int x, int y, int width, int height) {
+        drawPanel(x, y, width, height, background, border);
+    }
+
+    public void drawPanel(int x, int y, int width, int height, Color background, Color border) {
         int roundness = tileSize;
 
 
         // FILLED RECTANGLE
         Composite composite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
-        graphics.setPaint(new GradientPaint(width / 2f, 0, Color.DARK_GRAY, width / 2f, height, Color.BLACK));
+        Color start = background.brighter().brighter().brighter().brighter();
+        graphics.setPaint(new GradientPaint(width / 2f, 0, start, width / 2f, height, background));
         graphics.fillRoundRect(x, y, width, height, roundness, roundness);
         graphics.setComposite(composite);
 
@@ -104,7 +127,7 @@ public class UserInterface {
         graphics.drawRoundRect(x, y, width, height, roundness, roundness);
 
         // BORDER
-        graphics.setColor(Color.WHITE);
+        graphics.setColor(border);
         graphics.setStroke(new BasicStroke(3));
         graphics.drawRoundRect(x, y, width, height, roundness, roundness);
 

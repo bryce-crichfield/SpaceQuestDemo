@@ -30,7 +30,7 @@ public class RadioButtonWidget extends Widget {
         int radioX = (int) (menuX + (menuWidth / 2f));
         int radioY = y + 20;
         int radioHeight = ui.tileSize / 2;
-        Color border = hovered ? UserInterface.highlight : Color.WHITE;
+        Color border = hovered ? ui.highlight : Color.WHITE;
 
         ui.drawRadioButton(radioX, radioY, radioHeight, selected, border);
     }

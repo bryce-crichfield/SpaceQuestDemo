@@ -29,7 +29,7 @@ public class Menu {
         this.width = width;
         this.height = height;
 
-        itemDistance = game.TILE_SIZE;
+        itemDistance = Game.TILE_SIZE;
         textSize = 12;
     }
 
@@ -97,8 +97,8 @@ public class Menu {
             return;
         }
 
-        UserInterface ui = new UserInterface(graphics, getGame().SCREEN_WIDTH, getGame().SCREEN_HEIGHT,
-                                             getGame().TILE_SIZE
+        UserInterface ui = new UserInterface(graphics, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT,
+                                             Game.TILE_SIZE
         );
 
         int menuWidth = width;

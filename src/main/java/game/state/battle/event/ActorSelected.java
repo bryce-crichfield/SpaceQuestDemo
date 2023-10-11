@@ -11,4 +11,8 @@ public class ActorSelected {
     public ActorSelected(Actor actor) {
         this.actor = actor;
     }
+
+    public Actor getActor() {
+        return actor;
+    }
 }

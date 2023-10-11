@@ -1,7 +1,9 @@
 package game.util;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class Util {
 
@@ -10,7 +12,11 @@ public class Util {
     }
 
     public static int wrap(int value, int lower, int upper) {
-        return Math.floorMod(value - lower, upper - lower) + lower;
+        try {
+            return Math.floorMod(value - lower, upper - lower) + lower;
+        } catch (ArithmeticException e) {
+            return value;
+        }
     }
 
     public static float wrap(float value, float lower, float upper) {
@@ -57,5 +63,13 @@ public class Util {
     public static float easeIn(float start, float end, float duration, float elapsed) {
         float t = elapsed / duration;
         return start + (end - start) * t * t;
+    }
+
+    public static <T> Optional<T> optionalFromThrowable(Supplier<T> supplier) {
+        try {
+            return Optional.ofNullable(supplier.get());
+        } catch (Throwable throwable) {
+            return Optional.empty();
+        }
     }
 }

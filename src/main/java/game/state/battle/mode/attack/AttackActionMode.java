@@ -14,7 +14,6 @@ import game.state.battle.world.Raycast;
 import game.state.battle.world.Tile;
 
 import java.awt.*;
-import java.security.Key;
 import java.time.Duration;
 import java.util.List;
 
@@ -30,21 +29,12 @@ public class AttackActionMode extends ActionMode {
         this.selector = new Selector(battleState.getWorld());
     }
 
-    public void onKeyPressed(Integer keyCode) {
-        if (keyCode == Keyboard.PRIMARY) {
-            getBattleState().getGame().getAudio().play("select.wav");
-            ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
-            ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
-        }
-    }
-
-
     @Override
     public void onEnter() {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.RED);
 
-        on(BattleState.onWorldRender).run(this::onRender);
+        on(getBattleState().getOnWorldRender()).run(this::onRender);
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(CursorMoved.event).run(this::onCursorMoved);
 
@@ -55,6 +45,14 @@ public class AttackActionMode extends ActionMode {
                 ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
             }
         });
+    }
+
+    public void onKeyPressed(Integer keyCode) {
+        if (keyCode == Keyboard.PRIMARY) {
+            getBattleState().getGame().getAudio().play("select.wav");
+            ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
+            ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
+        }
     }
 
     //    @Override
@@ -68,7 +66,9 @@ public class AttackActionMode extends ActionMode {
 
         Tile.drawOutline(possiblePath, graphics, Color.RED);
 
-        List<Tile> inRange = getBattleState().getWorld().getTilesInRange((int) actor.getX(), (int) actor.getY(), actor.getAttackDistance());
+        List<Tile> inRange = getBattleState().getWorld().getTilesInRange((int) actor.getX(), (int) actor.getY(),
+                                                                         actor.getAttackDistance()
+        );
 
         Composite originalComposite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));

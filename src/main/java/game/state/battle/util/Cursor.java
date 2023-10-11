@@ -26,9 +26,10 @@ public class Cursor {
     Mode mode = Mode.NORMAL;
     Color color = Color.RED;
     float timer = 0;
+
     public Cursor(Camera camera, Game game, World world) {
         this.camera = camera;
-        this.tileSize = game.TILE_SIZE;
+        this.tileSize = Game.TILE_SIZE;
         this.game = game;
 
         cursorX = 0;

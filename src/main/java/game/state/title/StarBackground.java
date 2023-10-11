@@ -1,5 +1,6 @@
 package game.state.title;
 
+import game.Game;
 import game.state.GameState;
 import game.util.Util;
 
@@ -57,7 +58,7 @@ public class StarBackground {
         for (float[] star : stars) {
             star[starY] -= star[starSpeed] * dt;
             if (star[starY] <= 0) {
-                star[starY] = gameState.getGame().SCREEN_HEIGHT;
+                star[starY] = Game.SCREEN_HEIGHT;
             }
 
             star[starWarble] += dt * star[starWarbleSpeed];

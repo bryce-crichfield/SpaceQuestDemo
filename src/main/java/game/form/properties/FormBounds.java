@@ -1,21 +1,14 @@
 package game.form.properties;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.With;
+import lombok.*;
 
-@With
-@Builder
+
+@Data
 @AllArgsConstructor
 public class FormBounds {
-    @Getter
     private float x = 0;
-    @Getter
     private float y = 0;
-    @Getter
     private float width = 100;
-    @Getter
     private float height = 100;
 
     public FormBounds(int x, int y, int width, int height) {
@@ -23,5 +16,9 @@ public class FormBounds {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public FormBounds copy() {
+        return new FormBounds(x, y, width, height);
     }
 }

@@ -21,9 +21,9 @@ public class FormMenu extends FormElement {
 
     public FormMenu(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.layout.set(new FormVerticalLayout());
-        this.border.set(Optional.of(new FormBorder()));
-        this.fill.set(Optional.of(new FormFill()));
+        this.setLayout(new FormVerticalLayout());
+        this.setBorder(new FormBorder());
+        this.setFill(new FormFill());
     }
 
     public void onKeyPressed(Integer keycode) {
@@ -61,6 +61,9 @@ public class FormMenu extends FormElement {
 
     @Override
     public void onRender(Graphics2D graphics) {
+        if (!getVisible())
+            return;
+
         super.onRender(graphics);
 
         Optional<FormElement> child = Util.optionalFromThrowable(() -> caretChildren.get(index));
@@ -76,7 +79,8 @@ public class FormMenu extends FormElement {
         int centerX = (int) (bounds.getX() + caretSize);
 
         FormBounds caretBounds = new FormBounds(centerX, centerY, 10, 10);
-        FormText text = new FormText().withValue(">");
+        FormText text = new FormText();
+        text.setValue(">");
         text.onRender(graphics, caretBounds);
     }
 }

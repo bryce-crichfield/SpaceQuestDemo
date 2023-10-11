@@ -1,11 +1,11 @@
 package game.state.battle.mode.selection;
 
 import game.Game;
-import game.event.SubscriptionManager;
 import game.form.element.FormLabel;
 import game.form.element.FormMenu;
 import game.form.properties.FormAlignment;
 import game.form.properties.FormFill;
+import game.form.properties.FormText;
 import game.form.properties.FormVerticalLayout;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
@@ -38,8 +38,8 @@ public class SelectActionMode extends ActionMode {
         int bottomJustified = 100 - percentHeight - 5;
 
         menu = new FormMenu(rightJustified, bottomJustified, percentWidth, percentHeight);
-        menu.fill.set(Optional.of(new FormFill(Color.BLACK, 25)));
-        menu.layout.set(new FormVerticalLayout());
+        menu.setFill(new FormFill(Color.BLACK, 25));
+        menu.setLayout(new FormVerticalLayout());
 
 
         String textPadding = "   ";
@@ -80,20 +80,16 @@ public class SelectActionMode extends ActionMode {
     }
 
     private FormLabel createMenuOption(String text, Runnable action) {
-        FormLabel option = new FormLabel(100, 25);
-        option.text.set(textValue -> textValue.withValue(text));
-        option.text.set(textValue -> textValue.withSize(16));
-        option.horizontalTextAlignment.set(FormAlignment.START);
-        option.onPrimary.listenWith((event) -> {
-            action.run();
-        });
-        menu.onCaretHighlight.listenWith(element -> {
-            if (element.equals(option)) {
-                option.text.set(t -> t.withFill(Color.ORANGE));
-            } else {
-                option.text.set(t -> t.withFill(Color.WHITE));
-            }
-        });
+        FormLabel option = new FormLabel(100, 20);
+
+        FormText formText = new FormText();
+        formText.setValue(text);
+        formText.setSize(16);
+        option.setText(formText);
+
+        option.setHorizontalTextAlignment(FormAlignment.START);
+        option.onPrimary.listenWith((e) -> action.run());
+
         return option;
     }
 }

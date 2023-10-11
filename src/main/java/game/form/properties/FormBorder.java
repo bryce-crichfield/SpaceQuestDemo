@@ -1,22 +1,25 @@
 package game.form.properties;
 
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import java.awt.*;
 
 @Data
-@With
 @RequiredArgsConstructor
 public class FormBorder {
-    private final Color inlayColor;
-    private final Color outlineColor;
-    private final Integer rounding;
-    private final Integer thicknessInlay;
-    private final Integer thicknessOutline;
-    private final FormLine lineStyle;
+    @NonNull
+    private Color inlayColor;
+    @NonNull
+    private Color outlineColor;
+    @NonNull
+    private Integer rounding;
+    @NonNull
+    private Integer thicknessInlay;
+    @NonNull
+    private Integer thicknessOutline;
+    @NonNull
+    private FormLine lineStyle;
 
     public FormBorder() {
         this(Color.WHITE, Color.BLACK, 25, 3, 6, FormLine.SOLID);

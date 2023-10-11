@@ -10,9 +10,9 @@ public class FormHorizontalLayout implements FormLayout {
         float x = 0;
         for (FormElement child : children) {
             float childY = 0;
-            int percentHeight = (int) (child.bounds.get().getHeight() * 100);
+            int percentHeight = (int) (child.getBounds().getHeight() * 100);
 
-            switch (child.elementAlignment.get()) {
+            switch (child.getElementAlignment()) {
                 case START -> childY = 0;
                 case CENTER -> {
                     int childPercent = (int) (50 - (0.5 * percentHeight));
@@ -24,9 +24,11 @@ public class FormHorizontalLayout implements FormLayout {
                 }
             }
 
-            child.bounds.set(child.bounds.get().withY(childY));
-            child.bounds.set(child.bounds.get().withX(x));
-            x += child.bounds.get().getWidth();
+            FormBounds newBounds = child.getBounds().copy();
+            newBounds.setX(x);
+            newBounds.setY(childY);
+            child.setBounds(newBounds);
+            x += child.getBounds().getWidth();
         }
     }
 }

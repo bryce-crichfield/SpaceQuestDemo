@@ -1,6 +1,7 @@
 package game.form.properties;
 
 import game.form.element.FormElement;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ public class FormVerticalLayout implements FormLayout {
         float y = 0;
         for (FormElement child : children) {
             float childX = 0;
-            int percentWidth = (int) (child.bounds.get().getWidth() * 100);
+            int percentWidth = (int) (child.getBounds().getWidth() * 100);
 
-            switch (child.elementAlignment.get()) {
+            switch (child.getElementAlignment()) {
                 case START -> childX = 0;
                 case CENTER -> {
                     int childPercent = (int) (50 - (0.5 * percentWidth));
@@ -24,14 +25,15 @@ public class FormVerticalLayout implements FormLayout {
                 }
             }
 
-            int whatPercentOfParentWidthIsMargin = (int) (margin.getX() / parent.bounds.get().getWidth());
+            int whatPercentOfParentWidthIsMargin = (int) (margin.getX() / parent.getBounds().getWidth());
             float marginX = whatPercentOfParentWidthIsMargin / 100f;
             childX += marginX;
 
-
-            child.bounds.set(child.bounds.get().withX(childX));
-            child.bounds.set(child.bounds.get().withY(y));
-            y += child.bounds.get().getHeight();
+            FormBounds newBounds = child.getBounds().copy();
+            newBounds.setX(childX);
+            newBounds.setY(y);
+            child.setBounds(newBounds);
+            y += child.getBounds().getHeight();
         }
     }
 }

@@ -3,9 +3,12 @@ package game.state.battle;
 import game.Game;
 import game.event.Event;
 import game.event.SubscriptionManager;
+import game.form.element.FormElement;
 import game.form.element.FormLabel;
 import game.form.element.FormMenu;
 import game.form.properties.FormAlignment;
+import game.form.properties.FormBorder;
+import game.form.properties.FormFill;
 import game.form.properties.FormText;
 import game.io.Keyboard;
 import game.state.GameState;
@@ -23,6 +26,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
+import java.util.Optional;
 
 public class BattleState extends GameState {
     private final StarBackground starBackground;
@@ -31,6 +35,7 @@ public class BattleState extends GameState {
     private final Cursor cursor;
     private final Hoverer hoverer;
     private ActionMode mode;
+    private final FormElement hoveredStats;
 
     public BattleState(Game game) {
         super(game);
@@ -55,6 +60,36 @@ public class BattleState extends GameState {
         }
 
         getSubscriptions().on(CursorMoved.event).run(hoverer::onCursorMoved);
+
+
+        hoveredStats = new FormElement(5, 5, 25, 60);
+        FormFill fill = new FormFill();
+        fill.setPaint(new Color(0x0A001A));
+        fill.setRoundness(25);
+
+        FormBorder border = new FormBorder();
+        border.setInlayColor(Color.WHITE);
+        border.setOutlineColor(Color.BLACK);
+        border.setRounding(25);
+        border.setThicknessInlay(3);
+        border.setThicknessOutline(6);
+
+        hoveredStats.setFill(fill);
+        hoveredStats.setBorder(border);
+
+
+        getSubscriptions().on(ActorHovered.event).run(hovered -> {
+            hoveredStats.setVisible(true);
+        });
+
+        getSubscriptions().on(ActorUnhovered.event).run(unhovered -> {
+            hoveredStats.setVisible(false);
+        });
+
+        FormLabel name = new FormLabel(100, 20);
+        hoveredStats.addChild(name);
+
+        getSubscriptions().on(this.getOnGuiRender()).run(hoveredStats::onRender);
     }
 
     private void onActionModeEvent(ActionMode newMode) {

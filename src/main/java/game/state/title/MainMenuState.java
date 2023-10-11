@@ -5,14 +5,15 @@ import game.form.element.FormLabel;
 import game.form.element.FormMenu;
 import game.form.properties.FormAlignment;
 import game.form.properties.FormFill;
+import game.form.properties.FormText;
 import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.BattleState;
+import game.state.options.OptionsMenuState;
 import game.state.overworld.PlayOverworldState;
 
 import java.awt.*;
 import java.time.Duration;
-import java.util.Optional;
 
 public class MainMenuState extends GameState {
     StarBackground starBackground;
@@ -20,9 +21,11 @@ public class MainMenuState extends GameState {
 
     public MainMenuState(Game game) {
         super(game);
+
         starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
+
         menu = new FormMenu(25, 25, 50, 50);
-        menu.elementAlignment.set(FormAlignment.CENTER);
+        menu.setElementAlignment(FormAlignment.CENTER);
         int menuX = (int) menu.getAbsoluteBounds().getX();
         int menuWidth = (int) menu.getAbsoluteBounds().getWidth();
         int menuY = (int) menu.getAbsoluteBounds().getY();
@@ -31,11 +34,17 @@ public class MainMenuState extends GameState {
         Paint paint = new GradientPaint(menuX, menuY, Color.BLACK, menuX + menuWidth, menuY + menuHeight,
                                         Color.DARK_GRAY
         );
-        menu.fill.set(Optional.of(new FormFill(paint)));
+        FormFill formFill = new FormFill();
+        formFill.setPaint(paint);
+        formFill.setRoundness(25);
+        menu.setFill(formFill);
 
-        FormLabel title = new FormLabel(100, 25);
-        title.text.set(text -> text.withValue("Space Quest"));
-        title.text.set(text -> text.withSize(32));
+
+        FormLabel title = new FormLabel(100, 20);
+        FormText text = new FormText();
+        text.setValue("Space Quest");
+        text.setSize(32);
+        title.setText(text);
         menu.addChild(title);
 
         String textPadding = "   ";
@@ -50,6 +59,10 @@ public class MainMenuState extends GameState {
         });
         menu.addCaretChild(battle);
 
+        FormLabel options = createMenuOption(textPadding + "Options", () -> {
+            game.deferred().fire(g -> g.pushState(new OptionsMenuState(g)));
+        });
+        menu.addCaretChild(options);
 
         FormLabel quit = createMenuOption(textPadding + "Quit", () -> {
             System.exit(0);
@@ -58,20 +71,16 @@ public class MainMenuState extends GameState {
     }
 
     private FormLabel createMenuOption(String text, Runnable action) {
-        FormLabel option = new FormLabel(100, 25);
-        option.text.set(textValue -> textValue.withValue(text));
-        option.text.set(textValue -> textValue.withSize(16));
-        option.horizontalTextAlignment.set(FormAlignment.START);
-        option.onPrimary.listenWith((event) -> {
-            action.run();
-        });
-        menu.onCaretHighlight.listenWith(element -> {
-            if (element.equals(option)) {
-                option.text.set(t -> t.withFill(Color.ORANGE));
-            } else {
-                option.text.set(t -> t.withFill(Color.WHITE));
-            }
-        });
+        FormLabel option = new FormLabel(100, 20);
+
+        FormText formText = new FormText();
+        formText.setValue(text);
+        formText.setSize(16);
+        option.setText(formText);
+
+        option.setHorizontalTextAlignment(FormAlignment.START);
+        option.onPrimary.listenWith((e) -> action.run());
+
         return option;
     }
 

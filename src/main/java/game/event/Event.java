@@ -2,6 +2,8 @@ package game.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Event<T> {
     private final List<EventListener<T>> listeners;
@@ -30,4 +32,21 @@ public class Event<T> {
     public void clear() {
         listeners.clear();
     }
+
+    public <R> Event<R> map(Function<T, R> mapper) {
+        Event<R> result = new Event<>();
+        this.listenWith((event) -> result.fire(mapper.apply(event)));
+        return result;
+    }
+
+    public <T> Event<T> filter(Predicate<T> filter) {
+        Event<T> result = new Event<>();
+        this.listenWith((event) -> {
+            if (filter.test((T) event)) {
+                result.fire((T) event);
+            }
+        });
+        return result;
+    }
+
 }

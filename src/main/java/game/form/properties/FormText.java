@@ -1,21 +1,22 @@
 package game.form.properties;
 
 import game.widget.UserInterface;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 import java.awt.*;
 import java.util.Optional;
 
 @Data
-@With
 @RequiredArgsConstructor
 public class FormText {
-    private final String value;
-    private final Integer size;
-    private final Paint fill;
-    private final Optional<FormBorder> border;
+    @NonNull
+    private String value;
+    @NonNull
+    private Integer size;
+    @NonNull
+    private Paint fill;
+    @NonNull
+    private Optional<FormBorder> border;
 
     public FormText() {
         this("", 12, Color.WHITE, Optional.empty());

@@ -82,6 +82,7 @@ public class Actor {
             if (tile.getX() == x && tile.getY() == y) {
                 System.out.println("Actor hit!");
                 health -= 15;
+                ActorDamaged.event.fire(this);
 
                 if (health <= 0) {
                     ActorKilled.event.fire(new ActorKilled(this));
@@ -109,12 +110,14 @@ public class Actor {
                 Tile next = path.remove(0);
                 targetX = next.getX();
                 targetY = next.getY();
+                ActorAnimation.event.fire(this);
             }
         }
 
         // Otherwise ease towards the target, and if we are close enough, snap to the target
         x = Util.easeIn(x, targetX, stepDuration, walkTime);
         y = Util.easeIn(y, targetY, stepDuration, walkTime);
+        ActorAnimation.event.fire(this);
 
         if (Math.abs(targetX - x) < 0.1) {
             x = targetX;
@@ -123,7 +126,6 @@ public class Actor {
         if (Math.abs(targetY - y) < 0.1) {
             y = targetY;
         }
-
     }
 
     public void onRender(Graphics2D graphics) {

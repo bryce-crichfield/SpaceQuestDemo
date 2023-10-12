@@ -36,8 +36,9 @@ public class MoveActionMode extends ActionMode {
         getBattleState().getCursor().setColor(Color.ORANGE);
 
         on(ActorMoved.event).run(event -> {
-            ActorDeselected.event.fire(new ActorDeselected(actor));
-            ModeChanged.event.fire(new ObserverMode(getBattleState()));
+//            ActorDeselected.event.fire(new ActorDeselected(actor));
+//            ModeChanged.event.fire(new ObserverMode(getBattleState()));
+            ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
         });
 
         on(getBattleState().getOnWorldRender()).run(this::onWorldRender);

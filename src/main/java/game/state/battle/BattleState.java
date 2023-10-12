@@ -19,6 +19,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
+import java.util.Optional;
 
 public class BattleState extends GameState {
     private final StarBackground starBackground;
@@ -27,7 +28,8 @@ public class BattleState extends GameState {
     private final Cursor cursor;
     private final Hoverer hoverer;
     private ActionMode mode;
-    private final FormElement hoveredStats;
+    private final ActorForm actorForm;
+    private final ActorForm selectedActorForm;
 
     public BattleState(Game game) {
         super(game);
@@ -54,34 +56,14 @@ public class BattleState extends GameState {
         getSubscriptions().on(CursorMoved.event).run(hoverer::onCursorMoved);
 
 
-        hoveredStats = new FormElement(5, 5, 25, 60);
-        FormFill fill = new FormFill();
-        fill.setPaint(new Color(0x0A001A));
-        fill.setRoundness(25);
+        actorForm = new ActorForm(0, 0);
+        ActorForm.configureHovered(actorForm, getSubscriptions());
 
-        FormBorder border = new FormBorder();
-        border.setInlayColor(Color.WHITE);
-        border.setOutlineColor(Color.BLACK);
-        border.setRounding(25);
-        border.setThicknessInlay(3);
-        border.setThicknessOutline(6);
+        selectedActorForm = new ActorForm(0, 50);
+        ActorForm.configureSelected(selectedActorForm, getSubscriptions());
 
-        hoveredStats.setFill(fill);
-        hoveredStats.setBorder(border);
-
-
-        getSubscriptions().on(ActorHovered.event).run(hovered -> {
-            hoveredStats.setVisible(true);
-        });
-
-        getSubscriptions().on(ActorUnhovered.event).run(unhovered -> {
-            hoveredStats.setVisible(false);
-        });
-
-        FormElement name = new FormElement(100, 20);
-        hoveredStats.addChild(name);
-
-        getSubscriptions().on(this.getOnGuiRender()).run(hoveredStats::onRender);
+        getSubscriptions().on(this.getOnGuiRender()).run(actorForm::onRender);
+        getSubscriptions().on(this.getOnGuiRender()).run(selectedActorForm::onRender);
     }
 
     private void onActionModeEvent(ActionMode newMode) {

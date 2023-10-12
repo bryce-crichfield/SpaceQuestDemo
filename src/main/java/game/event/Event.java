@@ -1,5 +1,7 @@
 package game.event;
 
+import game.form.properties.FormBounds;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -48,5 +50,4 @@ public class Event<T> {
         });
         return result;
     }
-
 }

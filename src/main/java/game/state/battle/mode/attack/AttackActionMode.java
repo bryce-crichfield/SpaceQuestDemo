@@ -4,9 +4,11 @@ import game.event.SubscriptionManager;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorAttacked;
+import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ModeChanged;
 import game.state.battle.mode.ActionMode;
+import game.state.battle.mode.ObserverMode;
 import game.state.battle.mode.selection.SelectActionMode;
 import game.state.battle.util.Selector;
 import game.state.battle.world.Actor;
@@ -51,7 +53,8 @@ public class AttackActionMode extends ActionMode {
         if (keyCode == Keyboard.PRIMARY) {
             getBattleState().getGame().getAudio().play("select.wav");
             ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
-            ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
+            ActorDeselected.event.fire(new ActorDeselected(actor));
+            ModeChanged.event.fire(new ObserverMode(getBattleState()));
         }
     }
 

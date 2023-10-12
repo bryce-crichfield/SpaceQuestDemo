@@ -1,65 +1,78 @@
 package game.state.options;
 
 import game.Game;
+import game.form.element.*;
+import game.form.properties.*;
+import game.form.properties.layout.FormHorizontalLayout;
+import game.io.Keyboard;
 import game.state.GameState;
-import game.widget.Menu;
-import game.widget.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Duration;
 
 public class OptionsMenuState extends GameState {
-    private final Menu menu;
-    private final int caret = 0;
-
+    private final FormMenu menu;
 
     public OptionsMenuState(Game game) {
         super(game);
 
-        var musicVolume = new SliderWidget("Music Volume", getGame());
-        var soundVolume = new SliderWidget("Sound Volume", getGame());
-        var fullscreen = new RadioButtonWidget("Fullscreen", getGame());
+        menu = new FormMenu(25, 25, 50, 50);
 
-        var controls = new ButtonWidget("Controls", getGame(), () -> {
-            getGame().pushState(new ControlsMenuState(getGame()));
-        });
+        FormElement musicVolume = new FormElement(100, 1);
+        musicVolume.setLayout(new FormHorizontalLayout());
+        FormElement music = new FormElement("Music");
+        music.getBounds().setWidth(50);
+        musicVolume.addChild(music);
+        FormElement volume = new FormElement("Volume");
+        volume.getBounds().setWidth(50);
+        musicVolume.addChild(volume);
 
-        var back = new ButtonWidget("Back", getGame(), () -> {
-            getGame().popState();
-        });
+        FormElement soundVolume = new FormElement(100, 1);
+        soundVolume.setLayout(new FormHorizontalLayout());
+        FormElement sound = new FormElement("Sound");
+        sound.getBounds().setWidth(50);
+        soundVolume.addChild(sound);
+        FormElement volume2 = new FormElement("Volume");
+        volume2.getBounds().setWidth(50);
+        soundVolume.addChild(volume2);
 
+        menu.addChild(musicVolume);
+        menu.addChild(soundVolume);
+        menu.getLayout().execute(menu);
 
-        int menuWidth = 11 * Game.TILE_SIZE;
-        int menuHeight = 7 * Game.TILE_SIZE;
-        int menuX = (Game.SCREEN_WIDTH / 2) - (menuWidth / 2);
-        int menuY = (Game.SCREEN_HEIGHT / 2) - (menuHeight / 2);
-        menu = new Menu(getGame(), menuX, menuY, menuWidth, menuHeight);
-        menu.setWidgets(musicVolume, soundVolume, fullscreen, controls, new Blank(getGame()), back);
+        FormFill formFill = new FormFill();
+        formFill.setPaint( getPaint(menu));
+        formFill.setRoundness(25);
+        menu.setFill(formFill);
+    }
+
+    @NotNull
+    private Paint getPaint(FormElement element) {
+        int menuX = (int) element.getAbsoluteBounds().getX();
+        int menuWidth = (int) element.getAbsoluteBounds().getWidth();
+        int menuY = (int) element.getAbsoluteBounds().getY();
+        int menuHeight = (int) element.getAbsoluteBounds().getHeight();
+
+        Paint paint = new GradientPaint(menuX, menuY, Color.BLACK, menuX + menuWidth, menuY + menuHeight,
+                                        Color.DARK_GRAY
+        );
+        return paint;
     }
 
     @Override
     public void onEnter() {
-
+        getSubscriptions().on(Keyboard.keyPressed).run(menu::onKeyPressed);
+        getSubscriptions().on(getOnGuiRender()).run(menu::onRender);
     }
 
     @Override
     public void onUpdate(Duration delta) {
-        menu.onUpdate(delta);
+
     }
 
     @Override
     public void onRender(Graphics2D graphics) {
-
-
-        UserInterface ui = new UserInterface(graphics, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT,
-                                             Game.TILE_SIZE
-        );
-        graphics.setColor(ui.background);
-        graphics.fillRect(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
-        ui.textSize = 24;
-        ui.textColor = ui.highlight;
-        ui.drawTextCentered("Options Menu", 0, 16, ui.screenWidth, 32);
-
-        menu.onRender(graphics);
+        getOnGuiRender().fire(graphics);
     }
 }

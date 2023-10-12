@@ -1,12 +1,13 @@
 package game.state.battle.mode.selection;
 
 import game.Game;
-import game.form.element.FormLabel;
+import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.FormAlignment;
 import game.form.properties.FormFill;
+import game.form.properties.FormMargin;
 import game.form.properties.FormText;
-import game.form.properties.FormVerticalLayout;
+import game.form.properties.layout.FormVerticalLayout;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorDeselected;
@@ -19,7 +20,6 @@ import game.state.battle.world.Actor;
 
 import java.awt.*;
 import java.time.Duration;
-import java.util.Optional;
 
 public class SelectActionMode extends ActionMode {
     private final BattleState battleState;
@@ -41,25 +41,50 @@ public class SelectActionMode extends ActionMode {
         menu.setFill(new FormFill(Color.BLACK, 25));
         menu.setLayout(new FormVerticalLayout());
 
+        FormElement title = new FormElement(100, 15);
+        FormText text = new FormText();
+        text.setValue(actor.getName());
+        text.setSize(22);
+        title.setText(text);
+        title.setHorizontalTextAlignment(FormAlignment.CENTER);
+        title.setVerticalTextAlignment(FormAlignment.CENTER);
+        menu.addChild(title);
 
         String textPadding = "   ";
-        FormLabel attack = createMenuOption(textPadding+"Attack", () -> {
+        FormElement attack = createMenuOption(textPadding + "Attack", () -> {
             ModeChanged.event.fire(new AttackActionMode(battleState, actor));
         });
         menu.addCaretChild(attack);
 
-        FormLabel move = createMenuOption(textPadding+"Move", () -> {
+        FormElement move = createMenuOption(textPadding + "Move", () -> {
             ModeChanged.event.fire(new MoveActionMode(battleState, actor));
         });
         menu.addCaretChild(move);
 
-        FormLabel item = createMenuOption(textPadding+"Item", () -> {
+        FormElement item = createMenuOption(textPadding + "Item", () -> {
         });
         menu.addCaretChild(item);
 
-        FormLabel wait = createMenuOption(textPadding+"Wait", () -> {
+        FormElement wait = createMenuOption(textPadding + "Wait", () -> {
         });
         menu.addCaretChild(wait);
+
+        menu.setMargin(new FormMargin(0, 0, 5, 0));
+        menu.getLayout().execute(menu);
+    }
+
+    private FormElement createMenuOption(String text, Runnable action) {
+        FormElement option = new FormElement(100, 10);
+
+        FormText formText = new FormText();
+        formText.setValue(text);
+        formText.setSize(16);
+        option.setText(formText);
+
+        option.setHorizontalTextAlignment(FormAlignment.START);
+        option.getOnPrimary().listenWith((e) -> action.run());
+
+        return option;
     }
 
     @Override
@@ -77,19 +102,5 @@ public class SelectActionMode extends ActionMode {
     @Override
     public void onUpdate(Duration delta) {
         battleState.getCursor().onUpdate(delta);
-    }
-
-    private FormLabel createMenuOption(String text, Runnable action) {
-        FormLabel option = new FormLabel(100, 20);
-
-        FormText formText = new FormText();
-        formText.setValue(text);
-        formText.setSize(16);
-        option.setText(formText);
-
-        option.setHorizontalTextAlignment(FormAlignment.START);
-        option.onPrimary.listenWith((e) -> action.run());
-
-        return option;
     }
 }

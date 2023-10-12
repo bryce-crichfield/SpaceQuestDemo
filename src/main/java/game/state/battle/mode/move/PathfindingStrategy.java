@@ -26,7 +26,7 @@ public class PathfindingStrategy {
         }
 
         float distance = Util.distance(start.getX(), start.getY(), end.getX(), end.getY());
-        if (distance > actor.getWalkDistance()) {
+        if (distance > actor.getMovementPoints()) {
             return List.of();
         }
 

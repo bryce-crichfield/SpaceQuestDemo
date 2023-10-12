@@ -60,7 +60,8 @@ public class Pathfinder {
     }
 
     public void onRender(Graphics2D graphics) {
-        List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), actor.getWalkDistance());
+        int distance = actor.getMovementPoints();
+        List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), distance);
 
         Composite originalComposite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));

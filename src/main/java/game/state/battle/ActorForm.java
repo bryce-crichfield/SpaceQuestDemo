@@ -75,7 +75,7 @@ public class ActorForm extends FormElement {
             }
         });
 
-        subscribe.on(ActorAnimation.event).run(moved -> {
+        subscribe.on(ActorAnimated.event).run(moved -> {
             if (sameActor(form.actor, moved)) {
                 form.actorProperty.fire(moved);
             }
@@ -109,7 +109,7 @@ public class ActorForm extends FormElement {
             }
         });
 
-        subscribe.on(ActorAnimation.event).run(moved -> {
+        subscribe.on(ActorAnimated.event).run(moved -> {
             if (sameActor(form.actor, moved)) {
                 form.actorProperty.fire(moved);
             }

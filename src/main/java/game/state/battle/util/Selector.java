@@ -3,6 +3,7 @@ package game.state.battle.util;
 import game.io.Keyboard;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ActorSelected;
+import game.state.battle.event.ActorSelectionSwap;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.model.Actor;
 import game.state.battle.model.World;
@@ -32,6 +33,7 @@ public class Selector {
         boolean secondaryPressed = keyCode == Keyboard.SECONDARY;
 
         // Selection is concerned with 4 conditions
+        // DEPRECATED: This doesn't allow the modal controllers to use secondary to exit.  Controllers must handle this case.
         // 1. Secondary pressed and an actor is selected -> deselect
         boolean secondaryPressedWithActorSelected = secondaryPressed && currentlySelectedActor.isPresent();
         // 2. Primary pressed and no actor is selected, and we clicked on an actor -> select
@@ -40,20 +42,24 @@ public class Selector {
         boolean primaryPressedWithActorSelectedAndHovered = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() == currentlySelectedActor.get();
         // 4. Primary pressed and an actor is selected, and we clicked on a different actor -> deselect and select
         boolean primaryPressedWithActorSelectedAndHoveredDifferent = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() != currentlySelectedActor.get();
+        // DEPRECATED: This doesn't allow the modal controllers to use primary.  Controllers must handle this case.
         // 5. Primary pressed and an actor is selected, and we clicked on an empty tile -> deselect
         boolean primaryPressedWithActorSelectedAndHoveredEmpty = primaryPressed && currentlySelectedActor.isPresent() && hovered.isEmpty();
 
         if (secondaryPressedWithActorSelected) {
-//            deselectActor();
+            // DEPRECATED: See above
         } else if (primaryPressedWithNoActorSelectedAndHovered) {
             selectActor(hovered.get());
         } else if (primaryPressedWithActorSelectedAndHovered) {
-            deselectActor();
-        } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
-            deselectActor();
-            selectActor(hovered.get());
-        } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
+            // DEPRECATED: Caused issue in SelectMoveModalController
 //            deselectActor();
+        } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
+            ActorDeselected.event.fire(currentlySelectedActor.get());
+            currentlySelectedActor = hovered;
+            ActorSelectionSwap.event.fire(currentlySelectedActor.get());
+            ActorSelected.event.fire(currentlySelectedActor.get());
+        } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
+            // DEPRECATED: See above
         }
     }
 
@@ -62,7 +68,7 @@ public class Selector {
         ActorSelected.event.fire(currentlySelectedActor.get());
     }
 
-    private void deselectActor() {
+    public void deselectActor() {
         currentlySelectedActor.ifPresent(ActorDeselected.event::fire);
         currentlySelectedActor = Optional.empty();
     }

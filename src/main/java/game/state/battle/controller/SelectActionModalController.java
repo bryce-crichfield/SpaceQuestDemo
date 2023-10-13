@@ -3,6 +3,7 @@ package game.state.battle.controller;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorHovered;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.Hud;
 import game.state.battle.model.Actor;
@@ -27,8 +28,15 @@ public class SelectActionModalController extends ModalController {
             if (actor.isEmpty()) {
                 throw new IllegalStateException("No actor selected in the select action mode");
             }
-            ActorDeselected.event.fire(actor.get());
-            ControllerTransition.defer.fire(ObserverModalController::new);
+            getBattleState().getSelector().deselectActor();
+            ControllerTransition.defer.fire(state -> {
+                int cursorX = getBattleState().getCursor().getCursorX();
+                int cursorY = getBattleState().getCursor().getCursorY();
+                if (cursorX == actor.get().getX() && cursorY == actor.get().getY()) {
+                    ActorHovered.event.fire(actor.get());
+                }
+                return new ObserverModalController(state);
+            });
         });
 
         hud.getActions().setVisible(true);

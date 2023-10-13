@@ -35,7 +35,6 @@ public class Game {
         audio.load("resources/Shapeforms Audio Free Sound Effects/sci_fi_weapons/lock_on.wav", "select.wav");
 
         endOfUpdate.listenWith(consumer -> {
-            System.out.println("End of update heard");
             consumer.accept(this);
         });
     }

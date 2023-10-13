@@ -2,9 +2,7 @@ package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
-import game.state.battle.event.ActionActorMoved;
-import game.state.battle.event.CursorMoved;
-import game.state.battle.event.ControllerTransition;
+import game.state.battle.event.*;
 import game.state.battle.model.Tile;
 import game.state.battle.model.Actor;
 import game.state.battle.model.World;
@@ -47,15 +45,20 @@ public class SelectMoveModalController extends ModalController {
         on(CursorMoved.event).run(this::onCursorMoved);
         on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
 
-        on(Keyboard.keyPressed).run(this::onKeyPressed);
+
+
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(Keyboard.keyPressed).run(getBattleState().getSelector()::onKeyPressed);
+        // Order matters here.  We want the cursor to update before we check if it's on an empty tile in the keyPressed event.
+        on(Keyboard.keyPressed).run(this::onKeyPressed);
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
                 ControllerTransition.defer.fire(SelectActionModalController::new);
             }
         });
+
+        on(ActorSelectionSwap.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
     }
 
     private void onCursorMoved(Cursor cursor) {

@@ -52,6 +52,11 @@ public class BattleState extends GameState {
             getSubscriptions().on(ActorKilled.event).run(world::removeActor);
         }
 
+        getSubscriptions().on(CursorMoved.event).run(cursor -> {
+            selector.onCursorMoved(cursor);
+            hoverer.onCursorMoved(cursor);
+        });
+
         getSubscriptions().on(ActorHovered.event).run(actor -> {
             if (selector.getCurrentlySelectedActor().isPresent())
                 return;
@@ -62,6 +67,7 @@ public class BattleState extends GameState {
         getSubscriptions().on(ActorUnhovered.event).run(actor -> {
             if (selector.getCurrentlySelectedActor().isPresent())
                 return;
+            actorChanged.fire(actor);
             hud.getPrimary().setVisible(false);
         });
 
@@ -71,6 +77,7 @@ public class BattleState extends GameState {
         });
 
         getSubscriptions().on(ActorDeselected.event).run(actor -> {
+            actorChanged.fire(actor);
             hud.getPrimary().setVisible(false);
         });
 

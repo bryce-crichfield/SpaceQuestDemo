@@ -11,7 +11,7 @@ public class Hud {
     HudActions actions;
 
     public Hud(Event<Actor> onActorChanged) {
-        primary = new HudStats(0, 0, 25, 25, onActorChanged);
+        primary = new HudStats(5, 5, 30, 25, onActorChanged);
         primary.setVisible(false);
 
         secondary = new HudStats(25, 25, 25, 25, onActorChanged);

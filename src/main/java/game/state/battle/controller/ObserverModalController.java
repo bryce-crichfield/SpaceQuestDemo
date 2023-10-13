@@ -21,12 +21,11 @@ public class ObserverModalController extends ModalController {
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(Keyboard.keyPressed).run(getBattleState().getSelector()::onKeyPressed);
 
-        on(CursorMoved.event).run(getBattleState().getHoverer()::onCursorMoved);
-        on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
 
         on(getBattleState().getOnWorldRender()).run(getBattleState().getCursor()::onRender);
 
         on(ActorSelected.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
+
     }
 
     public void onRender(Graphics2D graphics) {

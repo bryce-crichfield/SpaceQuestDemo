@@ -1,4 +1,4 @@
-package game.widget;
+package game.util;
 
 import game.Game;
 import game.util.Util;

@@ -4,7 +4,7 @@ import game.event.Event;
 import game.form.properties.*;
 import game.form.properties.layout.FormLayout;
 import game.form.properties.layout.FormVerticalLayout;
-import game.widget.UserInterface;
+import game.util.UserInterface;
 import lombok.Data;
 
 import java.awt.*;

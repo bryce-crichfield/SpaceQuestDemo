@@ -1,6 +1,6 @@
 package game.form.properties;
 
-import game.widget.UserInterface;
+import game.util.UserInterface;
 import lombok.*;
 
 import java.awt.*;

@@ -21,6 +21,10 @@ public class Event<T> {
         listeners.add(listener);
     }
 
+    public void respondBy(EventListener<T> listener) {
+        listenWith(listener);
+    }
+
     public void remove(EventListener<T> listener) {
         listeners.remove(listener);
     }
@@ -35,19 +39,13 @@ public class Event<T> {
         listeners.clear();
     }
 
-    public <R> Event<R> map(Function<T, R> mapper) {
-        Event<R> result = new Event<>();
-        this.listenWith((event) -> result.fire(mapper.apply(event)));
-        return result;
+    public void triggerBy(Event<T> other) {
+        other.listenWith(this::fire);
     }
 
-    public <T> Event<T> filter(Predicate<T> filter) {
-        Event<T> result = new Event<>();
-        this.listenWith((event) -> {
-            if (filter.test((T) event)) {
-                result.fire((T) event);
-            }
-        });
-        return result;
+    public <R> Event<R> map(Function<T, R> mapper) {
+        Event<R> mapped = new Event<>();
+        listenWith(event -> mapped.fire(mapper.apply(event)));
+        return mapped;
     }
 }

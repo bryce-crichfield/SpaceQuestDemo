@@ -1,6 +1,7 @@
 package game.event;
 
 import java.util.Queue;
+import java.util.function.Consumer;
 
 public class LazyEvent<T> extends Event<T> {
     private final Queue<T> queue;
@@ -18,6 +19,12 @@ public class LazyEvent<T> extends Event<T> {
     public void flush() {
         while (!queue.isEmpty()) {
             super.fire(queue.remove());
+        }
+    }
+
+    public void flush(Consumer<T> consumer) {
+        while (!queue.isEmpty()) {
+            consumer.accept(queue.remove());
         }
     }
 }

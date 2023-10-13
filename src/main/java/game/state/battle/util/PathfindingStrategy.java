@@ -1,8 +1,8 @@
-package game.state.battle.mode.move;
+package game.state.battle.util;
 
-import game.state.battle.world.Actor;
-import game.state.battle.world.Tile;
-import game.state.battle.world.World;
+import game.state.battle.model.Actor;
+import game.state.battle.model.Tile;
+import game.state.battle.model.World;
 import game.util.Util;
 
 import java.util.*;

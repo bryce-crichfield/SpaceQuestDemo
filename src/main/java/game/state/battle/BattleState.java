@@ -1,25 +1,25 @@
 package game.state.battle;
 
 import game.Game;
-import game.form.element.FormElement;
-import game.form.properties.FormBorder;
-import game.form.properties.FormFill;
+import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.event.*;
-import game.state.battle.mode.ActionMode;
-import game.state.battle.mode.ObserverMode;
+import game.state.battle.controller.InteractionMode;
+import game.state.battle.controller.ObserverMode;
+import game.state.battle.hud.Hud;
 import game.state.battle.util.Cursor;
 import game.state.battle.util.Hoverer;
-import game.state.battle.world.Actor;
-import game.state.battle.world.World;
+import game.state.battle.model.Actor;
+import game.state.battle.model.World;
+import game.state.battle.util.Selector;
 import game.state.title.StarBackground;
 import game.util.Camera;
+import game.event.Event;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
-import java.util.Optional;
 
 public class BattleState extends GameState {
     private final StarBackground starBackground;
@@ -27,9 +27,9 @@ public class BattleState extends GameState {
     private final World world;
     private final Cursor cursor;
     private final Hoverer hoverer;
-    private ActionMode mode;
-    private final ActorForm actorForm;
-    private final ActorForm selectedActorForm;
+    private final Selector selector;
+    private final Hud hud;
+    private InteractionMode mode;
 
     public BattleState(Game game) {
         super(game);
@@ -38,39 +38,64 @@ public class BattleState extends GameState {
         starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
         cursor = new Cursor(camera, game, world);
         hoverer = new Hoverer(world);
+        selector = new Selector(world);
+        Event<Actor> actorChanged = new Event<>();
+        hud = new Hud(actorChanged);
 
-        getSubscriptions().on(ModeChanged.event).run(this::onActionModeEvent);
-        ModeChanged.event.fire(new ObserverMode(this));
-        ModeChanged.event.flush();
+        ModeChanged.event.fire(state -> new ObserverMode(state));
+        forceModeChange();
 
         for (Actor actor : world.getActors()) {
             getSubscriptions().on(ActorMoved.event).run(actor::onActorMoved);
             getSubscriptions().on(ActorSelected.event).run(actor::onActorSelected);
             getSubscriptions().on(ActorDeselected.event).run(actor::onActorDeselected);
             getSubscriptions().on(ActorAttacked.event).run(actor::onActorAttacked);
-            getSubscriptions().on(ActorKilled.event).run(killed -> {
-                world.removeActor(killed.getDead());
-            });
+            getSubscriptions().on(ActorKilled.event).run(world::removeActor);
         }
 
-        getSubscriptions().on(CursorMoved.event).run(hoverer::onCursorMoved);
+        getSubscriptions().on(ActorHovered.event).run(actor -> {
+            if (selector.getCurrentlySelectedActor().isPresent())
+                return;
+            actorChanged.fire(actor);
+            hud.getPrimary().setVisible(true);
+        });
 
+        getSubscriptions().on(ActorUnhovered.event).run(actor -> {
+            if (selector.getCurrentlySelectedActor().isPresent())
+                return;
+            hud.getPrimary().setVisible(false);
+        });
 
-        actorForm = new ActorForm(0, 0);
-        ActorForm.configureHovered(actorForm, getSubscriptions());
+        getSubscriptions().on(ActorSelected.event).run(actor -> {
+            actorChanged.fire(actor);
+            hud.getPrimary().setVisible(true);
+        });
 
-        selectedActorForm = new ActorForm(0, 50);
-        ActorForm.configureSelected(selectedActorForm, getSubscriptions());
+        getSubscriptions().on(ActorDeselected.event).run(actor -> {
+            hud.getPrimary().setVisible(false);
+        });
 
-        getSubscriptions().on(this.getOnGuiRender()).run(actorForm::onRender);
-        getSubscriptions().on(this.getOnGuiRender()).run(selectedActorForm::onRender);
+        getSubscriptions().on(ActorAnimated.event).run(actorChanged::fire);
+
+        getSubscriptions().on(getOnGuiRender()).run(graphics -> {
+            hud.getPrimary().onRender(graphics);
+            hud.getSecondary().onRender(graphics);
+            hud.getActions().onRender(graphics);
+        });
     }
 
-    private void onActionModeEvent(ActionMode newMode) {
-        if (mode != null)
-            mode.onExit();
-        mode = newMode;
-        mode.onEnter();
+    private void forceModeChange() {
+        ModeChanged.event.flush(event -> {
+            InteractionMode newMode = event.apply(this);
+            if (mode != null)
+                mode.onExit();
+            mode = newMode;
+            mode.onEnter();
+        });
+    }
+
+    public Hud getHud() {
+        return hud;
     }
 
     @Override
@@ -90,7 +115,7 @@ public class BattleState extends GameState {
             getGame().popState();
         }
 
-        ModeChanged.event.flush();
+        forceModeChange();
     }
 
     @Override
@@ -122,6 +147,14 @@ public class BattleState extends GameState {
 
     public World getWorld() {
         return world;
+    }
+
+    public Selector getSelector() {
+        return selector;
+    }
+
+    public Hoverer getHoverer() {
+        return hoverer;
     }
 
     public Cursor getCursor() {

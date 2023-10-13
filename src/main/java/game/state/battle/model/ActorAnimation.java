@@ -1,4 +1,4 @@
-package game.state.battle.world;
+package game.state.battle.model;
 
 import game.state.battle.event.ActorAnimated;
 import game.util.Util;

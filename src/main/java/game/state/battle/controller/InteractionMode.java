@@ -1,14 +1,14 @@
-package game.state.battle.mode;
+package game.state.battle.controller;
 
 import game.event.SubscriptionManager;
 import game.state.battle.BattleState;
 
 import java.time.Duration;
 
-public abstract class ActionMode extends SubscriptionManager {
+public abstract class InteractionMode extends SubscriptionManager {
     private final BattleState battleState;
 
-    protected ActionMode(BattleState battleState) {
+    protected InteractionMode(BattleState battleState) {
         this.battleState = battleState;
     }
 

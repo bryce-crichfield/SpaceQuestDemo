@@ -1,4 +1,4 @@
-package game.state.battle.mode.attack;
+package game.state.battle.controller;
 
 import game.event.SubscriptionManager;
 import game.io.Keyboard;
@@ -7,25 +7,22 @@ import game.state.battle.event.ActorAttacked;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ModeChanged;
-import game.state.battle.mode.ActionMode;
-import game.state.battle.mode.ObserverMode;
-import game.state.battle.mode.selection.SelectActionMode;
 import game.state.battle.util.Selector;
-import game.state.battle.world.Actor;
-import game.state.battle.world.Raycast;
-import game.state.battle.world.Tile;
+import game.state.battle.model.Actor;
+import game.state.battle.model.Raycast;
+import game.state.battle.model.Tile;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class AttackActionMode extends ActionMode {
+public class SelectAttackMode extends InteractionMode {
     private final SubscriptionManager subscriptions = new SubscriptionManager();
     private final Selector selector;
     Raycast raycast;
     Actor actor;
 
-    public AttackActionMode(BattleState battleState, Actor selectedActor) {
+    public SelectAttackMode(BattleState battleState, Actor selectedActor) {
         super(battleState);
         this.actor = selectedActor;
         this.selector = new Selector(battleState.getWorld());
@@ -44,7 +41,7 @@ public class AttackActionMode extends ActionMode {
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-                ModeChanged.event.fire(new SelectActionMode(getBattleState(), actor));
+//                ModeChanged.event.fire(new OldSelectActionMode(getBattleState(), actor));
             }
         });
     }
@@ -53,8 +50,8 @@ public class AttackActionMode extends ActionMode {
         if (keyCode == Keyboard.PRIMARY) {
             getBattleState().getGame().getAudio().play("select.wav");
             ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
-            ActorDeselected.event.fire(new ActorDeselected(actor));
-            ModeChanged.event.fire(new ObserverMode(getBattleState()));
+            ActorDeselected.event.fire(actor);
+//            ModeChanged.event.fire(new ObserverMode(getBattleState()));
         }
     }
 

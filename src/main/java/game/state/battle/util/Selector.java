@@ -4,8 +4,8 @@ import game.io.Keyboard;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ActorSelected;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.world.Actor;
-import game.state.battle.world.World;
+import game.state.battle.model.Actor;
+import game.state.battle.model.World;
 
 import java.util.Optional;
 
@@ -18,7 +18,6 @@ public class Selector {
     public Selector(World world) {
         this.world = world;
         this.currentlySelectedActor = Optional.empty();
-
     }
 
     public void onCursorMoved(CursorMoved event) {
@@ -45,7 +44,7 @@ public class Selector {
         boolean primaryPressedWithActorSelectedAndHoveredEmpty = primaryPressed && currentlySelectedActor.isPresent() && hovered.isEmpty();
 
         if (secondaryPressedWithActorSelected) {
-            deselectActor();
+//            deselectActor();
         } else if (primaryPressedWithNoActorSelectedAndHovered) {
             selectActor(hovered.get());
         } else if (primaryPressedWithActorSelectedAndHovered) {
@@ -54,19 +53,21 @@ public class Selector {
             deselectActor();
             selectActor(hovered.get());
         } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
-            deselectActor();
+//            deselectActor();
         }
+    }
+
+    public Optional<Actor> getCurrentlySelectedActor() {
+        return currentlySelectedActor;
     }
 
     private void selectActor(Actor actor) {
         currentlySelectedActor = Optional.of(actor);
-        ActorSelected.event.fire(new ActorSelected(currentlySelectedActor.get()));
+        ActorSelected.event.fire(currentlySelectedActor.get());
     }
 
-    public void deselectActor() {
-        currentlySelectedActor.ifPresent(actor -> {
-            ActorDeselected.event.fire(new ActorDeselected(actor));
-        });
+    private void deselectActor() {
+        currentlySelectedActor.ifPresent(ActorDeselected.event::fire);
         currentlySelectedActor = Optional.empty();
     }
 }

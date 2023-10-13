@@ -1,9 +1,9 @@
-package game.state.battle.world;
+package game.state.battle.model;
 
 import game.character.GameCharacter;
 import game.character.StarTrooper;
 import game.state.battle.event.*;
-import java.util.List;
+
 import java.awt.*;
 import java.time.Duration;
 
@@ -51,14 +51,14 @@ public class Actor {
         }
     }
 
-    public void onActorSelected(ActorSelected event) {
-        if (event.actor.equals(this)) {
+    public void onActorSelected(Actor actor) {
+        if (actor.equals(this)) {
             selected = true;
         }
     }
 
-    public void onActorDeselected(ActorDeselected event) {
-        if (event.actor.equals(this)) {
+    public void onActorDeselected(Actor actor) {
+        if (actor.equals(this)) {
             selected = false;
         }
     }
@@ -74,7 +74,7 @@ public class Actor {
                 ActorDamaged.event.fire(this);
 
                 if (currentHealthPoints <= 0) {
-                    ActorKilled.event.fire(new ActorKilled(this));
+                    ActorKilled.event.fire(this);
                 }
             }
         }

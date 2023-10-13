@@ -24,7 +24,7 @@ public class FormElement {
     private FormMargin margin = new FormMargin(0, 0, 0, 0);
     private FormAlignment elementAlignment = FormAlignment.CENTER;
     private FormLayout layout = new FormVerticalLayout();
-    private Boolean debug = true;
+    private Boolean debug = false;
     private Boolean visible = true;
     private Optional<FormElement> parent;
     private Optional<FormFill> fill = Optional.empty();

@@ -1,12 +1,12 @@
-package game.state.battle.mode.move;
+package game.state.battle.util;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorMoved;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.world.Actor;
-import game.state.battle.world.Tile;
-import game.state.battle.world.World;
+import game.state.battle.model.Actor;
+import game.state.battle.model.Tile;
+import game.state.battle.model.World;
 
 import java.awt.*;
 import java.util.ArrayList;

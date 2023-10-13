@@ -3,8 +3,8 @@ package game.state.battle.util;
 import game.state.battle.event.ActorHovered;
 import game.state.battle.event.ActorUnhovered;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.world.Actor;
-import game.state.battle.world.World;
+import game.state.battle.model.Actor;
+import game.state.battle.model.World;
 
 import java.util.Optional;
 

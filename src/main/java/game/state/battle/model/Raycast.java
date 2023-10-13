@@ -1,4 +1,4 @@
-package game.state.battle.world;
+package game.state.battle.model;
 
 import java.util.ArrayList;
 import java.util.List;

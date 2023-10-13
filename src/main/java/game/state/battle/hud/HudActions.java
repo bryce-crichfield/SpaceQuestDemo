@@ -4,8 +4,8 @@ import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.*;
 import game.form.properties.layout.FormVerticalLayout;
-import game.state.battle.controller.SelectAttackController;
-import game.state.battle.controller.SelectMoveController;
+import game.state.battle.controller.SelectAttackModalController;
+import game.state.battle.controller.SelectMoveModalController;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Actor;
 import game.event.Event;
@@ -39,7 +39,7 @@ public class HudActions extends FormMenu {
                 if (selected.isEmpty()) {
                     throw new RuntimeException("Invalid state, no actor selected");
                 }
-                return new SelectAttackController(state);
+                return new SelectAttackModalController(state);
             });
         });
 
@@ -51,7 +51,7 @@ public class HudActions extends FormMenu {
                 if (selected.isEmpty()) {
                     throw new RuntimeException("Invalid state, no actor selected");
                 }
-                return new SelectMoveController(state);
+                return new SelectMoveModalController(state);
             });
         });
         addCaretChild(move);

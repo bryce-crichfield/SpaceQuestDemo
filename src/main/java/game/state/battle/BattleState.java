@@ -3,8 +3,8 @@ package game.state.battle;
 import game.Game;
 import game.state.GameState;
 import game.state.battle.event.*;
-import game.state.battle.controller.BattleStateController;
-import game.state.battle.controller.ObserverController;
+import game.state.battle.controller.ModalController;
+import game.state.battle.controller.ObserverModalController;
 import game.state.battle.hud.Hud;
 import game.state.battle.util.Cursor;
 import game.state.battle.util.Hoverer;
@@ -28,7 +28,7 @@ public class BattleState extends GameState {
     private final Hoverer hoverer;
     private final Selector selector;
     private final Hud hud;
-    private BattleStateController mode;
+    private ModalController mode;
 
     public BattleState(Game game) {
         super(game);
@@ -41,7 +41,7 @@ public class BattleState extends GameState {
         Event<Actor> actorChanged = new Event<>();
         hud = new Hud(actorChanged);
 
-        ControllerTransition.defer.fire(state -> new ObserverController(state));
+        ControllerTransition.defer.fire(state -> new ObserverModalController(state));
         forceModeChange();
 
         for (Actor actor : world.getActors()) {
@@ -85,7 +85,7 @@ public class BattleState extends GameState {
 
     private void forceModeChange() {
         ControllerTransition.defer.flush(event -> {
-            BattleStateController newMode = event.apply(this);
+            ModalController newMode = event.apply(this);
             if (mode != null)
                 mode.onExit();
             mode = newMode;

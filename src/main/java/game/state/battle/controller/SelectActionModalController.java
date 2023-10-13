@@ -7,11 +7,10 @@ import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.Hud;
 import game.state.battle.model.Actor;
 
-import java.time.Duration;
 import java.util.Optional;
 
-public class SelectActionController extends BattleStateController {
-    protected SelectActionController(BattleState battleState) {
+public class SelectActionModalController extends ModalController {
+    protected SelectActionModalController(BattleState battleState) {
         super(battleState);
     }
 
@@ -28,7 +27,7 @@ public class SelectActionController extends BattleStateController {
                 throw new IllegalStateException("No actor selected in the select action mode");
             }
             ActorDeselected.event.fire(actor.get());
-            ControllerTransition.defer.fire(ObserverController::new);
+            ControllerTransition.defer.fire(ObserverModalController::new);
         });
 
         hud.getActions().setVisible(true);

@@ -3,7 +3,6 @@ package game.state.battle.controller;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorAttacked;
-import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Actor;
@@ -12,15 +11,14 @@ import game.state.battle.model.Tile;
 import game.state.battle.util.Cursor;
 
 import java.awt.*;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-public class SelectAttackController extends BattleStateController {
+public class SelectAttackModalController extends ModalController {
     Raycast raycast;
     Actor actor;
 
-    public SelectAttackController(BattleState battleState) {
+    public SelectAttackModalController(BattleState battleState) {
         super(battleState);
 
         Optional<Actor> selectedActor = getBattleState().getSelector().getCurrentlySelectedActor();
@@ -41,7 +39,7 @@ public class SelectAttackController extends BattleStateController {
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-                ControllerTransition.defer.fire(SelectActionController::new);
+                ControllerTransition.defer.fire(SelectActionModalController::new);
             }
         });
 
@@ -54,7 +52,7 @@ public class SelectAttackController extends BattleStateController {
             getBattleState().getGame().getAudio().play("select.wav");
             getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
             ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
-            ControllerTransition.defer.fire(SelectActionController::new);
+            ControllerTransition.defer.fire(SelectActionModalController::new);
         }
     }
 

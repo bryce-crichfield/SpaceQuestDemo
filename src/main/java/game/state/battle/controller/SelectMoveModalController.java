@@ -12,19 +12,18 @@ import game.state.battle.util.Pathfinder;
 import game.state.battle.util.Cursor;
 
 import java.awt.*;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SelectMoveController extends BattleStateController {
+public class SelectMoveModalController extends ModalController {
     private final World world;
     private final Actor actor;
     private int cursorX = 0;
     private int cursorY = 0;
     private List<Tile> possiblePath;
 
-    public SelectMoveController(BattleState battleState) {
+    public SelectMoveModalController(BattleState battleState) {
         super(battleState);
 
         this.world = battleState.getWorld();
@@ -41,7 +40,7 @@ public class SelectMoveController extends BattleStateController {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.ORANGE);
 
-        on(ActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionController::new));
+        on(ActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
 
         on(getBattleState().getOnWorldRender()).run(this::onRender);
 
@@ -54,7 +53,7 @@ public class SelectMoveController extends BattleStateController {
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-                ControllerTransition.defer.fire(SelectActionController::new);
+                ControllerTransition.defer.fire(SelectActionModalController::new);
             }
         });
     }

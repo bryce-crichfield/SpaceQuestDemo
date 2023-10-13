@@ -3,12 +3,10 @@ package game.state.battle.controller;
 import game.event.SubscriptionManager;
 import game.state.battle.BattleState;
 
-import java.time.Duration;
-
-public abstract class BattleStateController extends SubscriptionManager {
+public abstract class ModalController extends SubscriptionManager {
     private final BattleState battleState;
 
-    protected BattleStateController(BattleState battleState) {
+    protected ModalController(BattleState battleState) {
         this.battleState = battleState;
     }
 

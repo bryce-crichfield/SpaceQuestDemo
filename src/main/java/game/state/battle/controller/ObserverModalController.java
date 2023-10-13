@@ -7,10 +7,9 @@ import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
 
 import java.awt.*;
-import java.time.Duration;
 
-public class ObserverController extends BattleStateController {
-    public ObserverController(BattleState battleState) {
+public class ObserverModalController extends ModalController {
+    public ObserverModalController(BattleState battleState) {
         super(battleState);
     }
 
@@ -27,7 +26,7 @@ public class ObserverController extends BattleStateController {
 
         on(getBattleState().getOnWorldRender()).run(getBattleState().getCursor()::onRender);
 
-        on(ActorSelected.event).run(event -> ControllerTransition.defer.fire(SelectActionController::new));
+        on(ActorSelected.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
     }
 
     public void onRender(Graphics2D graphics) {

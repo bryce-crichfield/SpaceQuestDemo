@@ -1,5 +1,6 @@
 package game;
 
+import game.state.Sandbox;
 import game.state.battle.BattleState;
 import game.state.title.MainMenuState;
 import game.util.Util;
@@ -15,7 +16,7 @@ public enum Main {
     public static void main(String[] args) throws Exception {
         Game game = new Game();
         Window window = new Window(640 * 3, 480 * 3, game);
-        game.pushState(new BattleState(game));
+        game.pushState(new Sandbox(game));
 
         Instant lastUpdate = Instant.now();
         Instant lastRender = Instant.now();

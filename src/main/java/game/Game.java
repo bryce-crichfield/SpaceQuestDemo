@@ -27,7 +27,7 @@ public class Game {
                 "resources/Shapeforms Audio Free Sound Effects/Dystopia – Ambience and Drone Preview/AUDIO/AMBIENCE_SPACECRAFT_HOLD_LOOP.wav",
                 "drone.wav"
         );
-        audio.loopPlayForever("drone.wav", 0.1f);
+//        audio.loopPlayForever("drone.wav", 0.1f);
 
         audio.load("resources/Shapeforms Audio Free Sound Effects/Cassette Preview/AUDIO/button.wav", "button.wav");
         audio.load("resources/Shapeforms Audio Free Sound Effects/future_ui/beep.wav", "caret.wav");
@@ -85,17 +85,5 @@ public class Game {
         if (!stateStack.isEmpty()) {
             stateStack.peek().onRender(graphics);
         }
-    }
-
-    public int getScreenWidth() {
-        return SCREEN_WIDTH;
-    }
-
-    public int getScreenHeight() {
-        return SCREEN_HEIGHT;
-    }
-
-    public int getTileSize() {
-        return TILE_SIZE;
     }
 }

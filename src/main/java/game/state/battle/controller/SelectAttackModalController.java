@@ -2,7 +2,7 @@ package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
-import game.state.battle.event.ActorAttacked;
+import game.state.battle.event.ActionActorAttack;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Actor;
@@ -51,7 +51,7 @@ public class SelectAttackModalController extends ModalController {
         if (keyCode == Keyboard.PRIMARY) {
             getBattleState().getGame().getAudio().play("select.wav");
             getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
-            ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
+            ActionActorAttack.event.fire(new ActionActorAttack(actor, raycast.getTiles()));
             ControllerTransition.defer.fire(SelectActionModalController::new);
         }
     }

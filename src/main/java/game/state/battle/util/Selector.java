@@ -57,10 +57,6 @@ public class Selector {
         }
     }
 
-    public Optional<Actor> getCurrentlySelectedActor() {
-        return currentlySelectedActor;
-    }
-
     private void selectActor(Actor actor) {
         currentlySelectedActor = Optional.of(actor);
         ActorSelected.event.fire(currentlySelectedActor.get());
@@ -69,5 +65,9 @@ public class Selector {
     private void deselectActor() {
         currentlySelectedActor.ifPresent(ActorDeselected.event::fire);
         currentlySelectedActor = Optional.empty();
+    }
+
+    public Optional<Actor> getCurrentlySelectedActor() {
+        return currentlySelectedActor;
     }
 }

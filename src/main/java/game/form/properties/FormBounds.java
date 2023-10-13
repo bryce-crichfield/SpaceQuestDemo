@@ -8,6 +8,15 @@ import lombok.*;
 public class FormBounds {
     private float x = 0;
     private float y = 0;
+    private float width = 100;
+    private float height = 100;
+
+    public FormBounds(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
 
     public void setX(float x) {
         this.x = x;
@@ -25,11 +34,12 @@ public class FormBounds {
         this.height = height;
     }
 
-    private float width = 100;
-    private float height = 100;
-
     public FormBounds add(FormBounds bounds) {
         return new FormBounds(x + bounds.x, y + bounds.y, width + bounds.width, height + bounds.height);
+    }
+
+    public FormBounds copy() {
+        return new FormBounds(x, y, width, height);
     }
 
     public static FormBounds fractional(float x, float y, float width, float height) {
@@ -37,17 +47,6 @@ public class FormBounds {
     }
 
     public static FormBounds percent(int x, int y, int width, int height) {
-        return new FormBounds(x, y, width, height);
-    }
-
-    public FormBounds(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-    public FormBounds copy() {
         return new FormBounds(x, y, width, height);
     }
 }

@@ -2,7 +2,7 @@ package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
-import game.state.battle.event.ActorMoved;
+import game.state.battle.event.ActionActorMoved;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Tile;
@@ -40,7 +40,7 @@ public class SelectMoveModalController extends ModalController {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.ORANGE);
 
-        on(ActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
+        on(ActionActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
 
         on(getBattleState().getOnWorldRender()).run(this::onRender);
 
@@ -84,7 +84,7 @@ public class SelectMoveModalController extends ModalController {
             if (possiblePath.isEmpty()) {
                 return;
             }
-            ActorMoved.event.fire(new ActorMoved(actor, possiblePath));
+            ActionActorMoved.event.fire(new ActionActorMoved(actor, possiblePath));
             possiblePath = new ArrayList<>();
         }
     }

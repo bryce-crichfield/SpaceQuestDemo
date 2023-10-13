@@ -21,7 +21,8 @@ public class SelectActionModalController extends ModalController {
         on(Keyboard.keyPressed).run(hud.getActions()::onKeyPressed);
         on(Keyboard.keyPressed).run(keyCode -> {
             boolean isSecondary = keyCode == Keyboard.SECONDARY;
-            if (!isSecondary) return;
+            if (!isSecondary)
+                return;
             Optional<Actor> actor = getBattleState().getSelector().getCurrentlySelectedActor();
             if (actor.isEmpty()) {
                 throw new IllegalStateException("No actor selected in the select action mode");

@@ -42,7 +42,7 @@ public class OptionsMenuState extends GameState {
         menu.getLayout().execute(menu);
 
         FormFill formFill = new FormFill();
-        formFill.setPaint( getPaint(menu));
+        formFill.setPaint(getPaint(menu));
         formFill.setRoundness(25);
         menu.setFill(formFill);
     }

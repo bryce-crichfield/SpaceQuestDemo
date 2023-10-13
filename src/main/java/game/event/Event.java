@@ -14,6 +14,10 @@ public class Event<T> {
         listeners = new ArrayList<>();
     }
 
+    public void respondBy(EventListener<T> listener) {
+        listenWith(listener);
+    }
+
     public void listenWith(EventListener<T> listener) {
         if (listeners.contains(listener)) {
             return;
@@ -21,18 +25,8 @@ public class Event<T> {
         listeners.add(listener);
     }
 
-    public void respondBy(EventListener<T> listener) {
-        listenWith(listener);
-    }
-
     public void remove(EventListener<T> listener) {
         listeners.remove(listener);
-    }
-
-    public void fire(T event) {
-        for (EventListener<T> listener : listeners) {
-            listener.onEvent(event);
-        }
     }
 
     public void clear() {
@@ -41,6 +35,12 @@ public class Event<T> {
 
     public void triggerBy(Event<T> other) {
         other.listenWith(this::fire);
+    }
+
+    public void fire(T event) {
+        for (EventListener<T> listener : listeners) {
+            listener.onEvent(event);
+        }
     }
 
     public <R> Event<R> map(Function<T, R> mapper) {

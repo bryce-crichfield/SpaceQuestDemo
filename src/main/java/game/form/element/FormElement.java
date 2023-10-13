@@ -16,6 +16,7 @@ import java.util.Optional;
 public class FormElement {
     private final Event<Void> onPrimary = new Event<>();
     private final Event<Void> onSecondary = new Event<>();
+    private final List<FormElement> children;
     private FormBounds absoluteBounds = new FormBounds(0, 0, 0, 0);
     private FormText text = new FormText();
     private FormAlignment horizontalTextAlignment = FormAlignment.CENTER;
@@ -29,7 +30,7 @@ public class FormElement {
     private Optional<FormElement> parent;
     private Optional<FormFill> fill = Optional.empty();
     private Optional<FormBorder> border = Optional.empty();
-    private final List<FormElement> children;
+
     public FormElement(int width, int height) {
         this(new FormBounds(0, 0, width / 100f, height / 100f));
     }

@@ -24,9 +24,11 @@ public interface FormLayout {
 
         // Layout the children's children.
         for (FormElement child : element.getChildren()) {
-                child.getLayout().execute(child);
+            child.getLayout().execute(child);
         }
     }
+
+    void onLayout(FormElement parent, List<FormElement> children);
 
     private static void clampBoundsToZeroThroughOne(FormBounds bounds) {
         bounds.setX(Util.clamp(bounds.getX(), 0, 1));
@@ -62,6 +64,4 @@ public interface FormLayout {
         newAbsBounds.setHeight(bounds.getHeight() * screenBounds.getHeight());
         element.setAbsoluteBounds(newAbsBounds);
     }
-
-    void onLayout(FormElement parent, List<FormElement> children);
 }

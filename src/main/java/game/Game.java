@@ -13,18 +13,13 @@ import java.util.Stack;
 import java.util.function.Consumer;
 
 public class Game {
-    public Event<Consumer<Game>> deferred() {
-        return endOfUpdate;
-    }
-
-    private final LazyEvent<Consumer<Game>> endOfUpdate = new LazyEvent<>();
     public static final int SCREEN_WIDTH = 480;
     public static final int SCREEN_HEIGHT = 320;
     public static final int TILE_SIZE = 32;
+    private final LazyEvent<Consumer<Game>> endOfUpdate = new LazyEvent<>();
     private final Keyboard keyboard = new Keyboard();
     private final Audio audio = new Audio();
     private final Stack<GameState> stateStack = new Stack<>();
-
     Game() throws Exception {
         // set volume
         // set volume
@@ -43,6 +38,10 @@ public class Game {
             System.out.println("End of update heard");
             consumer.accept(this);
         });
+    }
+
+    public Event<Consumer<Game>> deferred() {
+        return endOfUpdate;
     }
 
     public Audio getAudio() {

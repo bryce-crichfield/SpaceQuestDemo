@@ -13,8 +13,8 @@ import java.util.Optional;
 
 public class FormMenu extends FormElement {
     public final Event<FormElement> onCaretHighlight = new Event<>();
-    private Integer index = 0;
     private final List<FormElement> caretChildren = new ArrayList<>();
+    private Integer index = 0;
 
     public FormMenu(int x, int y, int width, int height) {
         super(x, y, width, height);

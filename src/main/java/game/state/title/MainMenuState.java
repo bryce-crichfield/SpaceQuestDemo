@@ -57,17 +57,17 @@ public class MainMenuState extends GameState {
         });
         menu.addCaretChild(overworld);
 
-        FormElement battle = createMenuOption(textPadding + "Battle",1, () -> {
+        FormElement battle = createMenuOption(textPadding + "Battle", 1, () -> {
             game.deferred().fire(g -> g.pushState(new BattleState(g)));
         });
         menu.addCaretChild(battle);
 
-        FormElement options = createMenuOption(textPadding + "Options",1, () -> {
+        FormElement options = createMenuOption(textPadding + "Options", 1, () -> {
             game.deferred().fire(g -> g.pushState(new OptionsMenuState(g)));
         });
         menu.addCaretChild(options);
 
-        FormElement quit = createMenuOption(textPadding + "Quit", 1,() -> {
+        FormElement quit = createMenuOption(textPadding + "Quit", 1, () -> {
             System.exit(0);
         });
         menu.addCaretChild(quit);

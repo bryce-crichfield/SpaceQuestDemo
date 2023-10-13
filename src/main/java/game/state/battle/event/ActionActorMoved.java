@@ -6,13 +6,13 @@ import game.state.battle.model.Tile;
 
 import java.util.List;
 
-public class ActorMoved {
-    public static final Event<ActorMoved> event = new Event<>();
+public class ActionActorMoved {
+    public static final Event<ActionActorMoved> event = new Event<>();
 
     public final Actor actor;
     public final List<Tile> movePath;
 
-    public ActorMoved(Actor actor, List<Tile> movePath) {
+    public ActionActorMoved(Actor actor, List<Tile> movePath) {
         this.actor = actor;
         this.movePath = movePath;
     }

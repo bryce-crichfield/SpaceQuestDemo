@@ -6,18 +6,6 @@ import game.state.battle.model.Actor;
 import java.awt.*;
 
 public class Hud {
-    public HudStats getPrimary() {
-        return primary;
-    }
-
-    public HudStats getSecondary() {
-        return secondary;
-    }
-
-    public HudActions getActions() {
-        return actions;
-    }
-
     HudStats primary;
     HudStats secondary;
     HudActions actions;
@@ -31,6 +19,18 @@ public class Hud {
 
         actions = new HudActions(55, 55, 25, 25, onActorChanged);
         actions.setVisible(false);
+    }
+
+    public HudStats getPrimary() {
+        return primary;
+    }
+
+    public HudStats getSecondary() {
+        return secondary;
+    }
+
+    public HudActions getActions() {
+        return actions;
     }
 
     public void onRender(Graphics2D graphics) {

@@ -6,7 +6,8 @@ import game.util.Util;
 import java.time.Duration;
 import java.time.Instant;
 
-public class Main {
+public enum Main {
+    ;
     public final static long targetUps = 60;
     public final static long targetFps = 60;
 

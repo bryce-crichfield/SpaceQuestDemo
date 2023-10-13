@@ -45,10 +45,10 @@ public class BattleState extends GameState {
         forceModeChange();
 
         for (Actor actor : world.getActors()) {
-            getSubscriptions().on(ActorMoved.event).run(actor::onActorMoved);
+            getSubscriptions().on(ActionActorMoved.event).run(actor::onActorMoved);
             getSubscriptions().on(ActorSelected.event).run(actor::onActorSelected);
             getSubscriptions().on(ActorDeselected.event).run(actor::onActorDeselected);
-            getSubscriptions().on(ActorAttacked.event).run(actor::onActorAttacked);
+            getSubscriptions().on(ActionActorAttack.event).run(actor::onActorAttacked);
             getSubscriptions().on(ActorKilled.event).run(world::removeActor);
         }
 

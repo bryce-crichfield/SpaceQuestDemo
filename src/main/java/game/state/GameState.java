@@ -19,7 +19,9 @@ public abstract class GameState {
     private final SubscriptionManager subscriptions = new SubscriptionManager();
 
     public abstract void onEnter();
+
     public abstract void onUpdate(Duration delta);
+
     public abstract void onRender(Graphics2D graphics);
 
     public void onExit() {

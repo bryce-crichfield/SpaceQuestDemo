@@ -5,7 +5,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class Util {
+public enum Util {
+    ;
 
     public static float perSecond(Duration delta) {
         return delta.toNanos() / 1e9f;

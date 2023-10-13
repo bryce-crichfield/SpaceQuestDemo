@@ -6,12 +6,12 @@ import game.state.battle.model.Tile;
 
 import java.util.List;
 
-public class ActorAttacked {
-    public static final Event<ActorAttacked> event = new Event<>();
+public class ActionActorAttack {
+    public static final Event<ActionActorAttack> event = new Event<>();
     Actor attacker;
     List<Tile> targets;
 
-    public ActorAttacked(Actor attacker, List<Tile> targets) {
+    public ActionActorAttack(Actor attacker, List<Tile> targets) {
         this.attacker = attacker;
         this.targets = targets;
     }

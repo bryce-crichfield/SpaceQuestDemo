@@ -36,15 +36,11 @@ public class Actor {
         return character.getName();
     }
 
-    public float getAttack() {
-        return character.getStats().getPhysical();
-    }
-
     public float getHealth() {
         return currentHealthPoints;
     }
 
-    public void onActorMoved(ActorMoved event) {
+    public void onActorMoved(ActionActorMoved event) {
         if (event.actor.equals(this)) {
 //            currentMovementPoints -= event.movePath.size();
             animation.start(event.movePath);
@@ -63,7 +59,7 @@ public class Actor {
         }
     }
 
-    public void onActorAttacked(ActorAttacked attack) {
+    public void onActorAttacked(ActionActorAttack attack) {
         if (attack.getAttacker().equals(this)) {
             return;
         }
@@ -78,6 +74,10 @@ public class Actor {
                 }
             }
         }
+    }
+
+    public float getAttack() {
+        return character.getStats().getPhysical();
     }
 
     public float getX() {

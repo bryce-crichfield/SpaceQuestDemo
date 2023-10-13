@@ -6,6 +6,7 @@ import game.state.battle.controller.ModalController;
 
 import java.util.function.Function;
 
-public class ControllerTransition {
+public enum ControllerTransition {
+    ;
     public static LazyEvent<Function<BattleState, ModalController>> defer = new LazyEvent<>();
 }

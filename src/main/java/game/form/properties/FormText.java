@@ -1,9 +1,9 @@
 package game.form.properties;
 
-import game.util.UserInterface;
 import lombok.*;
 
 import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.util.Optional;
 
 @Data
@@ -23,11 +23,10 @@ public class FormText {
     }
 
     public void onRender(Graphics2D graphics, FormBounds bounds) {
-        UserInterface ui = new UserInterface(graphics);
 
         int textX = (int) bounds.getX();
         int textY = (int) bounds.getY();
-        Shape shape = ui.textToShape(value, textX, textY, size);
+        Shape shape = this.toShape(graphics, textX, textY);
 
         Paint restorePaint = graphics.getPaint();
         Stroke restoreStroke = graphics.getStroke();
@@ -49,5 +48,11 @@ public class FormText {
 
         graphics.setPaint(restorePaint);
         graphics.setStroke(restoreStroke);
+    }
+
+    public Shape toShape(Graphics2D graphics, int x, int y) {
+        Font font = new Font("White Rabbit", Font.PLAIN, size);
+        GlyphVector glyphVector = font.createGlyphVector(graphics.getFontRenderContext(), value);
+        return glyphVector.getOutline(x, y + size);
     }
 }

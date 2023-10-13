@@ -4,7 +4,6 @@ import game.event.Event;
 import game.form.properties.*;
 import game.form.properties.layout.FormLayout;
 import game.form.properties.layout.FormVerticalLayout;
-import game.util.UserInterface;
 import lombok.Data;
 
 import java.awt.*;
@@ -117,8 +116,7 @@ public class FormElement {
             graphics.setStroke(oldStroke);
         }
 
-        UserInterface ui = new UserInterface(graphics);
-        Shape shape = ui.textToShape(text.getValue(), 0, 0, text.getSize());
+        Shape shape = text.toShape(graphics, 0, 0);
         Rectangle textBounds = shape.getBounds();
         int textWidth = textBounds.width;
         int textHeight = textBounds.height;

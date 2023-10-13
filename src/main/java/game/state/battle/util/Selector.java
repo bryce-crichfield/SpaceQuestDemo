@@ -20,9 +20,9 @@ public class Selector {
         this.currentlySelectedActor = Optional.empty();
     }
 
-    public void onCursorMoved(CursorMoved event) {
-        cursorX = event.cursor.getCursorX();
-        cursorY = event.cursor.getCursorY();
+    public void onCursorMoved(Cursor cursor) {
+        cursorX = cursor.getCursorX();
+        cursorY = cursor.getCursorY();
     }
 
     public void onKeyPressed(Integer keyCode) {

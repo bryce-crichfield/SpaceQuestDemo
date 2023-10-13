@@ -4,11 +4,12 @@ import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorMoved;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.event.ModeChanged;
+import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Tile;
 import game.state.battle.model.Actor;
 import game.state.battle.model.World;
-import game.state.battle.util.PathfindingStrategy;
+import game.state.battle.util.Pathfinder;
+import game.state.battle.util.Cursor;
 
 import java.awt.*;
 import java.time.Duration;
@@ -19,19 +20,19 @@ import java.util.Optional;
 public class SelectMoveController extends BattleStateController {
     private final World world;
     private final Actor actor;
-    int cursorX = 0;
-    int cursorY = 0;
-
+    private int cursorX = 0;
+    private int cursorY = 0;
     private List<Tile> possiblePath;
 
     public SelectMoveController(BattleState battleState) {
         super(battleState);
+
         this.world = battleState.getWorld();
         possiblePath = new ArrayList<>();
 
         Optional<Actor> actor = battleState.getSelector().getCurrentlySelectedActor();
         if (actor.isEmpty())
-            throw new IllegalStateException("No actor selected");
+            throw new IllegalStateException("Attempting to enter SelectMoveController without a selected actor");
         this.actor = actor.get();
     }
 
@@ -40,9 +41,9 @@ public class SelectMoveController extends BattleStateController {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.ORANGE);
 
-        on(ActorMoved.event).run(event -> ModeChanged.event.fire(SelectActionController::new));
+        on(ActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionController::new));
 
-        on(getBattleState().getOnWorldRender()).run(this::onWorldRender);
+        on(getBattleState().getOnWorldRender()).run(this::onRender);
 
         on(CursorMoved.event).run(this::onCursorMoved);
         on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
@@ -53,14 +54,14 @@ public class SelectMoveController extends BattleStateController {
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-                ModeChanged.event.fire(SelectActionController::new);
+                ControllerTransition.defer.fire(SelectActionController::new);
             }
         });
     }
 
-    private void onCursorMoved(CursorMoved event) {
-        cursorX = event.cursor.getCursorX();
-        cursorY = event.cursor.getCursorY();
+    private void onCursorMoved(Cursor cursor) {
+        cursorX = cursor.getCursorX();
+        cursorY = cursor.getCursorY();
 
         boolean hoveringOnEmptyTile = world.getActorByPosition(cursorX, cursorY).isEmpty();
         if (!hoveringOnEmptyTile) {
@@ -68,10 +69,10 @@ public class SelectMoveController extends BattleStateController {
             return;
         }
 
-        PathfindingStrategy pathfindingStrategy = new PathfindingStrategy(world, actor);
+        Pathfinder pathfinder = new Pathfinder(world, actor);
         Tile start = world.getTile((int) actor.getX(), (int) actor.getY());
         Tile end = world.getTile(cursorX, cursorY);
-        possiblePath = pathfindingStrategy.find(start, end);
+        possiblePath = pathfinder.find(start, end);
     }
 
     private void onKeyPressed(Integer keyCode) {
@@ -89,7 +90,7 @@ public class SelectMoveController extends BattleStateController {
         }
     }
 
-    public void onWorldRender(Graphics2D graphics) {
+    public void onRender(Graphics2D graphics) {
         int distance = actor.getMovementPoints();
         List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), distance);
 
@@ -107,10 +108,5 @@ public class SelectMoveController extends BattleStateController {
         Tile.drawTurtle(possiblePath, graphics, Color.ORANGE);
 
         getBattleState().getCursor().onRender(graphics);
-    }
-
-    @Override
-    public void onUpdate(Duration delta) {
-        getBattleState().getCursor().onUpdate(delta);
     }
 }

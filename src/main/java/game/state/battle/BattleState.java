@@ -4,7 +4,7 @@ import game.Game;
 import game.state.GameState;
 import game.state.battle.event.*;
 import game.state.battle.controller.BattleStateController;
-import game.state.battle.controller.ObserverMode;
+import game.state.battle.controller.ObserverController;
 import game.state.battle.hud.Hud;
 import game.state.battle.util.Cursor;
 import game.state.battle.util.Hoverer;
@@ -41,7 +41,7 @@ public class BattleState extends GameState {
         Event<Actor> actorChanged = new Event<>();
         hud = new Hud(actorChanged);
 
-        ModeChanged.event.fire(state -> new ObserverMode(state));
+        ControllerTransition.defer.fire(state -> new ObserverController(state));
         forceModeChange();
 
         for (Actor actor : world.getActors()) {
@@ -84,7 +84,7 @@ public class BattleState extends GameState {
     }
 
     private void forceModeChange() {
-        ModeChanged.event.flush(event -> {
+        ControllerTransition.defer.flush(event -> {
             BattleStateController newMode = event.apply(this);
             if (mode != null)
                 mode.onExit();
@@ -105,8 +105,7 @@ public class BattleState extends GameState {
     @Override
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
-
-        mode.onUpdate(delta);
+        cursor.onUpdate(delta);
 
         world.onUpdate(delta);
 

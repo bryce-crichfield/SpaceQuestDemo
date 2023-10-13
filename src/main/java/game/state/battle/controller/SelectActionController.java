@@ -3,7 +3,7 @@ package game.state.battle.controller;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorDeselected;
-import game.state.battle.event.ModeChanged;
+import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.Hud;
 import game.state.battle.model.Actor;
 
@@ -28,15 +28,10 @@ public class SelectActionController extends BattleStateController {
                 throw new IllegalStateException("No actor selected in the select action mode");
             }
             ActorDeselected.event.fire(actor.get());
-            ModeChanged.event.fire(ObserverMode::new);
+            ControllerTransition.defer.fire(ObserverController::new);
         });
 
         hud.getActions().setVisible(true);
-    }
-
-    @Override
-    public void onUpdate(Duration delta) {
-
     }
 
     @Override

@@ -51,39 +51,39 @@ public class Cursor {
     public void setPosition(int x, int y) {
         cursorX = x;
         cursorY = y;
-        CursorMoved.event.fire(new CursorMoved(this));
+        CursorMoved.event.fire(this);
     }
 
     public void onKeyPressed(Integer keyCode) {
         switch (keyCode) {
             case Keyboard.LEFT -> {
                 cursorX--;
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
             }
             case Keyboard.RIGHT -> {
                 cursorX++;
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
             }
             case Keyboard.UP -> {
                 cursorY--;
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
             }
             case Keyboard.DOWN -> {
                 cursorY++;
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
 
             }
             case KeyEvent.VK_MINUS -> {
                 float zoom = camera.getZoom();
                 zoom = Math.max(zoom - 0.25f, 0.25f);
                 camera.setZoom(zoom);
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
             }
             case KeyEvent.VK_EQUALS -> {
                 float zoom = camera.getZoom();
                 zoom = Math.min(zoom + 0.25f, 2);
                 camera.setZoom(zoom);
-                CursorMoved.event.fire(new CursorMoved(this));
+                CursorMoved.event.fire(this);
             }
         }
     }

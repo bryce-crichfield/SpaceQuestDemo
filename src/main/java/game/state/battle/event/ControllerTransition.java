@@ -6,6 +6,6 @@ import game.state.battle.controller.BattleStateController;
 
 import java.util.function.Function;
 
-public class ModeChanged {
-    public static LazyEvent<Function<BattleState, BattleStateController>> event = new LazyEvent<>();
+public class ControllerTransition {
+    public static LazyEvent<Function<BattleState, BattleStateController>> defer = new LazyEvent<>();
 }

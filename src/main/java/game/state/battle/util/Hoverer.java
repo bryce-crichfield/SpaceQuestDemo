@@ -17,13 +17,13 @@ public class Hoverer {
         this.world = world;
     }
 
-    public void onCursorMoved(CursorMoved moved) {
+    public void onCursorMoved(Cursor cursor) {
         Optional<Actor> currentHoveredActor = world.getActors().stream()
                 .filter(actor -> actor.getX() == this.cursorX && actor.getY() == this.cursorY)
                 .findFirst();
 
-        this.cursorX = moved.cursor.getCursorX();
-        this.cursorY = moved.cursor.getCursorY();
+        this.cursorX = cursor.getCursorX();
+        this.cursorY = cursor.getCursorY();
 
         Optional<Actor> newlyHoveredActor = world.getActors().stream()
                 .filter(actor -> actor.getX() == this.cursorX && actor.getY() == this.cursorY)
@@ -33,8 +33,6 @@ public class Hoverer {
             ActorUnhovered.event.fire(currentHoveredActor.get());
         }
 
-        if (newlyHoveredActor.isPresent()) {
-            ActorHovered.event.fire(newlyHoveredActor.get());
-        }
+        newlyHoveredActor.ifPresent(actor -> ActorHovered.event.fire(actor));
     }
 }

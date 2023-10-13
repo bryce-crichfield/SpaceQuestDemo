@@ -7,13 +7,13 @@ import game.util.Util;
 
 import java.util.*;
 
-public class PathfindingStrategy {
+public class Pathfinder {
     World world;
     Queue<Node> open;
     Set<Node> closed;
     Actor actor;
 
-    public PathfindingStrategy(World world, Actor actor) {
+    public Pathfinder(World world, Actor actor) {
         this.world = world;
         this.actor = actor;
         open = new PriorityQueue<>(Comparator.comparingInt(n -> n.gScore + n.hScore));

@@ -1,30 +1,34 @@
 package game.state.battle.controller;
 
-import game.event.SubscriptionManager;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorAttacked;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.util.Selector;
+import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.Actor;
 import game.state.battle.model.Raycast;
 import game.state.battle.model.Tile;
+import game.state.battle.util.Cursor;
 
 import java.awt.*;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 public class SelectAttackController extends BattleStateController {
-    private final SubscriptionManager subscriptions = new SubscriptionManager();
-    private final Selector selector;
     Raycast raycast;
     Actor actor;
 
-    public SelectAttackController(BattleState battleState, Actor selectedActor) {
+    public SelectAttackController(BattleState battleState) {
         super(battleState);
-        this.actor = selectedActor;
-        this.selector = new Selector(battleState.getWorld());
+
+        Optional<Actor> selectedActor = getBattleState().getSelector().getCurrentlySelectedActor();
+        if (selectedActor.isEmpty()) {
+            throw new IllegalStateException("Attempting to enter SelectAttackController without a selected actor");
+        }
+
+        this.actor = selectedActor.get();
     }
 
     @Override
@@ -32,29 +36,28 @@ public class SelectAttackController extends BattleStateController {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.RED);
 
-        on(getBattleState().getOnWorldRender()).run(this::onRender);
-        on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(CursorMoved.event).run(this::onCursorMoved);
-
         on(Keyboard.keyPressed).run(this::onKeyPressed);
-
+        on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-//                ModeChanged.event.fire(new OldSelectActionMode(getBattleState(), actor));
+                ControllerTransition.defer.fire(SelectActionController::new);
             }
         });
+
+        on(getBattleState().getOnWorldRender()).run(this::onRender);
+
     }
 
     public void onKeyPressed(Integer keyCode) {
         if (keyCode == Keyboard.PRIMARY) {
             getBattleState().getGame().getAudio().play("select.wav");
+            getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
             ActorAttacked.event.fire(new ActorAttacked(actor, raycast.getTiles()));
-            ActorDeselected.event.fire(actor);
-//            ModeChanged.event.fire(new ObserverMode(getBattleState()));
+            ControllerTransition.defer.fire(SelectActionController::new);
         }
     }
 
-    //    @Override
     public void onRender(Graphics2D graphics) {
         getBattleState().getCursor().onRender(graphics);
 
@@ -78,17 +81,11 @@ public class SelectAttackController extends BattleStateController {
         graphics.setComposite(originalComposite);
 
         Tile.drawOutline(inRange, graphics, Color.RED);
-
     }
 
-    public void onCursorMoved(CursorMoved event) {
-        int cursorX = event.cursor.getCursorX();
-        int cursorY = event.cursor.getCursorY();
+    private void onCursorMoved(Cursor cursor) {
+        int cursorX = cursor.getCursorX();
+        int cursorY = cursor.getCursorY();
         raycast = getBattleState().getWorld().raycast((int) actor.getX(), (int) actor.getY(), cursorX, cursorY);
-    }
-
-    @Override
-    public void onUpdate(Duration delta) {
-        getBattleState().getCursor().onUpdate(delta);
     }
 }

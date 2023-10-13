@@ -18,8 +18,6 @@ public abstract class BattleStateController extends SubscriptionManager {
 
     public abstract void onEnter();
 
-    public abstract void onUpdate(Duration delta);
-
     public void onExit() {
         unsubscribeAll();
     }

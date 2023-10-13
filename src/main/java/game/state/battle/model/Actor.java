@@ -95,6 +95,7 @@ public class Actor {
     }
 
     public void onRender(Graphics2D graphics) {
+        // Draw the actor
         Color color = selected ? Color.GREEN : this.color;
         float x = animation.getX();
         float y = animation.getY();
@@ -103,21 +104,21 @@ public class Actor {
         graphics.setColor(Color.BLACK);
         graphics.drawOval((int) (x * 32), (int) (y * 32), 32, 32);
 
-        // draw the health bar
-//        float healthPercentage = currentHealthPoints / character.getStats().getHealth();
-//        Color healthColor = healthPercentage > 0.5 ? Color.GREEN : healthPercentage > 0.25 ? Color.YELLOW : Color.RED;
-//        graphics.setColor(healthColor);
-//        int healthWidth = (int) ((32 - 10) * healthPercentage);
-//        int healthHeight = 5;
-//        int healthX = (int) ((x * 32) + 5);
-//        int healthY = (int) ((y * 32) + 32 - 5);
-//
-//        graphics.setColor(Color.BLACK);
-//        graphics.fillRect(healthX, healthY, 32 - 10, healthHeight);
-//        graphics.setColor(healthColor);
-//        graphics.fillRect(healthX, healthY, healthWidth, healthHeight);
-//        graphics.setColor(Color.BLACK);
-//        graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
+        // Draw the health bar
+        float healthPercentage = currentHealthPoints / character.getStats().getHealth();
+        Color healthColor = healthPercentage > 0.5 ? Color.GREEN : healthPercentage > 0.25 ? Color.YELLOW : Color.RED;
+        graphics.setColor(healthColor);
+        int healthWidth = (int) ((32 - 10) * healthPercentage);
+        int healthHeight = 5;
+        int healthX = (int) ((x * 32) + 5);
+        int healthY = (int) ((y * 32) + 32 - 5);
+
+        graphics.setColor(Color.BLACK);
+        graphics.fillRect(healthX, healthY, 32 - 10, healthHeight);
+        graphics.setColor(healthColor);
+        graphics.fillRect(healthX, healthY, healthWidth, healthHeight);
+        graphics.setColor(Color.BLACK);
+        graphics.drawRect(healthX, healthY, 32 - 10, healthHeight);
     }
 
     public int getMovementPoints() {

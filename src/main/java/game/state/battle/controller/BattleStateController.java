@@ -5,10 +5,10 @@ import game.state.battle.BattleState;
 
 import java.time.Duration;
 
-public abstract class InteractionMode extends SubscriptionManager {
+public abstract class BattleStateController extends SubscriptionManager {
     private final BattleState battleState;
 
-    protected InteractionMode(BattleState battleState) {
+    protected BattleStateController(BattleState battleState) {
         this.battleState = battleState;
     }
 

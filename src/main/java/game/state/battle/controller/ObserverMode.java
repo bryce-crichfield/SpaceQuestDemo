@@ -2,18 +2,14 @@ package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
-import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ActorSelected;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ModeChanged;
-import game.state.battle.util.Selector;
-import game.state.battle.model.Actor;
 
 import java.awt.*;
-import java.security.Key;
 import java.time.Duration;
 
-public class ObserverMode extends InteractionMode {
+public class ObserverMode extends BattleStateController {
     public ObserverMode(BattleState battleState) {
         super(battleState);
     }
@@ -31,7 +27,7 @@ public class ObserverMode extends InteractionMode {
 
         on(getBattleState().getOnWorldRender()).run(getBattleState().getCursor()::onRender);
 
-        on(ActorSelected.event).run(event -> ModeChanged.event.fire(SelectActionMode::new));
+        on(ActorSelected.event).run(event -> ModeChanged.event.fire(SelectActionController::new));
     }
 
     public void onRender(Graphics2D graphics) {

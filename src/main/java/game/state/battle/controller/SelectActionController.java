@@ -10,8 +10,8 @@ import game.state.battle.model.Actor;
 import java.time.Duration;
 import java.util.Optional;
 
-public class SelectActionMode extends InteractionMode {
-    protected SelectActionMode(BattleState battleState) {
+public class SelectActionController extends BattleStateController {
+    protected SelectActionController(BattleState battleState) {
         super(battleState);
     }
 

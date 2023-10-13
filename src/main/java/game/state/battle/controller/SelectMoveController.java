@@ -1,19 +1,22 @@
-package game.state.battle.util;
+package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorMoved;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.model.Actor;
+import game.state.battle.event.ModeChanged;
 import game.state.battle.model.Tile;
+import game.state.battle.model.Actor;
 import game.state.battle.model.World;
+import game.state.battle.util.PathfindingStrategy;
 
 import java.awt.*;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class Pathfinder {
-    private final BattleState battleState;
+public class SelectMoveController extends BattleStateController {
     private final World world;
     private final Actor actor;
     int cursorX = 0;
@@ -21,14 +24,41 @@ public class Pathfinder {
 
     private List<Tile> possiblePath;
 
-    public Pathfinder(BattleState state, World world, Actor actor) {
-        this.battleState = state;
-        this.world = world;
-        this.actor = actor;
+    public SelectMoveController(BattleState battleState) {
+        super(battleState);
+        this.world = battleState.getWorld();
         possiblePath = new ArrayList<>();
+
+        Optional<Actor> actor = battleState.getSelector().getCurrentlySelectedActor();
+        if (actor.isEmpty())
+            throw new IllegalStateException("No actor selected");
+        this.actor = actor.get();
     }
 
-    public void onCursorMoved(CursorMoved event) {
+    @Override
+    public void onEnter() {
+        getBattleState().getCursor().enterBlinkingMode();
+        getBattleState().getCursor().setColor(Color.ORANGE);
+
+        on(ActorMoved.event).run(event -> ModeChanged.event.fire(SelectActionController::new));
+
+        on(getBattleState().getOnWorldRender()).run(this::onWorldRender);
+
+        on(CursorMoved.event).run(this::onCursorMoved);
+        on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
+
+        on(Keyboard.keyPressed).run(this::onKeyPressed);
+        on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
+        on(Keyboard.keyPressed).run(getBattleState().getSelector()::onKeyPressed);
+
+        on(Keyboard.keyPressed).run(keyCode -> {
+            if (keyCode == Keyboard.SECONDARY) {
+                ModeChanged.event.fire(SelectActionController::new);
+            }
+        });
+    }
+
+    private void onCursorMoved(CursorMoved event) {
         cursorX = event.cursor.getCursorX();
         cursorY = event.cursor.getCursorY();
 
@@ -44,13 +74,13 @@ public class Pathfinder {
         possiblePath = pathfindingStrategy.find(start, end);
     }
 
-    public void onKeyPressed(Integer keyCode) {
+    private void onKeyPressed(Integer keyCode) {
         boolean primaryPressed = keyCode == Keyboard.PRIMARY;
         boolean hoveringOnEmptyTile = world.getActorByPosition(cursorX, cursorY).isEmpty();
 
         if (hoveringOnEmptyTile && primaryPressed) {
             // TODO: This should really be a move command
-            battleState.getGame().getAudio().play("select.wav");
+            getBattleState().getGame().getAudio().play("select.wav");
             if (possiblePath.isEmpty()) {
                 return;
             }
@@ -59,7 +89,7 @@ public class Pathfinder {
         }
     }
 
-    public void onRender(Graphics2D graphics) {
+    public void onWorldRender(Graphics2D graphics) {
         int distance = actor.getMovementPoints();
         List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), distance);
 
@@ -76,5 +106,11 @@ public class Pathfinder {
 
         Tile.drawTurtle(possiblePath, graphics, Color.ORANGE);
 
+        getBattleState().getCursor().onRender(graphics);
+    }
+
+    @Override
+    public void onUpdate(Duration delta) {
+        getBattleState().getCursor().onUpdate(delta);
     }
 }

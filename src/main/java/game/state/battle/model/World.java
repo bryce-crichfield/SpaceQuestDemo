@@ -24,7 +24,8 @@ public class World {
         // Initialize the tiles
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                tiles[x][y] = new ColorTile(x, y, true, Color.CYAN);
+                Color color = Color.cyan;
+                tiles[x][y] = new ColorTile(x, y, true, color);
             }
         }
 

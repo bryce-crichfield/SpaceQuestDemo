@@ -1,10 +1,9 @@
 package game.state.battle;
 
 import game.Game;
-import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.event.*;
-import game.state.battle.controller.InteractionMode;
+import game.state.battle.controller.BattleStateController;
 import game.state.battle.controller.ObserverMode;
 import game.state.battle.hud.Hud;
 import game.state.battle.util.Cursor;
@@ -29,7 +28,7 @@ public class BattleState extends GameState {
     private final Hoverer hoverer;
     private final Selector selector;
     private final Hud hud;
-    private InteractionMode mode;
+    private BattleStateController mode;
 
     public BattleState(Game game) {
         super(game);
@@ -86,7 +85,7 @@ public class BattleState extends GameState {
 
     private void forceModeChange() {
         ModeChanged.event.flush(event -> {
-            InteractionMode newMode = event.apply(this);
+            BattleStateController newMode = event.apply(this);
             if (mode != null)
                 mode.onExit();
             mode = newMode;

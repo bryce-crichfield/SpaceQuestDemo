@@ -6,7 +6,6 @@ import game.state.battle.BattleState;
 import game.state.battle.event.ActorAttacked;
 import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.event.ModeChanged;
 import game.state.battle.util.Selector;
 import game.state.battle.model.Actor;
 import game.state.battle.model.Raycast;
@@ -16,13 +15,13 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class SelectAttackMode extends InteractionMode {
+public class SelectAttackController extends BattleStateController {
     private final SubscriptionManager subscriptions = new SubscriptionManager();
     private final Selector selector;
     Raycast raycast;
     Actor actor;
 
-    public SelectAttackMode(BattleState battleState, Actor selectedActor) {
+    public SelectAttackController(BattleState battleState, Actor selectedActor) {
         super(battleState);
         this.actor = selectedActor;
         this.selector = new Selector(battleState.getWorld());

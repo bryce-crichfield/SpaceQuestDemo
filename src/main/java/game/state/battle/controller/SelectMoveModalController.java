@@ -38,14 +38,11 @@ public class SelectMoveModalController extends ModalController {
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.ORANGE);
 
-        on(ActionActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
 
         on(getBattleState().getOnWorldRender()).run(this::onRender);
 
         on(CursorMoved.event).run(this::onCursorMoved);
         on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
-
-
 
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
         on(Keyboard.keyPressed).run(getBattleState().getSelector()::onKeyPressed);
@@ -58,6 +55,7 @@ public class SelectMoveModalController extends ModalController {
             }
         });
 
+        on(ActionActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
         on(ActorSelectionSwap.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
     }
 

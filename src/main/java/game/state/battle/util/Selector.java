@@ -63,6 +63,7 @@ public class Selector {
     }
 
     private void selectActor(Actor actor) {
+        if (actor.isWaiting()) return;
         currentlySelectedActor = Optional.of(actor);
         ActorSelected.event.fire(currentlySelectedActor.get());
     }

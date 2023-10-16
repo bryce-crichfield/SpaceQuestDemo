@@ -4,8 +4,11 @@ import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.*;
 import game.form.properties.layout.FormVerticalLayout;
+import game.state.battle.controller.ObserverModalController;
 import game.state.battle.controller.SelectAttackModalController;
 import game.state.battle.controller.SelectMoveModalController;
+import game.state.battle.event.ActorDamaged;
+import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.actor.Actor;
 import game.event.Event;
@@ -61,6 +64,18 @@ public class HudActions extends FormMenu {
         addCaretChild(item);
 
         FormElement wait = createMenuOption(textPadding + "Wait", () -> {
+            ControllerTransition.defer.fire((state) -> {
+                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
+                if (selected.isEmpty()) {
+                    throw new RuntimeException("Invalid state, no actor selected");
+                }
+
+                Actor actor = selected.get();
+                actor.setWaiting(true);
+                ActorUnselected.event.fire(actor);
+                state.getSelector().deselectActor();
+                return new ObserverModalController(state);
+            });
         });
         addCaretChild(wait);
 

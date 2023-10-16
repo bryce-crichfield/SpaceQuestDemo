@@ -47,37 +47,18 @@ public class BattleState extends GameState {
             getSubscriptions().on(ActorUnselected.event).run(actor::onActorDeselected);
             getSubscriptions().on(ActionActorAttack.event).run(actor::onActorAttacked);
             getSubscriptions().on(ActorKilled.event).run(world::removeActor);
-            getSubscriptions().on(CursorMoved.event).run(actor.getHoverComponent()::onCursorMoved);
+            getSubscriptions().on(CursorMoved.event).run(actor::onCursorMoved);
         }
 
-        getSubscriptions().on(CursorMoved.event).run(cursor -> {
-            selector.onCursorMoved(cursor);
-        });
-
-        getSubscriptions().on(ActorHovered.event).run(actor -> {
-            if (selector.getCurrentlySelectedActor().isPresent())
-                return;
-            actorChanged.fire(actor);
-            hud.getPrimary().setVisible(true);
-        });
-
-        getSubscriptions().on(ActorUnhovered.event).run(actor -> {
-            if (selector.getCurrentlySelectedActor().isPresent())
-                return;
-            actorChanged.fire(actor);
-            hud.getPrimary().setVisible(false);
-        });
-
-        getSubscriptions().on(ActorSelected.event).run(actor -> {
-            actorChanged.fire(actor);
-            hud.getPrimary().setVisible(true);
-        });
-
-        getSubscriptions().on(ActorUnselected.event).run(actor -> {
-            actorChanged.fire(actor);
-            hud.getPrimary().setVisible(false);
-        });
-
+        hud.getPrimary().setVisible(true);
+        // This implies that the selector will always respond to cursor movements, meaning
+        // it is the responsibility of the modal controllers to decide when to allow
+        // cursor movements to be processed by the selector.
+        getSubscriptions().on(CursorMoved.event).run(selector::onCursorMoved);
+        getSubscriptions().on(ActorHovered.event).run(actorChanged::fire);
+        getSubscriptions().on(ActorUnhovered.event).run(actorChanged::fire);
+        getSubscriptions().on(ActorSelected.event).run(actorChanged::fire);
+        getSubscriptions().on(ActorUnselected.event).run(actorChanged::fire);
         getSubscriptions().on(ActorAnimated.event).run(actorChanged::fire);
 
         getSubscriptions().on(getOnGuiRender()).run(graphics -> {

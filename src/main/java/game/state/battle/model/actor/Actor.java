@@ -4,6 +4,7 @@ import game.character.GameCharacter;
 import game.character.StarTrooper;
 import game.state.battle.event.*;
 import game.state.battle.model.world.Tile;
+import game.state.battle.util.Cursor;
 
 import java.awt.*;
 import java.time.Duration;
@@ -13,30 +14,28 @@ public class Actor {
     int tileY;
 
     ActorAnimation animation;
-    SelectComponent selectComponent = new SelectComponent(this);
-    HoverComponent hoverComponent = new HoverComponent(this);
-
-    public SelectComponent getSelectComponent() {
-        return selectComponent;
-    }
-
-    public HoverComponent getHoverComponent() {
-        return hoverComponent;
-    }
-
     GameCharacter character = StarTrooper.create();
     float currentHealthPoints = character.getStats().getHealth();
     float currentMovementPoints = character.getStats().getSpeed();
-
     Color color;
-    boolean selected = false;
+    private boolean selected = false;
+    private boolean hovered = false;
 
+    private boolean waiting = false;
     public Actor(int x, int y, Color color) {
         this.tileX = x;
         this.tileY = y;
         this.color = color;
 
         animation = new ActorAnimation(this);
+    }
+
+    public boolean isWaiting() {
+        return waiting;
+    }
+
+    public void setWaiting(boolean waiting) {
+        this.waiting = waiting;
     }
 
     public int getAttackDistance() {
@@ -55,6 +54,18 @@ public class Actor {
         if (event.actor.equals(this)) {
 //            currentMovementPoints -= event.movePath.size();
             animation.start(event.movePath);
+        }
+    }
+
+    public void onCursorMoved(Cursor cursor) {
+        boolean cursorHovers = cursor.getCursorX() == this.tileX && cursor.getCursorY() == this.tileY;
+
+        if (hovered && !cursorHovers) {
+            hovered = true;
+            ActorHovered.event.fire(this);
+        } else if (!hovered && cursorHovers) {
+            hovered = false;
+            ActorUnhovered.event.fire(this);
         }
     }
 
@@ -107,7 +118,7 @@ public class Actor {
 
     public void onRender(Graphics2D graphics) {
         // Draw the actor
-        Color color = selected ? Color.GREEN : this.color;
+        Color color = selected ? Color.GREEN : waiting ? Color.GRAY : this.color;
         float x = animation.getX();
         float y = animation.getY();
         graphics.setColor(color);

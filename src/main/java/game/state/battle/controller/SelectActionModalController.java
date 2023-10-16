@@ -2,11 +2,10 @@ package game.state.battle.controller;
 
 import game.io.Keyboard;
 import game.state.battle.BattleState;
-import game.state.battle.event.ActorDeselected;
 import game.state.battle.event.ActorHovered;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.Hud;
-import game.state.battle.model.Actor;
+import game.state.battle.model.actor.Actor;
 
 import java.util.Optional;
 

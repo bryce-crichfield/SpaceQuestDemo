@@ -1,12 +1,11 @@
 package game.state.battle.util;
 
 import game.io.Keyboard;
-import game.state.battle.event.ActorDeselected;
+import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ActorSelected;
 import game.state.battle.event.ActorSelectionSwap;
-import game.state.battle.event.CursorMoved;
-import game.state.battle.model.Actor;
-import game.state.battle.model.World;
+import game.state.battle.model.actor.Actor;
+import game.state.battle.model.world.World;
 
 import java.util.Optional;
 
@@ -54,7 +53,7 @@ public class Selector {
             // DEPRECATED: Caused issue in SelectMoveModalController
 //            deselectActor();
         } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
-            ActorDeselected.event.fire(currentlySelectedActor.get());
+            ActorUnselected.event.fire(currentlySelectedActor.get());
             currentlySelectedActor = hovered;
             ActorSelectionSwap.event.fire(currentlySelectedActor.get());
             ActorSelected.event.fire(currentlySelectedActor.get());
@@ -69,7 +68,7 @@ public class Selector {
     }
 
     public void deselectActor() {
-        currentlySelectedActor.ifPresent(ActorDeselected.event::fire);
+        currentlySelectedActor.ifPresent(ActorUnselected.event::fire);
         currentlySelectedActor = Optional.empty();
     }
 

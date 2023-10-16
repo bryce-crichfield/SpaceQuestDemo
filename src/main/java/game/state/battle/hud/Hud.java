@@ -1,7 +1,7 @@
 package game.state.battle.hud;
 
 import game.event.Event;
-import game.state.battle.model.Actor;
+import game.state.battle.model.actor.Actor;
 
 import java.awt.*;
 

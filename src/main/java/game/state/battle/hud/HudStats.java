@@ -4,11 +4,10 @@ import game.event.Event;
 import game.form.element.FormElement;
 import game.form.properties.*;
 import game.form.properties.layout.FormHorizontalLayout;
-import game.state.battle.model.Actor;
+import game.state.battle.model.actor.Actor;
 
 import java.awt.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class HudStats extends FormElement {
     private final Event<Actor> onActorChanged;

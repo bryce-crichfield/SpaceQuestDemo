@@ -1,6 +1,7 @@
-package game.state.battle.model;
+package game.state.battle.model.actor;
 
 import game.state.battle.event.ActorAnimated;
+import game.state.battle.model.world.Tile;
 import game.util.Util;
 
 import java.time.Duration;

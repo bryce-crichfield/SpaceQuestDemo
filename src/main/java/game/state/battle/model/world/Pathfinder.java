@@ -1,8 +1,8 @@
-package game.state.battle.util;
+package game.state.battle.model.world;
 
-import game.state.battle.model.Actor;
-import game.state.battle.model.Tile;
-import game.state.battle.model.World;
+import game.state.battle.model.actor.Actor;
+import game.state.battle.model.world.Tile;
+import game.state.battle.model.world.World;
 import game.util.Util;
 
 import java.util.*;

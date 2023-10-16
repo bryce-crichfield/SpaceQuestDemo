@@ -3,10 +3,10 @@ package game.state.battle.controller;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.*;
-import game.state.battle.model.Tile;
-import game.state.battle.model.Actor;
-import game.state.battle.model.World;
-import game.state.battle.util.Pathfinder;
+import game.state.battle.model.world.Tile;
+import game.state.battle.model.actor.Actor;
+import game.state.battle.model.world.World;
+import game.state.battle.model.world.Pathfinder;
 import game.state.battle.util.Cursor;
 
 import java.awt.*;

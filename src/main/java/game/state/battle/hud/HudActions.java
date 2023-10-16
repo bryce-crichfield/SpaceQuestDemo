@@ -7,7 +7,7 @@ import game.form.properties.layout.FormVerticalLayout;
 import game.state.battle.controller.SelectAttackModalController;
 import game.state.battle.controller.SelectMoveModalController;
 import game.state.battle.event.ControllerTransition;
-import game.state.battle.model.Actor;
+import game.state.battle.model.actor.Actor;
 import game.event.Event;
 
 import java.awt.*;

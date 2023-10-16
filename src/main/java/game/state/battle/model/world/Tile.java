@@ -1,4 +1,4 @@
-package game.state.battle.model;
+package game.state.battle.model.world;
 
 import java.awt.*;
 import java.util.Arrays;

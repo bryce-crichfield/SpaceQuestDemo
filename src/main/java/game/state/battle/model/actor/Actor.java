@@ -1,8 +1,9 @@
-package game.state.battle.model;
+package game.state.battle.model.actor;
 
 import game.character.GameCharacter;
 import game.character.StarTrooper;
 import game.state.battle.event.*;
+import game.state.battle.model.world.Tile;
 
 import java.awt.*;
 import java.time.Duration;
@@ -12,6 +13,16 @@ public class Actor {
     int tileY;
 
     ActorAnimation animation;
+    SelectComponent selectComponent = new SelectComponent(this);
+    HoverComponent hoverComponent = new HoverComponent(this);
+
+    public SelectComponent getSelectComponent() {
+        return selectComponent;
+    }
+
+    public HoverComponent getHoverComponent() {
+        return hoverComponent;
+    }
 
     GameCharacter character = StarTrooper.create();
     float currentHealthPoints = character.getStats().getHealth();

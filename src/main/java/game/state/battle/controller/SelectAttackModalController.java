@@ -5,9 +5,9 @@ import game.state.battle.BattleState;
 import game.state.battle.event.ActionActorAttack;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
-import game.state.battle.model.Actor;
-import game.state.battle.model.Raycast;
-import game.state.battle.model.Tile;
+import game.state.battle.model.actor.Actor;
+import game.state.battle.model.world.Raycast;
+import game.state.battle.model.world.Tile;
 import game.state.battle.util.Cursor;
 
 import java.awt.*;

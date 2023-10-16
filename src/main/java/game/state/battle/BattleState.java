@@ -7,9 +7,8 @@ import game.state.battle.controller.ModalController;
 import game.state.battle.controller.ObserverModalController;
 import game.state.battle.hud.Hud;
 import game.state.battle.util.Cursor;
-import game.state.battle.util.Hoverer;
-import game.state.battle.model.Actor;
-import game.state.battle.model.World;
+import game.state.battle.model.actor.Actor;
+import game.state.battle.model.world.World;
 import game.state.battle.util.Selector;
 import game.state.title.StarBackground;
 import game.util.Camera;
@@ -25,7 +24,6 @@ public class BattleState extends GameState {
     private final Camera camera;
     private final World world;
     private final Cursor cursor;
-    private final Hoverer hoverer;
     private final Selector selector;
     private final Hud hud;
     private ModalController mode;
@@ -36,7 +34,6 @@ public class BattleState extends GameState {
         world = new World(16, 16);
         starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
         cursor = new Cursor(camera, game, world);
-        hoverer = new Hoverer(world);
         selector = new Selector(world);
         Event<Actor> actorChanged = new Event<>();
         hud = new Hud(actorChanged);
@@ -47,14 +44,14 @@ public class BattleState extends GameState {
         for (Actor actor : world.getActors()) {
             getSubscriptions().on(ActionActorMoved.event).run(actor::onActorMoved);
             getSubscriptions().on(ActorSelected.event).run(actor::onActorSelected);
-            getSubscriptions().on(ActorDeselected.event).run(actor::onActorDeselected);
+            getSubscriptions().on(ActorUnselected.event).run(actor::onActorDeselected);
             getSubscriptions().on(ActionActorAttack.event).run(actor::onActorAttacked);
             getSubscriptions().on(ActorKilled.event).run(world::removeActor);
+            getSubscriptions().on(CursorMoved.event).run(actor.getHoverComponent()::onCursorMoved);
         }
 
         getSubscriptions().on(CursorMoved.event).run(cursor -> {
             selector.onCursorMoved(cursor);
-            hoverer.onCursorMoved(cursor);
         });
 
         getSubscriptions().on(ActorHovered.event).run(actor -> {
@@ -76,7 +73,7 @@ public class BattleState extends GameState {
             hud.getPrimary().setVisible(true);
         });
 
-        getSubscriptions().on(ActorDeselected.event).run(actor -> {
+        getSubscriptions().on(ActorUnselected.event).run(actor -> {
             actorChanged.fire(actor);
             hud.getPrimary().setVisible(false);
         });
@@ -156,10 +153,6 @@ public class BattleState extends GameState {
 
     public Selector getSelector() {
         return selector;
-    }
-
-    public Hoverer getHoverer() {
-        return hoverer;
     }
 
     public Cursor getCursor() {

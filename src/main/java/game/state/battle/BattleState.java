@@ -25,7 +25,6 @@ public class BattleState extends GameState {
     private final World world;
     private final Cursor cursor;
     private final Selector selector;
-    private final Hud hud;
     private ModalController mode;
 
     public BattleState(Game game) {
@@ -35,8 +34,6 @@ public class BattleState extends GameState {
         starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
         cursor = new Cursor(camera, game, world);
         selector = new Selector(world);
-        Event<Actor> actorChanged = new Event<>();
-        hud = new Hud(actorChanged);
 
         ControllerTransition.defer.fire(state -> new ObserverModalController(state));
         forceModeChange();
@@ -50,22 +47,10 @@ public class BattleState extends GameState {
             getSubscriptions().on(CursorMoved.event).run(actor::onCursorMoved);
         }
 
-        hud.getPrimary().setVisible(true);
         // This implies that the selector will always respond to cursor movements, meaning
         // it is the responsibility of the modal controllers to decide when to allow
         // cursor movements to be processed by the selector.
         getSubscriptions().on(CursorMoved.event).run(selector::onCursorMoved);
-        getSubscriptions().on(ActorHovered.event).run(actorChanged::fire);
-        getSubscriptions().on(ActorUnhovered.event).run(actorChanged::fire);
-        getSubscriptions().on(ActorSelected.event).run(actorChanged::fire);
-        getSubscriptions().on(ActorUnselected.event).run(actorChanged::fire);
-        getSubscriptions().on(ActorAnimated.event).run(actorChanged::fire);
-
-        getSubscriptions().on(getOnGuiRender()).run(graphics -> {
-            hud.getPrimary().onRender(graphics);
-            hud.getSecondary().onRender(graphics);
-            hud.getActions().onRender(graphics);
-        });
     }
 
     private void forceModeChange() {
@@ -76,10 +61,6 @@ public class BattleState extends GameState {
             mode = newMode;
             mode.onEnter();
         });
-    }
-
-    public Hud getHud() {
-        return hud;
     }
 
     @Override

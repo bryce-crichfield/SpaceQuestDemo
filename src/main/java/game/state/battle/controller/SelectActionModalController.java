@@ -1,25 +1,40 @@
 package game.state.battle.controller;
 
+import game.event.Event;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorHovered;
 import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.Hud;
+import game.state.battle.hud.HudActions;
+import game.state.battle.hud.HudStats;
 import game.state.battle.model.actor.Actor;
 
 import java.util.Optional;
 
 public class SelectActionModalController extends ModalController {
-    protected SelectActionModalController(BattleState battleState) {
+    private final Actor selected;
+    private final HudStats hudStats;
+    private final HudActions hudActions;
+
+    protected SelectActionModalController(BattleState battleState, Actor selected) {
         super(battleState);
+
+        this.selected = selected;
+
+        Event<Actor> onChange = new Event<>();
+        hudStats = new HudStats(5, 5, 30, 25, onChange);
+        hudStats.setVisible(true);
+        onChange.fire(selected);
+
+        hudActions = new HudActions(55, 55, 25, 25, onChange);
+        hudActions.setVisible(true);
     }
 
     @Override
     public void onEnter() {
-        Hud hud = getBattleState().getHud();
-
-        on(Keyboard.keyPressed).run(hud.getActions()::onKeyPressed);
+        on(Keyboard.keyPressed).run(hudActions::onKeyPressed);
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
@@ -40,12 +55,12 @@ public class SelectActionModalController extends ModalController {
             }
         });
 
-        hud.getActions().setVisible(true);
+        on(getBattleState().getOnGuiRender()).run(hudStats::onRender);
+        on(getBattleState().getOnGuiRender()).run(hudActions::onRender);
     }
 
     @Override
     public void onExit() {
         super.onExit();
-        getBattleState().getHud().getActions().setVisible(false);
     }
 }

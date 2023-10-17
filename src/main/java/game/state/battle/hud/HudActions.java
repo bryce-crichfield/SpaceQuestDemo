@@ -54,7 +54,7 @@ public class HudActions extends FormMenu {
                 if (selected.isEmpty()) {
                     throw new RuntimeException("Invalid state, no actor selected");
                 }
-                return new SelectMoveModalController(state);
+                return new SelectMoveModalController(state, selected.get());
             });
         });
         addCaretChild(move);

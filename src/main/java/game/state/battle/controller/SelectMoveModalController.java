@@ -3,11 +3,13 @@ package game.state.battle.controller;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.*;
+import game.state.battle.hud.HudStats;
 import game.state.battle.model.world.Tile;
 import game.state.battle.model.actor.Actor;
 import game.state.battle.model.world.World;
 import game.state.battle.model.world.Pathfinder;
 import game.state.battle.util.Cursor;
+import game.event.Event;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,21 +18,31 @@ import java.util.Optional;
 
 public class SelectMoveModalController extends ModalController {
     private final World world;
-    private final Actor actor;
+    private final Actor selectedActor;
     private int cursorX = 0;
     private int cursorY = 0;
     private List<Tile> possiblePath;
+    private HudStats selectedActorStats;
+    private HudStats hoveredActorStats;
+    Event<Actor> onChangeHovered = new Event<>();
 
-    public SelectMoveModalController(BattleState battleState) {
+
+    public SelectMoveModalController(BattleState battleState, Actor selected) {
         super(battleState);
 
         this.world = battleState.getWorld();
         possiblePath = new ArrayList<>();
 
-        Optional<Actor> actor = battleState.getSelector().getCurrentlySelectedActor();
-        if (actor.isEmpty())
-            throw new IllegalStateException("Attempting to enter SelectMoveController without a selected actor");
-        this.actor = actor.get();
+        this.selectedActor = selected;
+
+        Event<Actor> onChangeSelected = new Event<>();
+        selectedActorStats = new HudStats(5, 5, 30, 25, onChangeSelected);
+        selectedActorStats.setVisible(true);
+        onChangeSelected.fire(selectedActor);
+
+        hoveredActorStats = new HudStats(55, 5, 30, 25, onChangeHovered);
+        hoveredActorStats.setVisible(false);
+        onChangeHovered.fire(selectedActor);
     }
 
     @Override
@@ -51,12 +63,46 @@ public class SelectMoveModalController extends ModalController {
 
         on(Keyboard.keyPressed).run(keyCode -> {
             if (keyCode == Keyboard.SECONDARY) {
-                ControllerTransition.defer.fire(SelectActionModalController::new);
+                var actor = getBattleState().getSelector().getCurrentlySelectedActor();
+                if (actor.isEmpty()) {
+                    throw new IllegalStateException("No actor selected in the select action mode");
+                }
+                ControllerTransition.defer.fire(state -> new SelectActionModalController(state, actor.get()));
             }
         });
 
-        on(ActionActorMoved.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
-        on(ActorSelectionSwap.event).run(event -> ControllerTransition.defer.fire(SelectActionModalController::new));
+        on(ActionActorMoved.event).run(movement -> {
+            ControllerTransition.defer.fire(state -> new SelectActionModalController(state, movement.actor));
+        });
+
+        on(ActorSelectionSwap.event).run(actor -> {
+            ControllerTransition.defer.fire(state -> new SelectActionModalController(state, actor));
+        });
+
+        on(CursorMoved.event).run(cursor -> {
+           int cursorX = cursor.getCursorX();
+              int cursorY = cursor.getCursorY();
+
+            Optional<Actor> actor = world.getActorByPosition(cursorX, cursorY);
+            if (actor.isEmpty()) {
+                hoveredActorStats.setVisible(false);
+            }
+
+            if (actor.isPresent()) {
+
+                if (actor.get().equals(selectedActor)) {
+                    hoveredActorStats.setVisible(false);
+                    return;
+                }
+
+                Actor hovered = actor.get();
+                hoveredActorStats.setVisible(true);
+                onChangeHovered.fire(hovered);
+            }
+        });
+
+        on(getBattleState().getOnGuiRender()).run(selectedActorStats::onRender);
+        on(getBattleState().getOnGuiRender()).run(hoveredActorStats::onRender);
     }
 
     private void onCursorMoved(Cursor cursor) {
@@ -69,8 +115,8 @@ public class SelectMoveModalController extends ModalController {
             return;
         }
 
-        Pathfinder pathfinder = new Pathfinder(world, actor);
-        Tile start = world.getTile((int) actor.getX(), (int) actor.getY());
+        Pathfinder pathfinder = new Pathfinder(world, selectedActor);
+        Tile start = world.getTile((int) selectedActor.getX(), (int) selectedActor.getY());
         Tile end = world.getTile(cursorX, cursorY);
         possiblePath = pathfinder.find(start, end);
     }
@@ -85,14 +131,14 @@ public class SelectMoveModalController extends ModalController {
             if (possiblePath.isEmpty()) {
                 return;
             }
-            ActionActorMoved.event.fire(new ActionActorMoved(actor, possiblePath));
+            ActionActorMoved.event.fire(new ActionActorMoved(selectedActor, possiblePath));
             possiblePath = new ArrayList<>();
         }
     }
 
     public void onRender(Graphics2D graphics) {
-        int distance = actor.getMovementPoints();
-        List<Tile> inRange = world.getTilesInRange((int) actor.getX(), (int) actor.getY(), distance);
+        int distance = selectedActor.getMovementPoints();
+        List<Tile> inRange = world.getTilesInRange((int) selectedActor.getX(), (int) selectedActor.getY(), distance);
 
         Composite originalComposite = graphics.getComposite();
         graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));

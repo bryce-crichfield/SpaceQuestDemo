@@ -18,7 +18,7 @@ public class HudStats extends FormElement {
     private final Event<Actor> onActorChanged;
 
     public HudStats(int x, int y, Event<Actor> onActorChanged) {
-        super(x, y, 30, 30);
+        super(x, y, 150, 200);
 
         this.onActorChanged = onActorChanged;
 
@@ -79,12 +79,12 @@ public class HudStats extends FormElement {
         createPadding(rowContainer);
 
         addChild(rowContainer);
-        getLayout().execute(this);
+        onLayout();
     }
 
     private void createTitleEntry(FormElement rowContainer, BiConsumer<FormElement, Actor> update) {
         FormElement row = new FormElement("");
-        row.getBounds().setWidth(100);
+        row.getBounds().setWidth(150);
         row.getBounds().setHeight(titleHeight);
         row.setLayout(new FormHorizontalLayout());
 
@@ -95,7 +95,7 @@ public class HudStats extends FormElement {
 
     private void createPadding(FormElement rowContainer) {
         FormElement row = new FormElement("");
-        row.getBounds().setWidth(100);
+        row.getBounds().setWidth(150);
         row.getBounds().setHeight(vSpace);
         row.setLayout(new FormHorizontalLayout());
 
@@ -104,7 +104,7 @@ public class HudStats extends FormElement {
     }
     private void createStatSheetEntry(FormElement rowContainer, String name, BiConsumer<FormElement, Actor> update) {
         FormElement row = new FormElement("");
-        row.getBounds().setWidth(100);
+        row.getBounds().setWidth(150);
         row.getBounds().setHeight(rowHeight);
         row.setLayout(new FormHorizontalLayout());
 

@@ -39,7 +39,7 @@ public class OptionsMenuState extends GameState {
 
         menu.addChild(musicVolume);
         menu.addChild(soundVolume);
-        menu.getLayout().execute(menu);
+        menu.onLayout();
 
         FormFill formFill = new FormFill();
         formFill.setPaint(getPaint(menu));

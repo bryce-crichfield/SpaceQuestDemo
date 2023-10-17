@@ -25,6 +25,7 @@ public class FormGrid extends FormElement {
         if (hasCurrentElement) {
             FormElement currentElement = this.getChildren().get(cursorX + cursorY * cols);
             currentElement.setBorder(null);
+            currentElement.getOnUnhover().fire(null);
         }
 
         switch (keyCode) {
@@ -57,6 +58,7 @@ public class FormGrid extends FormElement {
         if (hasCurrentElement) {
             FormElement currentElement = this.getChildren().get(cursorX + cursorY * cols);
             currentElement.setBorder(new FormBorder());
+            currentElement.getOnHover().fire(null);
 
             if (keyCode == Keyboard.PRIMARY) {
                 currentElement.getOnPrimary().fire(null);

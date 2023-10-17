@@ -41,8 +41,8 @@ public class FormText {
             graphics.draw(shape);
 
             graphics.setStroke(
-                    new BasicStroke(formBorder.getThicknessInlay(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            graphics.setPaint(formBorder.getInlayColor());
+                    new BasicStroke(formBorder.getThickness(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.setPaint(formBorder.getColor());
             graphics.draw(shape);
         });
 

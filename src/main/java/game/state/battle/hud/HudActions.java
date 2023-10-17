@@ -97,17 +97,25 @@ public class HudActions extends FormMenu {
         addChild(v2);
 
 
-        getLayout().execute(this);
+        onLayout();
     }
 
     private FormElement createMenuOption(String text, Runnable action) {
         FormElement option = new FormElement(100, 20);
 
-        FormText formText = new FormText();
-        formText.setValue(text);
-        formText.setSize(16);
-        option.setText(formText);
+        FormText defaultText = new FormText();
+        defaultText.setValue(text);
+        defaultText.setSize(16);
+        defaultText.setFill(Color.WHITE);
+        option.setText(defaultText);
 
+        FormText hoverText = new FormText();
+        hoverText.setValue(text);
+        hoverText.setSize(16);
+        hoverText.setFill(Color.RED);
+        option.getOnHover().listenWith((e) -> option.setText(hoverText));
+        option.getOnUnhover().listenWith((e) -> option.setText(defaultText));
+        
         option.setHorizontalTextAlignment(FormAlignment.START);
         option.getOnPrimary().listenWith((e) -> action.run());
 

@@ -26,7 +26,7 @@ public class SelectActionPlayerController extends PlayerController {
         hudStats.setVisible(true);
         onChange.fire(selected);
 
-        hudActions = new HudActions(40, 65, 30, 30, onChange);
+        hudActions = new HudActions(200, 65, 30, 30, onChange);
         hudActions.setVisible(true);
     }
 

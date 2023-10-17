@@ -72,8 +72,6 @@ public class MainMenuState extends GameState {
         menu.addCaretChild(option.apply("Exit", () -> {
             System.exit(0);
         }));
-
-        menu.getLayout().execute(menu);
     }
 
     @Override

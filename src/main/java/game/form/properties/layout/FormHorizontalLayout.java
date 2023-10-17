@@ -37,23 +37,13 @@ public class FormHorizontalLayout implements FormLayout {
         int parentMarginTop = (int) parent.getMargin().getTop();
         int parentMarginBottom = (int) parent.getMargin().getBottom();
 
-        int offsetX = 0;
-        switch (layoutAlignment) {
-            case START -> {
-                offsetX = parentX + parentMarginLeft;
-            }
-            case CENTER -> {
-                int parentCenterX = parentX + parentWidth / 2;
-                offsetX = parentCenterX - totalChildrenWidth / 2;
-            }
-            case END -> {
-                offsetX = parentX + parentWidth - parentMarginRight - totalChildrenWidth;
-            }
-        }
+        int offsetX = switch (layoutAlignment) {
+            case START -> parentX + parentMarginLeft;
+            case CENTER -> parentX + parentWidth / 2 - totalChildrenWidth / 2;
+            case END -> parentX + parentWidth - parentMarginRight - totalChildrenWidth;
+        };
 
         for (FormElement child : children) {
-            int childX = (int) child.getBounds().getX();
-            int childY = (int) child.getBounds().getY();
             int childWidth = (int) child.getBounds().getWidth();
             int childHeight = (int) child.getBounds().getHeight();
 
@@ -65,22 +55,11 @@ public class FormHorizontalLayout implements FormLayout {
             int childTotalWidth = childWidth + childPaddingLeft + childPaddingRight;
             int childTotalHeight = childHeight + childPaddingTop + childPaddingBottom;
 
-            int offsetY = 0;
-            offsetX += childPaddingLeft;
-
-            switch (parent.getElementAlignment()) {
-                case START -> {
-                    offsetY = parentY + parentMarginTop + childPaddingTop;
-                }
-                case CENTER -> {
-                    int parentCenterY = parentY + parentHeight / 2;
-                    int childCenterY = childY + childHeight / 2;
-                    offsetY = parentCenterY - childCenterY;
-                }
-                case END -> {
-                    offsetY = parentY + parentHeight - parentMarginBottom - childTotalHeight;
-                }
-            }
+            int offsetY = switch (parent.getElementAlignment()) {
+                case START -> childPaddingLeft + (parentY + parentMarginTop + childPaddingTop);
+                case CENTER -> childPaddingLeft + (parentY + parentHeight / 2 - childTotalHeight / 2);
+                case END -> childPaddingLeft + (parentY + parentHeight - parentMarginBottom - childTotalHeight);
+            };
 
             FormBounds bounds = new FormBounds(offsetX, offsetY, childWidth, childHeight);
             child.setBounds(bounds);

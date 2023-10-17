@@ -16,6 +16,8 @@ import java.util.Optional;
 public class FormElement {
     private final Event<Void> onPrimary = new Event<>();
     private final Event<Void> onSecondary = new Event<>();
+    private final Event<Void> onHover = new Event<>();
+    private final Event<Void> onUnhover = new Event<>();
     private final List<FormElement> children = new ArrayList<>();
     private FormText text = new FormText();
     private FormAlignment horizontalTextAlignment = FormAlignment.CENTER;
@@ -69,33 +71,47 @@ public class FormElement {
 
     public final void setBounds(FormBounds bounds) {
         this.bounds = bounds;
+        onLayout();
     }
 
     public final void setMargin(FormMargin margin) {
         this.margin = margin;
+        onLayout();
     }
     public final void setPadding(FormMargin padding) {
         this.padding = padding;
+        onLayout();
     }
 
     public final void setElementAlignment(FormAlignment elementAlignment) {
         this.elementAlignment = elementAlignment;
+        onLayout();
     }
     public final void setTexture(BufferedImage texture) {
         this.texture = Optional.of(texture);
     }
     public final void setLayout(FormLayout layout) {
         this.layout = layout;
+        onLayout();
     }
 
     public final void addChild(FormElement child) {
         children.add(child);
         child.parent = Optional.of(this);
+        onLayout();
     }
 
     public List<FormElement> getChildren() {
         return children;
     }
+
+    public void onLayout() {
+        layout.onLayout(this, children);
+        for (FormElement child : children) {
+            child.onLayout();
+        }
+    }
+
 
     public void onRender(Graphics2D graphics) {
         if (!visible)

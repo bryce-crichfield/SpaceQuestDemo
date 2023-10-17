@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class HudItems extends FormGrid {
 
     public HudItems() {
-        super(25, 25, 150, 150, 5, 5);
+        super(25, 25, 150, 150, 4,4);
         setFill(new FormFill(Color.DARK_GRAY, 20));
         setBorder(new FormBorder());
         setElementAlignment(FormAlignment.CENTER);
@@ -23,8 +23,11 @@ public class HudItems extends FormGrid {
         Supplier<FormElement> label = () -> {
             FormElement labelElement = new FormElement(20, 20);
             labelElement.setFill(new FormFill(Color.WHITE, 15));
-            labelElement.getOnPrimary().listenWith(Null -> {
+            labelElement.getOnHover().listenWith(Null -> {
                 labelElement.setFill(new FormFill(Color.RED, 15));
+            });
+            labelElement.getOnUnhover().listenWith(Null -> {
+                labelElement.setFill(new FormFill(Color.WHITE, 15));
             });
             return labelElement;
         };
@@ -35,8 +38,7 @@ public class HudItems extends FormGrid {
             }
         }
 
-
-        getLayout().execute(this);
+        onLayout();
     }
 
 }

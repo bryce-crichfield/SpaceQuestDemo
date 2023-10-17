@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class FormMenu extends FormElement {
-    public final Event<FormElement> onCaretHighlight = new Event<>();
     private final List<FormElement> caretChildren = new ArrayList<>();
     private Integer index = 0;
 
@@ -28,6 +27,8 @@ public class FormMenu extends FormElement {
             return;
         }
 
+        Optional<FormElement> current = Util.optionalFromThrowable(() -> caretChildren.get(index));
+
         boolean changed = false;
         if (keycode == Keyboard.UP) {
             index--;
@@ -40,12 +41,16 @@ public class FormMenu extends FormElement {
         index = Util.wrap(index, 0, caretChildren.size());
 
         Optional<FormElement> highlighted = Util.optionalFromThrowable(() -> caretChildren.get(index));
+
+        if (changed && current.isPresent()) {
+            current.get().getOnUnhover().fire(null);
+        }
+
         if (changed && highlighted.isPresent()) {
-            onCaretHighlight.fire(highlighted.get());
+            highlighted.get().getOnHover().fire(null);
         }
 
         if (keycode == Keyboard.PRIMARY) {
-            // TODO: fire event
             Optional<FormElement> child = Optional.ofNullable(caretChildren.get(index));
             child.ifPresent(c -> c.getOnPrimary().fire(null));
         }

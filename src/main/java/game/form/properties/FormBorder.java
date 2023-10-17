@@ -9,13 +9,13 @@ import java.awt.*;
 @RequiredArgsConstructor
 public class FormBorder {
     @NonNull
-    private Color inlayColor;
+    private Color color;
     @NonNull
     private Color outlineColor;
     @NonNull
     private Integer rounding;
     @NonNull
-    private Integer thicknessInlay;
+    private Integer thickness;
     @NonNull
     private Integer thicknessOutline;
     @NonNull
@@ -38,11 +38,13 @@ public class FormBorder {
         graphics.setPaint(outlineColor);
         graphics.drawRoundRect(x, y, width, height, rounding, rounding);
 
-        graphics.setStroke(new BasicStroke(thicknessInlay, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        graphics.setPaint(inlayColor);
+        graphics.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.setPaint(color);
         graphics.drawRoundRect(x, y, width, height, rounding, rounding);
 
         graphics.setStroke(stroke);
         graphics.setPaint(paint);
     }
+
+
 }

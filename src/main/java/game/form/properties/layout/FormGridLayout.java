@@ -47,6 +47,12 @@ public class FormGridLayout implements FormLayout {
         for (int x = 0; x < colsCount; x++) {
             for (int y = 0; y < rowsCount; y++) {
                 index = x + y * colsCount;
+
+                boolean hasChild = index < children.size();
+                if (!hasChild) {
+                    break;
+                }
+
                 FormElement child = children.get(index);
                 child.setBounds(new FormBounds(offsetX, offsetY, childWidth, childHeight));
 

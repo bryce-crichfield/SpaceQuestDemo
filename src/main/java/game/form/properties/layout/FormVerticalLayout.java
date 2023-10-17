@@ -36,22 +36,13 @@ public class FormVerticalLayout implements FormLayout {
         int parentMarginTop = (int) parent.getMargin().getTop();
         int parentMarginBottom = (int) parent.getMargin().getBottom();
 
-        int offsetY = 0;
-        switch (layoutAlignment) {
-            case START -> {
-                offsetY = parentY + parentMarginTop;
-            }
-            case CENTER -> {
-                offsetY = parentY + parentHeight / 2 - totalChildrenHeight / 2;
-            }
-            case END -> {
-                offsetY = parentY + parentHeight - parentMarginBottom - totalChildrenHeight;
-            }
-        }
+        int offsetY = switch (layoutAlignment) {
+            case START -> parentY + parentMarginTop;
+            case CENTER -> parentY + parentHeight / 2 - totalChildrenHeight / 2;
+            case END -> parentY + parentHeight - parentMarginBottom - totalChildrenHeight;
+        };
 
         for (FormElement child : children) {
-            int childX = (int) child.getBounds().getX();
-            int childY = (int) child.getBounds().getY();
             int childWidth = (int) child.getBounds().getWidth();
             int childHeight = (int) child.getBounds().getHeight();
 
@@ -63,26 +54,16 @@ public class FormVerticalLayout implements FormLayout {
             int childTotalWidth = childWidth + childPaddingLeft + childPaddingRight;
             int childTotalHeight = childHeight + childPaddingTop + childPaddingBottom;
 
-            int offsetX = 0;
-            offsetY += childPaddingTop;
-
-            switch (parent.getElementAlignment()) {
-                case START -> {
-                    offsetX = parentX + parentMarginLeft + childPaddingLeft;
-                }
-                case CENTER -> {
-                    int parentCenterX = parentX + parentWidth / 2;
-                    int childCenterX = childX + childWidth / 2;
-                    offsetX = parentCenterX - childCenterX;
-                }
-                case END -> {
-                    offsetX = parentX + parentWidth - parentMarginRight - childTotalWidth;
-                }
-            }
+            int offsetX = switch (parent.getElementAlignment()) {
+                case START -> parentX + parentMarginLeft + childPaddingLeft + childPaddingTop;
+                case CENTER -> parentX + parentWidth / 2 - childTotalWidth / 2 + childPaddingLeft + childPaddingTop;
+                case END -> parentX + parentWidth - parentMarginRight - childTotalWidth + childPaddingLeft + childPaddingTop;
+            };
 
             FormBounds bounds = new FormBounds(offsetX, offsetY, childWidth, childHeight);
-            child.setBounds(bounds);
             offsetY += childTotalHeight + childPaddingBottom;
+
+            child.setBounds(bounds);
         }
     }
 }

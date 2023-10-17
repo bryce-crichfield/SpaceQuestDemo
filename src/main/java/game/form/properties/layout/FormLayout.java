@@ -12,19 +12,19 @@ public interface FormLayout {
         FormBounds bounds = element.getBounds();
 
         // Percentages should be between 0 and 1.
-        clampBoundsToZeroThroughOne(bounds);
+//        clampBoundsToZeroThroughOne(bounds);
 
         // The child's bounds are described in terms of percentages of the parent/screen's bounds.
         // Calculate the absolute bounds, or parent/screen coordinates, of the child.
-        attemptResizeInRelationToScreen(element, bounds);
-        attemptResizeInRelationToParent(element, bounds);
+//        attemptResizeInRelationToScreen(element, bounds);
+//        attemptResizeInRelationToParent(element, bounds);
 
         // Layout the children.
         onLayout(element, element.getChildren());
 
         // Layout the children's children.
         for (FormElement child : element.getChildren()) {
-            child.getLayout().execute(child);
+            child.getLayout().onLayout(child, child.getChildren());
         }
     }
 
@@ -42,13 +42,13 @@ public interface FormLayout {
             return;
         }
 
-        FormBounds parentBounds = element.getParent().get().getAbsoluteBounds();
+        FormBounds parentBounds = element.getParent().get().getBounds();
         FormBounds newAbsBounds = new FormBounds(0, 0, 0, 0);
         newAbsBounds.setX(parentBounds.getX() + parentBounds.getWidth() * bounds.getX());
         newAbsBounds.setY(parentBounds.getY() + parentBounds.getHeight() * bounds.getY());
         newAbsBounds.setWidth(parentBounds.getWidth() * bounds.getWidth());
         newAbsBounds.setHeight(parentBounds.getHeight() * bounds.getHeight());
-        element.setAbsoluteBounds(newAbsBounds);
+        element.setBounds(newAbsBounds);
     }
 
     private static void attemptResizeInRelationToScreen(FormElement element, FormBounds bounds) {
@@ -62,6 +62,6 @@ public interface FormLayout {
         newAbsBounds.setY(bounds.getY() * screenBounds.getHeight());
         newAbsBounds.setWidth(bounds.getWidth() * screenBounds.getWidth());
         newAbsBounds.setHeight(bounds.getHeight() * screenBounds.getHeight());
-        element.setAbsoluteBounds(newAbsBounds);
+        element.setBounds(newAbsBounds);
     }
 }

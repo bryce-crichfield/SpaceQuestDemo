@@ -7,6 +7,7 @@ import game.form.properties.layout.FormVerticalLayout;
 import lombok.Data;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,37 +16,38 @@ import java.util.Optional;
 public class FormElement {
     private final Event<Void> onPrimary = new Event<>();
     private final Event<Void> onSecondary = new Event<>();
-    private final List<FormElement> children;
-    private FormBounds absoluteBounds = new FormBounds(0, 0, 0, 0);
+    private final List<FormElement> children = new ArrayList<>();
     private FormText text = new FormText();
     private FormAlignment horizontalTextAlignment = FormAlignment.CENTER;
     private FormAlignment verticalTextAlignment = FormAlignment.CENTER;
     private FormBounds bounds = new FormBounds(0, 0, 0, 0);
     private FormMargin margin = new FormMargin(0, 0, 0, 0);
+    private FormMargin padding = new FormMargin(0, 0, 0, 0);
     private FormAlignment elementAlignment = FormAlignment.CENTER;
     private FormLayout layout = new FormVerticalLayout();
     private Boolean debug = false;
     private Boolean visible = true;
-    private Optional<FormElement> parent;
+    private Optional<FormElement> parent = Optional.empty();
     private Optional<FormFill> fill = Optional.empty();
     private Optional<FormBorder> border = Optional.empty();
+    private Optional<BufferedImage> texture = Optional.empty();
 
+    public FormElement() {
+    }
     public FormElement(int width, int height) {
-        this(new FormBounds(0, 0, width / 100f, height / 100f));
+        this(new FormBounds(0, 0, width, height));
     }
 
-    public FormElement(FormBounds percentBounds) {
-        this.bounds = percentBounds;
-        this.parent = Optional.empty();
-        this.children = new ArrayList<>();
+    public FormElement(FormBounds bounds) {
+        this.bounds = bounds;
     }
 
     public FormElement(int x, int y, int width, int height) {
-        this(new FormBounds(x / 100f, y / 100f, width / 100f, height / 100f));
+        this(new FormBounds(x, y, width, height));
     }
 
     public FormElement(String value) {
-        this();
+        this(0, 0, 0, 0);
         FormText formText = new FormText();
         formText.setValue(value);
         formText.setFill(Color.WHITE);
@@ -54,42 +56,41 @@ public class FormElement {
         this.setText(formText);
     }
 
-    public FormElement() {
-        this(new FormBounds(0, 0, 0, 0));
-    }
-
     public void setFill(FormFill fill) {
         this.fill = Optional.of(fill);
     }
 
     public void setBorder(FormBorder border) {
-        this.border = Optional.of(border);
+        if (border == null)
+            this.border = Optional.empty();
+        else
+            this.border = Optional.of(border);
     }
 
     public final void setBounds(FormBounds bounds) {
         this.bounds = bounds;
-//        layout.execute(this);
     }
 
     public final void setMargin(FormMargin margin) {
         this.margin = margin;
-//        layout.execute(this);
+    }
+    public final void setPadding(FormMargin padding) {
+        this.padding = padding;
     }
 
     public final void setElementAlignment(FormAlignment elementAlignment) {
         this.elementAlignment = elementAlignment;
-//        layout.execute(this);
     }
-
+    public final void setTexture(BufferedImage texture) {
+        this.texture = Optional.of(texture);
+    }
     public final void setLayout(FormLayout layout) {
         this.layout = layout;
-//        layout.execute(this);
     }
 
     public final void addChild(FormElement child) {
         children.add(child);
         child.parent = Optional.of(this);
-//        layout.execute(this);
     }
 
     public List<FormElement> getChildren() {
@@ -100,16 +101,24 @@ public class FormElement {
         if (!visible)
             return;
 
-        fill.ifPresent(fill -> fill.onRender(graphics, absoluteBounds));
-        border.ifPresent(border -> border.onRender(graphics, absoluteBounds));
+        fill.ifPresent(fill -> fill.onRender(graphics, bounds));
+        border.ifPresent(border -> border.onRender(graphics, bounds));
+        texture.ifPresent(image -> {
+            int x = (int) bounds.getX();
+            int y = (int) bounds.getY();
+            int width = (int) bounds.getWidth();
+            int height = (int) bounds.getHeight();
+
+            graphics.drawImage(image, x, y, width, height, null);
+        });
         children.forEach(child -> child.onRender(graphics));
 
         if (getDebug()) {
             graphics.setColor(Color.GREEN);
-            int x = (int) absoluteBounds.getX();
-            int y = (int) absoluteBounds.getY();
-            int width = (int) absoluteBounds.getWidth();
-            int height = (int) absoluteBounds.getHeight();
+            int x = (int) bounds.getX();
+            int y = (int) bounds.getY();
+            int width = (int) bounds.getWidth();
+            int height = (int) bounds.getHeight();
             Stroke oldStroke = graphics.getStroke();
             graphics.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
             graphics.drawRect(x, y, width, height);
@@ -120,19 +129,19 @@ public class FormElement {
         Rectangle textBounds = shape.getBounds();
         int textWidth = textBounds.width;
         int textHeight = textBounds.height;
-        int textX = (int) getAbsoluteBounds().getX();
-        int textY = (int) getAbsoluteBounds().getY();
+        int textX = (int) bounds.getX();
+        int textY = (int) bounds.getY();
 
         switch (horizontalTextAlignment) {
-            case CENTER -> textX += (int) (getAbsoluteBounds().getWidth() / 2) - (textWidth / 2);
-            case END -> textX += (int) getAbsoluteBounds().getWidth() - textWidth;
+            case CENTER -> textX += (int) (bounds.getWidth() / 2) - (textWidth / 2);
+            case END -> textX += (int) bounds.getWidth() - textWidth;
             default -> {
             }
         }
 
         switch (verticalTextAlignment) {
-            case CENTER -> textY += (int) (getAbsoluteBounds().getHeight() / 2) - (textHeight / 2) - textHeight / 4;
-            case END -> textY += (int) getAbsoluteBounds().getHeight() - textHeight - textHeight / 2;
+            case CENTER -> textY += (int) (bounds.getHeight() / 2) - (textHeight / 2) - textHeight / 4;
+            case END -> textY += (int) bounds.getHeight() - textHeight - textHeight / 2;
             default -> {
             }
         }

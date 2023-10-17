@@ -68,7 +68,7 @@ public class FormMenu extends FormElement {
             return;
         }
 
-        FormBounds bounds = child.get().getAbsoluteBounds();
+        FormBounds bounds = child.get().getBounds();
         graphics.setColor(Color.WHITE);
 
         int caretSize = 10;

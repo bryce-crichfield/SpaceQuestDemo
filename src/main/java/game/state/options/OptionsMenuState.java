@@ -49,10 +49,10 @@ public class OptionsMenuState extends GameState {
 
     @NotNull
     private Paint getPaint(FormElement element) {
-        int menuX = (int) element.getAbsoluteBounds().getX();
-        int menuWidth = (int) element.getAbsoluteBounds().getWidth();
-        int menuY = (int) element.getAbsoluteBounds().getY();
-        int menuHeight = (int) element.getAbsoluteBounds().getHeight();
+        int menuX = (int) element.getBounds().getX();
+        int menuWidth = (int) element.getBounds().getWidth();
+        int menuY = (int) element.getBounds().getY();
+        int menuHeight = (int) element.getBounds().getHeight();
 
         Paint paint = new GradientPaint(menuX, menuY, Color.BLACK, menuX + menuWidth, menuY + menuHeight,
                                         Color.DARK_GRAY

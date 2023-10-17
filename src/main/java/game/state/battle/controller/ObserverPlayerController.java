@@ -53,8 +53,8 @@ public class ObserverPlayerController extends PlayerController {
         on(CursorMoved.event).run(this::onCursorMoved);
         on(getBattleState().getOnGuiRender()).run(hoveredActorStats::onRender);
 
-        getBattleState().getCursor().setPosition(3, 0);
-        Keyboard.keyPressed.fire(Keyboard.PRIMARY);
+//        getBattleState().getCursor().setPosition(3, 0);
+//        Keyboard.keyPressed.fire(Keyboard.PRIMARY);
     }
 
     private void onCursorMoved(Cursor cursor) {

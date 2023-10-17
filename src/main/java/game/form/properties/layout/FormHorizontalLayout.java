@@ -1,64 +1,91 @@
 package game.form.properties.layout;
 
 import game.form.element.FormElement;
+import game.form.properties.FormAlignment;
 import game.form.properties.FormBounds;
 
 import java.util.List;
 
 public class FormHorizontalLayout implements FormLayout {
+    FormAlignment layoutAlignment;
+
+    public FormHorizontalLayout() {
+        this.layoutAlignment = FormAlignment.START;
+    }
+
+    public FormHorizontalLayout(FormAlignment layoutAlignment) {
+        this.layoutAlignment = layoutAlignment;
+    }
+
     @Override
     public void onLayout(FormElement parent, List<FormElement> children) {
-        float[] total = new float[2];
+        int totalChildrenWidth = 0;
         for (FormElement child : children) {
-            total[0] += child.getBounds().getWidth();
-            total[0] += child.getMargin().getLeft();
-            total[0] += child.getMargin().getRight();
-
-            total[1] += child.getBounds().getHeight();
-            total[1] += child.getMargin().getTop();
-            total[1] += child.getMargin().getBottom();
+            int childWidth = (int) child.getBounds().getWidth();
+            int childPaddingLeft = (int) child.getPadding().getLeft();
+            int childPaddingRight = (int) child.getPadding().getRight();
+            totalChildrenWidth += childWidth + childPaddingLeft + childPaddingRight;
         }
-        float totalFractionalWidth = total[0];
-        float totalFractionalHeight = total[1];
 
-        float offsetFractionalX = 0;
+        int parentX = (int) parent.getBounds().getX();
+        int parentY = (int) parent.getBounds().getY();
+        int parentWidth = (int) parent.getBounds().getWidth();
+        int parentHeight = (int) parent.getBounds().getHeight();
+
+        int parentMarginLeft = (int) parent.getMargin().getLeft();
+        int parentMarginRight = (int) parent.getMargin().getRight();
+        int parentMarginTop = (int) parent.getMargin().getTop();
+        int parentMarginBottom = (int) parent.getMargin().getBottom();
+
+        int offsetX = 0;
+        switch (layoutAlignment) {
+            case START -> {
+                offsetX = parentX + parentMarginLeft;
+            }
+            case CENTER -> {
+                int parentCenterX = parentX + parentWidth / 2;
+                offsetX = parentCenterX - totalChildrenWidth / 2;
+            }
+            case END -> {
+                offsetX = parentX + parentWidth - parentMarginRight - totalChildrenWidth;
+            }
+        }
 
         for (FormElement child : children) {
-            float currentFractionalWidth = child.getBounds().getWidth();
-            currentFractionalWidth += child.getMargin().getLeft();
-            currentFractionalWidth += child.getMargin().getRight();
+            int childX = (int) child.getBounds().getX();
+            int childY = (int) child.getBounds().getY();
+            int childWidth = (int) child.getBounds().getWidth();
+            int childHeight = (int) child.getBounds().getHeight();
 
-            float offsetFractionalY = 0;
-            float currentFractionalHeight = child.getBounds().getHeight();
-            float newFractionalHeight = 0;
-            switch (child.getElementAlignment()) {
+            int childPaddingTop = (int) child.getPadding().getTop();
+            int childPaddingBottom = (int) child.getPadding().getBottom();
+            int childPaddingLeft = (int) child.getPadding().getLeft();
+            int childPaddingRight = (int) child.getPadding().getRight();
+
+            int childTotalWidth = childWidth + childPaddingLeft + childPaddingRight;
+            int childTotalHeight = childHeight + childPaddingTop + childPaddingBottom;
+
+            int offsetY = 0;
+            offsetX += childPaddingLeft;
+
+            switch (parent.getElementAlignment()) {
                 case START -> {
-                    newFractionalHeight = currentFractionalHeight - child.getMargin().getBottom() - child.getMargin().getTop();
-                    offsetFractionalY = child.getMargin().getTop();
+                    offsetY = parentY + parentMarginTop + childPaddingTop;
                 }
                 case CENTER -> {
-                    newFractionalHeight = currentFractionalHeight - child.getMargin().getTop() - child.getMargin().getBottom();
-                    offsetFractionalY = 0.5f - (newFractionalHeight / 2f);
+                    int parentCenterY = parentY + parentHeight / 2;
+                    int childCenterY = childY + childHeight / 2;
+                    offsetY = parentCenterY - childCenterY;
                 }
                 case END -> {
-                    newFractionalHeight = currentFractionalHeight - child.getMargin().getTop() - child.getMargin().getBottom();
-                    offsetFractionalY = 1 - newFractionalHeight - child.getMargin().getBottom();
-                }
-                default -> {
-                    throw new IllegalStateException("Unexpected value: " + child.getElementAlignment());
+                    offsetY = parentY + parentHeight - parentMarginBottom - childTotalHeight;
                 }
             }
 
-            float newFractionalWidth = currentFractionalWidth / totalFractionalWidth;
-            FormBounds newBounds = child.getBounds().copy();
-            newBounds.setY(offsetFractionalY);
-            newBounds.setX(offsetFractionalX);
-            newBounds.setHeight(newFractionalHeight);
-            newBounds.setWidth(newFractionalWidth);
+            FormBounds bounds = new FormBounds(offsetX, offsetY, childWidth, childHeight);
+            child.setBounds(bounds);
 
-            child.setBounds(newBounds);
-
-            offsetFractionalX += newFractionalWidth;
+            offsetX += childTotalWidth + childPaddingRight;
         }
 
     }

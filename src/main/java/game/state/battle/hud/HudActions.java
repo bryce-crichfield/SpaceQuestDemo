@@ -6,6 +6,7 @@ import game.form.properties.*;
 import game.form.properties.layout.FormVerticalLayout;
 import game.state.battle.controller.ObserverPlayerController;
 import game.state.battle.controller.SelectAttackPlayerController;
+import game.state.battle.controller.SelectItemPlayerController;
 import game.state.battle.controller.SelectMovePlayerController;
 import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ControllerTransition;
@@ -65,6 +66,14 @@ public class HudActions extends FormMenu {
         addCaretChild(move);
 
         FormElement item = createMenuOption(textPadding + "Item", () -> {
+            ControllerTransition.defer.fire((state) -> {
+                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
+                if (selected.isEmpty()) {
+                    throw new RuntimeException("Invalid state, no actor selected");
+                }
+
+                return new SelectItemPlayerController(state, selected.get());
+            });
         });
         addCaretChild(item);
 

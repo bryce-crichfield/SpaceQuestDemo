@@ -10,9 +10,9 @@ public class FormMargin {
     private float left;
 
     public FormMargin(int top, int right, int bottom, int left) {
-        this.top = top / 100f;
-        this.right = right / 100f;
-        this.bottom = bottom / 100f;
-        this.left = left / 100f;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+        this.left = left;
     }
 }

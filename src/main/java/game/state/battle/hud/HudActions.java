@@ -26,7 +26,7 @@ public class HudActions extends FormMenu {
         setFill(new FormFill(Color.BLACK, 25));
         setLayout(new FormVerticalLayout());
 
-        FormElement title = new FormElement(100, 15);
+        FormElement title = new FormElement(100, 30);
         FormText text = new FormText();
         text.setValue("Actions");
         text.setSize(22);
@@ -85,7 +85,7 @@ public class HudActions extends FormMenu {
     }
 
     private FormElement createMenuOption(String text, Runnable action) {
-        FormElement option = new FormElement(100, 10);
+        FormElement option = new FormElement(100, 20);
 
         FormText formText = new FormText();
         formText.setValue(text);

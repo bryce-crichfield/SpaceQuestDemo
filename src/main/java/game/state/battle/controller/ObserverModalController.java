@@ -20,10 +20,21 @@ public class ObserverModalController extends ModalController {
         onChangeHovered = new Event<>();
         hoveredActorStats = new HudStats(55, 5, 30, 25, onChangeHovered);
         hoveredActorStats.setVisible(false);
+
+
     }
 
     @Override
     public void onEnter() {
+
+        int cx = getBattleState().getCursor().getCursorX();
+        int cy = getBattleState().getCursor().getCursorY();
+        Optional<Actor> hov = getBattleState().getWorld().getActorByPosition(cx, cy);
+        hov.ifPresent(actor -> {
+            onChangeHovered.fire(actor);
+            hoveredActorStats.setVisible(true);
+        });
+
         getBattleState().getCursor().enterBlinkingMode();
         getBattleState().getCursor().setColor(Color.WHITE);
 

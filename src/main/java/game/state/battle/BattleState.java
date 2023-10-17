@@ -3,16 +3,14 @@ package game.state.battle;
 import game.Game;
 import game.state.GameState;
 import game.state.battle.event.*;
-import game.state.battle.controller.ModalController;
-import game.state.battle.controller.ObserverModalController;
-import game.state.battle.hud.Hud;
+import game.state.battle.controller.PlayerController;
+import game.state.battle.controller.ObserverPlayerController;
 import game.state.battle.util.Cursor;
 import game.state.battle.model.actor.Actor;
 import game.state.battle.model.world.World;
 import game.state.battle.util.Selector;
 import game.state.title.StarBackground;
 import game.util.Camera;
-import game.event.Event;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -25,7 +23,7 @@ public class BattleState extends GameState {
     private final World world;
     private final Cursor cursor;
     private final Selector selector;
-    private ModalController mode;
+    private PlayerController mode;
 
     public BattleState(Game game) {
         super(game);
@@ -35,7 +33,7 @@ public class BattleState extends GameState {
         cursor = new Cursor(camera, game, world);
         selector = new Selector(world);
 
-        ControllerTransition.defer.fire(state -> new ObserverModalController(state));
+        ControllerTransition.defer.fire(state -> new ObserverPlayerController(state));
         forceModeChange();
 
         for (Actor actor : world.getActors()) {
@@ -55,7 +53,7 @@ public class BattleState extends GameState {
 
     private void forceModeChange() {
         ControllerTransition.defer.flush(event -> {
-            ModalController newMode = event.apply(this);
+            PlayerController newMode = event.apply(this);
             if (mode != null)
                 mode.onExit();
             mode = newMode;

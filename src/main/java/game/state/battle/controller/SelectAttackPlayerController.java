@@ -17,21 +17,15 @@ import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
-public class SelectAttackModalController extends ModalController {
+public class SelectAttackPlayerController extends PlayerController {
     Raycast raycast;
-    Actor actor;
+    Actor selectedActor;
     private final game.event.Event<Actor> onChangeHovered;
     private final HudStats hoveredActorStats;
 
-    public SelectAttackModalController(BattleState battleState) {
+    public SelectAttackPlayerController(BattleState battleState, Actor selectedActor) {
         super(battleState);
-
-        Optional<Actor> selectedActor = getBattleState().getSelector().getCurrentlySelectedActor();
-        if (selectedActor.isEmpty()) {
-            throw new IllegalStateException("Attempting to enter SelectAttackController without a selected actor");
-        }
-
-        this.actor = selectedActor.get();
+        this.selectedActor = selectedActor;
 
         onChangeHovered = new Event<>();
         hoveredActorStats = new HudStats(55, 5, 30, 25, onChangeHovered);
@@ -44,57 +38,33 @@ public class SelectAttackModalController extends ModalController {
         getBattleState().getCursor().setColor(Color.RED);
 
         on(CursorMoved.event).run(this::onCursorMoved);
+
         on(Keyboard.keyPressed).run(this::onKeyPressed);
         on(Keyboard.keyPressed).run(getBattleState().getCursor()::onKeyPressed);
-        on(Keyboard.keyPressed).run(keyCode -> {
-            if (keyCode == Keyboard.SECONDARY) {
-                var actor = getBattleState().getSelector().getCurrentlySelectedActor();
-                if (actor.isEmpty()) {
-                    throw new IllegalStateException("No actor selected in the select action mode");
-                }
-                ControllerTransition.defer.fire(state -> new SelectActionModalController(state, actor.get()));
-            }
-        });
 
         on(getBattleState().getOnWorldRender()).run(this::onRender);
-
-        on(CursorMoved.event).run(cursor -> {
-            int cursorX = cursor.getCursorX();
-            int cursorY = cursor.getCursorY();
-
-            Optional<Actor> actor = getBattleState().getWorld().getActorByPosition(cursorX, cursorY);
-            if (actor.isEmpty()) {
-                hoveredActorStats.setVisible(false);
-            }
-
-            if (actor.isPresent()) {
-
-                if (actor.get() == this.actor) {
-                    hoveredActorStats.setVisible(false);
-                    return;
-                }
-
-                Actor hovered = actor.get();
-                hoveredActorStats.setVisible(true);
-                onChangeHovered.fire(hovered);
-            }
-        });
-
         on(getBattleState().getOnGuiRender()).run(hoveredActorStats::onRender);
-
     }
 
     public void onKeyPressed(Integer keyCode) {
         if (keyCode == Keyboard.PRIMARY) {
             getBattleState().getGame().getAudio().play("select.wav");
-            getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
-            ActionActorAttack.event.fire(new ActionActorAttack(actor, raycast.getTiles()));
+            getBattleState().getCursor().setPosition((int) selectedActor.getX(), (int) selectedActor.getY());
+            ActionActorAttack.event.fire(new ActionActorAttack(selectedActor, raycast.getTiles()));
 
             // The actor has issued its attack, it is now waiting.
-            actor.setWaiting(true);
-            ActorUnselected.event.fire(actor);
+            selectedActor.setWaiting(true);
+            ActorUnselected.event.fire(selectedActor);
             getBattleState().getSelector().deselectActor();
-            ControllerTransition.defer.fire(ObserverModalController::new);
+            ControllerTransition.defer.fire(ObserverPlayerController::new);
+        }
+
+        if (keyCode == Keyboard.SECONDARY) {
+            var actor = getBattleState().getSelector().getCurrentlySelectedActor();
+            if (actor.isEmpty()) {
+                throw new IllegalStateException("No actor selected in the select action mode");
+            }
+            ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, actor.get()));
         }
     }
 
@@ -108,8 +78,8 @@ public class SelectAttackModalController extends ModalController {
 
         Tile.drawOutline(possiblePath, graphics, Color.RED);
 
-        List<Tile> inRange = getBattleState().getWorld().getTilesInRange((int) actor.getX(), (int) actor.getY(),
-                                                                         actor.getAttackDistance()
+        List<Tile> inRange = getBattleState().getWorld().getTilesInRange((int) selectedActor.getX(), (int) selectedActor.getY(),
+                                                                         selectedActor.getAttackDistance()
         );
 
         Composite originalComposite = graphics.getComposite();
@@ -126,6 +96,23 @@ public class SelectAttackModalController extends ModalController {
     private void onCursorMoved(Cursor cursor) {
         int cursorX = cursor.getCursorX();
         int cursorY = cursor.getCursorY();
-        raycast = getBattleState().getWorld().raycast((int) actor.getX(), (int) actor.getY(), cursorX, cursorY);
+        raycast = getBattleState().getWorld().raycast((int) selectedActor.getX(), (int) selectedActor.getY(), cursorX, cursorY);
+
+        Optional<Actor> actor = getBattleState().getWorld().getActorByPosition(cursorX, cursorY);
+        if (actor.isEmpty()) {
+            hoveredActorStats.setVisible(false);
+        }
+
+        if (actor.isPresent()) {
+
+            if (actor.get() == this.selectedActor) {
+                hoveredActorStats.setVisible(false);
+                return;
+            }
+
+            Actor hovered = actor.get();
+            hoveredActorStats.setVisible(true);
+            onChangeHovered.fire(hovered);
+        }
     }
 }

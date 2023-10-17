@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SelectMoveModalController extends ModalController {
+public class SelectMovePlayerController extends PlayerController {
     private final World world;
     private final Actor selectedActor;
     private int cursorX = 0;
@@ -27,7 +27,7 @@ public class SelectMoveModalController extends ModalController {
     Event<Actor> onChangeHovered = new Event<>();
 
 
-    public SelectMoveModalController(BattleState battleState, Actor selected) {
+    public SelectMovePlayerController(BattleState battleState, Actor selected) {
         super(battleState);
 
         this.world = battleState.getWorld();
@@ -51,7 +51,6 @@ public class SelectMoveModalController extends ModalController {
         getBattleState().getCursor().setColor(Color.ORANGE);
 
 
-        on(getBattleState().getOnWorldRender()).run(this::onRender);
 
         on(CursorMoved.event).run(this::onCursorMoved);
         on(CursorMoved.event).run(getBattleState().getSelector()::onCursorMoved);
@@ -67,7 +66,7 @@ public class SelectMoveModalController extends ModalController {
                 if (actor.isEmpty()) {
                     throw new IllegalStateException("No actor selected in the select action mode");
                 }
-                ControllerTransition.defer.fire(state -> new SelectActionModalController(state, actor.get()));
+                ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, actor.get()));
             }
         });
 
@@ -76,35 +75,14 @@ public class SelectMoveModalController extends ModalController {
             selectedActor.setWaiting(true);
             ActorUnselected.event.fire(selectedActor);
             getBattleState().getSelector().deselectActor();
-            ControllerTransition.defer.fire(ObserverModalController::new);
+            ControllerTransition.defer.fire(ObserverPlayerController::new);
         });
 
         on(ActorSelectionSwap.event).run(actor -> {
-            ControllerTransition.defer.fire(state -> new SelectActionModalController(state, actor));
+            ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, actor));
         });
 
-        on(CursorMoved.event).run(cursor -> {
-           int cursorX = cursor.getCursorX();
-              int cursorY = cursor.getCursorY();
-
-            Optional<Actor> actor = world.getActorByPosition(cursorX, cursorY);
-            if (actor.isEmpty()) {
-                hoveredActorStats.setVisible(false);
-            }
-
-            if (actor.isPresent()) {
-
-                if (actor.get().equals(selectedActor)) {
-                    hoveredActorStats.setVisible(false);
-                    return;
-                }
-
-                Actor hovered = actor.get();
-                hoveredActorStats.setVisible(true);
-                onChangeHovered.fire(hovered);
-            }
-        });
-
+        on(getBattleState().getOnWorldRender()).run(this::onRender);
         on(getBattleState().getOnGuiRender()).run(selectedActorStats::onRender);
         on(getBattleState().getOnGuiRender()).run(hoveredActorStats::onRender);
     }
@@ -113,16 +91,27 @@ public class SelectMoveModalController extends ModalController {
         cursorX = cursor.getCursorX();
         cursorY = cursor.getCursorY();
 
-        boolean hoveringOnEmptyTile = world.getActorByPosition(cursorX, cursorY).isEmpty();
-        if (!hoveringOnEmptyTile) {
-            possiblePath = new ArrayList<>();
-            return;
-        }
+        Optional<Actor> hoveredActor = world.getActorByPosition(cursorX, cursorY);
+        boolean hoveringOnEmptyTile = hoveredActor.isEmpty();
+        if (hoveringOnEmptyTile) {
+            Pathfinder pathfinder = new Pathfinder(world, selectedActor);
+            Tile start = world.getTile((int) selectedActor.getX(), (int) selectedActor.getY());
+            Tile end = world.getTile(cursorX, cursorY);
+            possiblePath = pathfinder.find(start, end);
 
-        Pathfinder pathfinder = new Pathfinder(world, selectedActor);
-        Tile start = world.getTile((int) selectedActor.getX(), (int) selectedActor.getY());
-        Tile end = world.getTile(cursorX, cursorY);
-        possiblePath = pathfinder.find(start, end);
+            hoveredActorStats.setVisible(false);
+        } else {
+            possiblePath = new ArrayList<>();
+
+            if (hoveredActor.get().equals(selectedActor)) {
+                hoveredActorStats.setVisible(false);
+                return;
+            }
+
+            Actor hovered = hoveredActor.get();
+            hoveredActorStats.setVisible(true);
+            onChangeHovered.fire(hovered);
+        }
     }
 
     private void onKeyPressed(Integer keyCode) {

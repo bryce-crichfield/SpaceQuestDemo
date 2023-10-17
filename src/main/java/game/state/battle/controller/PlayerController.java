@@ -3,10 +3,10 @@ package game.state.battle.controller;
 import game.event.SubscriptionManager;
 import game.state.battle.BattleState;
 
-public abstract class ModalController extends SubscriptionManager {
+public abstract class PlayerController extends SubscriptionManager {
     private final BattleState battleState;
 
-    protected ModalController(BattleState battleState) {
+    protected PlayerController(BattleState battleState) {
         this.battleState = battleState;
     }
 

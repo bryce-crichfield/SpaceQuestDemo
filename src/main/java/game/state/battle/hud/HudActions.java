@@ -4,10 +4,9 @@ import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.*;
 import game.form.properties.layout.FormVerticalLayout;
-import game.state.battle.controller.ObserverModalController;
-import game.state.battle.controller.SelectAttackModalController;
-import game.state.battle.controller.SelectMoveModalController;
-import game.state.battle.event.ActorDamaged;
+import game.state.battle.controller.ObserverPlayerController;
+import game.state.battle.controller.SelectAttackPlayerController;
+import game.state.battle.controller.SelectMovePlayerController;
 import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.actor.Actor;
@@ -42,7 +41,7 @@ public class HudActions extends FormMenu {
                 if (selected.isEmpty()) {
                     throw new RuntimeException("Invalid state, no actor selected");
                 }
-                return new SelectAttackModalController(state);
+                return new SelectAttackPlayerController(state, selected.get());
             });
         });
 
@@ -54,7 +53,7 @@ public class HudActions extends FormMenu {
                 if (selected.isEmpty()) {
                     throw new RuntimeException("Invalid state, no actor selected");
                 }
-                return new SelectMoveModalController(state, selected.get());
+                return new SelectMovePlayerController(state, selected.get());
             });
         });
         addCaretChild(move);
@@ -74,7 +73,7 @@ public class HudActions extends FormMenu {
                 actor.setWaiting(true);
                 ActorUnselected.event.fire(actor);
                 state.getSelector().deselectActor();
-                return new ObserverModalController(state);
+                return new ObserverPlayerController(state);
             });
         });
         addCaretChild(wait);

@@ -67,8 +67,8 @@ public class ActorAnimation {
             }
         }
 
-        animationX = Util.easeIn(animationTargetX, animationX, animationPeriod, animationAccumulator);
-        animationY = Util.easeIn(animationTargetY, animationY, animationPeriod, animationAccumulator);
+        animationX = Util.easeIn(animationX, animationTargetX, animationPeriod, animationAccumulator);
+        animationY = Util.easeIn(animationY, animationTargetY, animationPeriod, animationAccumulator);
 
         if (Math.abs(animationTargetX - animationX) < 0.1) {
             animationX = animationTargetX;

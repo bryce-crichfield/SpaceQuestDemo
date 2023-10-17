@@ -26,7 +26,6 @@ public class ObserverModalController extends ModalController {
 
     @Override
     public void onEnter() {
-
         int cx = getBattleState().getCursor().getCursorX();
         int cy = getBattleState().getCursor().getCursorY();
         Optional<Actor> hov = getBattleState().getWorld().getActorByPosition(cx, cy);

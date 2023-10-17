@@ -41,10 +41,8 @@ public class OptionsMenuState extends GameState {
         menu.addChild(soundVolume);
         menu.onLayout();
 
-        FormFill formFill = new FormFill();
-        formFill.setPaint(getPaint(menu));
-        formFill.setRoundness(25);
-        menu.setFill(formFill);
+        menu.setRounding(25);
+        menu.setFillPaint(getPaint(menu));
     }
 
     @NotNull

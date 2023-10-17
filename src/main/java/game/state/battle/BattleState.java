@@ -1,13 +1,6 @@
 package game.state.battle;
 
 import game.Game;
-import game.form.element.FormElement;
-import game.form.element.FormGrid;
-import game.form.properties.FormAlignment;
-import game.form.properties.FormBorder;
-import game.form.properties.FormFill;
-import game.form.properties.FormMargin;
-import game.io.Keyboard;
 import game.state.GameState;
 import game.state.battle.event.*;
 import game.state.battle.controller.PlayerController;

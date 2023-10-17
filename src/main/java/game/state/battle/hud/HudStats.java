@@ -22,12 +22,10 @@ public class HudStats extends FormElement {
 
         this.onActorChanged = onActorChanged;
 
-        FormFill fill = new FormFill();
         Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
         Paint gradient = new GradientPaint(0, 0, barelyBlack, 0, 400, Color.BLACK);
-        fill.setPaint(gradient);
-        fill.setRoundness(25);
-        setFill(fill);
+        setRounding(25);
+        setFillPaint(gradient);
 
         FormBorder border = new FormBorder();
         setBorder(border);

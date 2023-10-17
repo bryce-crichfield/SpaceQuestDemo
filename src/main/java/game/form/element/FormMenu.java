@@ -19,7 +19,7 @@ public class FormMenu extends FormElement {
         super(x, y, width, height);
         this.setLayout(new FormVerticalLayout());
         this.setBorder(new FormBorder());
-        this.setFill(new FormFill());
+        this.setFillPaint(Color.BLACK);
     }
 
     public void onKeyPressed(Integer keycode) {
@@ -53,6 +53,12 @@ public class FormMenu extends FormElement {
         if (keycode == Keyboard.PRIMARY) {
             Optional<FormElement> child = Optional.ofNullable(caretChildren.get(index));
             child.ifPresent(c -> c.getOnPrimary().fire(null));
+        } else if (keycode == Keyboard.SECONDARY) {
+            Optional<FormElement> child = Optional.ofNullable(caretChildren.get(index));
+            child.ifPresent(c -> c.getOnSecondary().fire(null));
+        } else {
+            Optional<FormElement> child = Optional.ofNullable(caretChildren.get(index));
+            child.ifPresent(c -> c.getOnKeyPressed().fire(keycode));
         }
     }
 

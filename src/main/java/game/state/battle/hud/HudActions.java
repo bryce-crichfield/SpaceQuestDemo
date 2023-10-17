@@ -25,7 +25,8 @@ public class HudActions extends FormMenu {
 
         Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
         Paint gradient = new GradientPaint(0, 200, barelyBlack, 0, 400, Color.BLACK);
-        setFill(new FormFill(gradient, 25));
+        setFillPaint(gradient);
+        setRounding(25);
         setLayout(new FormVerticalLayout());
 
         FormElement title = new FormElement(100, 30);
@@ -115,7 +116,7 @@ public class HudActions extends FormMenu {
         hoverText.setFill(Color.RED);
         option.getOnHover().listenWith((e) -> option.setText(hoverText));
         option.getOnUnhover().listenWith((e) -> option.setText(defaultText));
-        
+
         option.setHorizontalTextAlignment(FormAlignment.START);
         option.getOnPrimary().listenWith((e) -> action.run());
 

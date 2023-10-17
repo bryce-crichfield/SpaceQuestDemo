@@ -4,7 +4,6 @@ import game.form.element.FormElement;
 import game.form.element.FormGrid;
 import game.form.properties.FormAlignment;
 import game.form.properties.FormBorder;
-import game.form.properties.FormFill;
 import game.form.properties.FormMargin;
 
 import java.awt.*;
@@ -14,7 +13,8 @@ public class HudItems extends FormGrid {
 
     public HudItems() {
         super(25, 25, 150, 150, 4,4);
-        setFill(new FormFill(Color.DARK_GRAY, 20));
+        setFillPaint(Color.DARK_GRAY);
+        setRounding(20);
         setBorder(new FormBorder());
         setElementAlignment(FormAlignment.CENTER);
         setMargin(new FormMargin(5, 5, 5, 5));
@@ -22,12 +22,15 @@ public class HudItems extends FormGrid {
 
         Supplier<FormElement> label = () -> {
             FormElement labelElement = new FormElement(20, 20);
-            labelElement.setFill(new FormFill(Color.WHITE, 15));
+            labelElement.setFillPaint(Color.WHITE);
+            labelElement.setRounding(10);
             labelElement.getOnHover().listenWith(Null -> {
-                labelElement.setFill(new FormFill(Color.RED, 15));
+                labelElement.setFillPaint(Color.RED);
+                labelElement.setRounding(10);
             });
             labelElement.getOnUnhover().listenWith(Null -> {
-                labelElement.setFill(new FormFill(Color.WHITE, 15));
+                labelElement.setFillPaint(Color.WHITE);
+                labelElement.setRounding(10);
             });
             return labelElement;
         };

@@ -4,7 +4,6 @@ import game.Game;
 import game.form.element.FormElement;
 import game.form.element.FormGrid;
 import game.form.properties.FormBounds;
-import game.form.properties.FormFill;
 import game.form.properties.layout.FormGridLayout;
 
 import java.awt.*;

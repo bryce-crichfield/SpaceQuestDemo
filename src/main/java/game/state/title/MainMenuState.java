@@ -4,6 +4,7 @@ import game.Game;
 import game.form.element.FormElement;
 import game.form.element.FormGrid;
 import game.form.element.FormMenu;
+import game.form.element.FormSlider;
 import game.form.properties.*;
 import game.form.properties.layout.FormGridLayout;
 import game.form.properties.layout.FormHorizontalLayout;
@@ -38,7 +39,8 @@ public class MainMenuState extends GameState {
         menu = new FormMenu(menuX, menuY, menuWidth, menuHeight);
         menu.setLayout(new FormVerticalLayout());
         menu.setMargin(new FormMargin(10, 10, 10, 10));
-        menu.setFill(new FormFill(Color.BLACK, 20));
+        menu.setFillPaint(Color.BLACK);
+        menu.setRounding(20);
 
         BiFunction<String, Runnable, FormElement> option = (name, onPrimary) -> {
             FormElement element = new FormElement(100, 20);
@@ -72,6 +74,10 @@ public class MainMenuState extends GameState {
         menu.addCaretChild(option.apply("Exit", () -> {
             System.exit(0);
         }));
+
+        FormSlider formSlider = new FormSlider(0, 100, 50, 1);
+        formSlider.setSize(100, 20);
+        menu.addCaretChild(formSlider);
     }
 
     @Override

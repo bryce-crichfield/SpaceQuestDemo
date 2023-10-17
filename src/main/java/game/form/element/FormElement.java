@@ -16,6 +16,7 @@ import java.util.Optional;
 public class FormElement {
     private final Event<Void> onPrimary = new Event<>();
     private final Event<Void> onSecondary = new Event<>();
+    private final Event<Integer> onKeyPressed = new Event<>();
     private final Event<Void> onHover = new Event<>();
     private final Event<Void> onUnhover = new Event<>();
     private final List<FormElement> children = new ArrayList<>();
@@ -29,8 +30,11 @@ public class FormElement {
     private FormLayout layout = new FormVerticalLayout();
     private Boolean debug = false;
     private Boolean visible = true;
+    private int rounding = 0;
     private Optional<FormElement> parent = Optional.empty();
-    private Optional<FormFill> fill = Optional.empty();
+
+    private FormBounds fillArea = new FormBounds(0, 0, 1, 1);
+    private Paint fillPaint = new Color(0, 0, 0, 0);
     private Optional<FormBorder> border = Optional.empty();
     private Optional<BufferedImage> texture = Optional.empty();
 
@@ -57,11 +61,6 @@ public class FormElement {
 
         this.setText(formText);
     }
-
-    public void setFill(FormFill fill) {
-        this.fill = Optional.of(fill);
-    }
-
     public void setBorder(FormBorder border) {
         if (border == null)
             this.border = Optional.empty();
@@ -73,6 +72,33 @@ public class FormElement {
         this.bounds = bounds;
         onLayout();
     }
+
+    public final void setX(int x) {
+        this.bounds.setX(x);
+        onLayout();
+    }
+
+    public final void setY(int y) {
+        this.bounds.setY(y);
+        onLayout();
+    }
+
+    public final void setWidth(int width) {
+        this.bounds.setWidth(width);
+        onLayout();
+    }
+
+    public final void setHeight(int height) {
+        this.bounds.setHeight(height);
+        onLayout();
+    }
+
+    public final void setSize(int width, int height) {
+        this.bounds.setWidth(width);
+        this.bounds.setHeight(height);
+        onLayout();
+    }
+
 
     public final void setMargin(FormMargin margin) {
         this.margin = margin;
@@ -117,8 +143,14 @@ public class FormElement {
         if (!visible)
             return;
 
-        fill.ifPresent(fill -> fill.onRender(graphics, bounds));
-        border.ifPresent(border -> border.onRender(graphics, bounds));
+        graphics.setPaint(fillPaint);
+        int fillX = (int) (bounds.getX() + bounds.getWidth() * fillArea.getX());
+        int fillY = (int) (bounds.getY() + bounds.getHeight() * fillArea.getY());
+        int fillWidth = (int) (bounds.getWidth() * fillArea.getWidth());
+        int fillHeight = (int) (bounds.getHeight() * fillArea.getHeight());
+        graphics.fillRoundRect(fillX, fillY, fillWidth, fillHeight, rounding, rounding);
+
+        border.ifPresent(border -> border.onRender(graphics, bounds, rounding));
         texture.ifPresent(image -> {
             int x = (int) bounds.getX();
             int y = (int) bounds.getY();

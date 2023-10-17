@@ -28,7 +28,7 @@ public class SelectActionModalController extends ModalController {
         hudStats.setVisible(true);
         onChange.fire(selected);
 
-        hudActions = new HudActions(55, 55, 25, 25, onChange);
+        hudActions = new HudActions(5, 65, 30, 30, onChange);
         hudActions.setVisible(true);
     }
 

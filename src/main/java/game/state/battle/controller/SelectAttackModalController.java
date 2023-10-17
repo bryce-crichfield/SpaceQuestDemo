@@ -4,6 +4,7 @@ import game.event.Event;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActionActorAttack;
+import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.CursorMoved;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.hud.HudStats;
@@ -88,6 +89,11 @@ public class SelectAttackModalController extends ModalController {
             getBattleState().getGame().getAudio().play("select.wav");
             getBattleState().getCursor().setPosition((int) actor.getX(), (int) actor.getY());
             ActionActorAttack.event.fire(new ActionActorAttack(actor, raycast.getTiles()));
+
+            // The actor has issued its attack, it is now waiting.
+            actor.setWaiting(true);
+            ActorUnselected.event.fire(actor);
+            getBattleState().getSelector().deselectActor();
             ControllerTransition.defer.fire(ObserverModalController::new);
         }
     }

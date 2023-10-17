@@ -72,7 +72,11 @@ public class SelectMoveModalController extends ModalController {
         });
 
         on(ActionActorMoved.event).run(movement -> {
-            ControllerTransition.defer.fire(state -> new SelectActionModalController(state, movement.actor));
+            // the actor has now moved and can no longer move this turn, it is waiting for the next turn
+            selectedActor.setWaiting(true);
+            ActorUnselected.event.fire(selectedActor);
+            getBattleState().getSelector().deselectActor();
+            ControllerTransition.defer.fire(ObserverModalController::new);
         });
 
         on(ActorSelectionSwap.event).run(actor -> {
@@ -131,6 +135,7 @@ public class SelectMoveModalController extends ModalController {
             if (possiblePath.isEmpty()) {
                 return;
             }
+
             ActionActorMoved.event.fire(new ActionActorMoved(selectedActor, possiblePath));
             possiblePath = new ArrayList<>();
         }

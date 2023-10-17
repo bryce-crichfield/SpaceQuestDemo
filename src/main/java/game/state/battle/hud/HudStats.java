@@ -10,87 +10,123 @@ import java.awt.*;
 import java.util.function.BiConsumer;
 
 public class HudStats extends FormElement {
+    private final int vSpace = 10;
+    private final int rowHeight = 20;
+    private final int titleHeight = 20;
+
+
     private final Event<Actor> onActorChanged;
 
-    public HudStats(int x, int y, int width, int height, Event<Actor> onActorChanged) {
-        super(x, y, width, height);
-
-        setMargin(new FormMargin(5, 5, 5, 5));
+    public HudStats(int x, int y, Event<Actor> onActorChanged) {
+        super(x, y, 30, 30);
 
         this.onActorChanged = onActorChanged;
 
         FormFill fill = new FormFill();
-        fill.setPaint(Color.DARK_GRAY.darker().darker().darker());
+        Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
+        Paint gradient = new GradientPaint(0, 0, barelyBlack, 0, 400, Color.BLACK);
+        fill.setPaint(gradient);
         fill.setRoundness(25);
         setFill(fill);
 
         FormBorder border = new FormBorder();
         setBorder(border);
 
-        createStatSheetEntry("", (actorName, actor) -> {
+        FormElement rowContainer = new FormElement("");
+        rowContainer.getBounds().setWidth(100);
+        rowContainer.getBounds().setHeight(100);
+
+        createPadding(rowContainer);
+
+        createTitleEntry(rowContainer, (actorName, actor) -> {
             actorName.getText().setValue(actor.getName());
         });
 
-        createStatSheetEntry("Health", (actorHealth, actor) -> {
+        createPadding(rowContainer);
+
+        createStatSheetEntry(rowContainer, "Health", (actorHealth, actor) -> {
             String health = String.valueOf(actor.getHealth());
             actorHealth.getText().setValue(health);
         });
 
-        createStatSheetEntry("Position", (actorPosition, actor) -> {
+        createStatSheetEntry(rowContainer, "Position", (actorPosition, actor) -> {
             String positionX = String.valueOf((int) actor.getX());
             String positionY = String.valueOf((int) actor.getY());
             String position = positionX + ", " + positionY;
-            actorPosition.getText().setValue(position);
+            actorPosition.getText().setValue(position + " ");
         });
 
-        createStatSheetEntry("Movement", (actorMovement, actor) -> {
+        createStatSheetEntry(rowContainer, "Movement", (actorMovement, actor) -> {
             String movement = String.valueOf(actor.getMovementPoints());
             actorMovement.getText().setValue(movement);
         });
 
-        createStatSheetEntry("Range", (actorRange, actor) -> {
+        createStatSheetEntry(rowContainer, "Range", (actorRange, actor) -> {
             String range = String.valueOf(actor.getAttackDistance());
             actorRange.getText().setValue(range);
         });
 
-        createStatSheetEntry("Attack", (actorAttack, actor) -> {
+        createStatSheetEntry(rowContainer, "Attack", (actorAttack, actor) -> {
             String attack = String.valueOf(actor.getAttack());
             actorAttack.getText().setValue(attack);
         });
 
-        createStatSheetEntry("Defense", (actorDefense, actor) -> {
+        createStatSheetEntry(rowContainer, "Defense", (actorDefense, actor) -> {
             String defense = String.valueOf(0);
             actorDefense.getText().setValue(defense);
         });
 
+        createPadding(rowContainer);
 
+        addChild(rowContainer);
         getLayout().execute(this);
     }
 
-    private void createStatSheetEntry(String name, BiConsumer<FormElement, Actor> update) {
+    private void createTitleEntry(FormElement rowContainer, BiConsumer<FormElement, Actor> update) {
         FormElement row = new FormElement("");
         row.getBounds().setWidth(100);
-        row.getBounds().setHeight(1);
+        row.getBounds().setHeight(titleHeight);
+        row.setLayout(new FormHorizontalLayout());
+
+        onActorChanged.listenWith(actor -> update.accept(row, actor));
+
+        rowContainer.addChild(row);
+    }
+
+    private void createPadding(FormElement rowContainer) {
+        FormElement row = new FormElement("");
+        row.getBounds().setWidth(100);
+        row.getBounds().setHeight(vSpace);
+        row.setLayout(new FormHorizontalLayout());
+
+
+        rowContainer.addChild(row);
+    }
+    private void createStatSheetEntry(FormElement rowContainer, String name, BiConsumer<FormElement, Actor> update) {
+        FormElement row = new FormElement("");
+        row.getBounds().setWidth(100);
+        row.getBounds().setHeight(rowHeight);
         row.setLayout(new FormHorizontalLayout());
 
         if (!name.equals("")) {
-            FormElement label = new FormElement(name);
+            FormElement label = new FormElement(" " + name);
             label.getBounds().setWidth(75);
             label.getBounds().setHeight(1);
             label.getText().setSize(12);
+            label.setHorizontalTextAlignment(FormAlignment.START);
             row.addChild(label);
         }
 
         FormElement element = new FormElement("");
-
         FormText text = new FormText();
         element.getBounds().setWidth(25);
         element.getBounds().setHeight(1);
         element.getText().setSize(12);
+        element.setHorizontalTextAlignment(FormAlignment.START);
         row.addChild(element);
 
         onActorChanged.listenWith(actor -> update.accept(element, actor));
 
-        addChild(row);
+        rowContainer.addChild(row);
     }
 }

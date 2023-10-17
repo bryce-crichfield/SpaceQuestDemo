@@ -53,10 +53,10 @@ public class Selector {
             // DEPRECATED: Caused issue in SelectMoveModalController
 //            deselectActor();
         } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
-            ActorUnselected.event.fire(currentlySelectedActor.get());
-            currentlySelectedActor = hovered;
-            ActorSelectionSwap.event.fire(currentlySelectedActor.get());
-            ActorSelected.event.fire(currentlySelectedActor.get());
+//            ActorUnselected.event.fire(currentlySelectedActor.get());
+//            currentlySelectedActor = hovered;
+//            ActorSelectionSwap.event.fire(currentlySelectedActor.get());
+//            ActorSelected.event.fire(currentlySelectedActor.get());
         } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
             // DEPRECATED: See above
         }

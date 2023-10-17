@@ -33,8 +33,6 @@ public class BattleState extends GameState {
         cursor = new Cursor(camera, game, world);
         selector = new Selector(world);
 
-        ControllerTransition.defer.fire(state -> new ObserverPlayerController(state));
-        forceModeChange();
 
         for (Actor actor : world.getActors()) {
             getSubscriptions().on(ActionActorMoved.event).run(actor::onActorMoved);
@@ -49,6 +47,9 @@ public class BattleState extends GameState {
         // it is the responsibility of the modal controllers to decide when to allow
         // cursor movements to be processed by the selector.
         getSubscriptions().on(CursorMoved.event).run(selector::onCursorMoved);
+
+        ControllerTransition.defer.fire(state -> new ObserverPlayerController(state));
+        forceModeChange();
     }
 
     private void forceModeChange() {

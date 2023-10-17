@@ -22,7 +22,9 @@ public class HudActions extends FormMenu {
         super(x, y, width, height);
         this.onActorChanged = onActorChanged;
 
-        setFill(new FormFill(Color.BLACK, 25));
+        Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
+        Paint gradient = new GradientPaint(0, 200, barelyBlack, 0, 400, Color.BLACK);
+        setFill(new FormFill(gradient, 25));
         setLayout(new FormVerticalLayout());
 
         FormElement title = new FormElement(100, 30);
@@ -33,6 +35,10 @@ public class HudActions extends FormMenu {
         title.setHorizontalTextAlignment(FormAlignment.CENTER);
         title.setVerticalTextAlignment(FormAlignment.CENTER);
         addChild(title);
+
+
+        FormElement v1 = new FormElement(100, 5);
+        addChild(v1);
 
         String textPadding = "   ";
         FormElement attack = createMenuOption(textPadding + "Attack", () -> {
@@ -78,7 +84,9 @@ public class HudActions extends FormMenu {
         });
         addCaretChild(wait);
 
-        setMargin(new FormMargin(0, 0, 5, 0));
+        FormElement v2 = new FormElement(100, 5);
+        addChild(v2);
+
 
         getLayout().execute(this);
     }

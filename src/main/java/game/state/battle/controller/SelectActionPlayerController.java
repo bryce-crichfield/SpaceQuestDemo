@@ -22,11 +22,11 @@ public class SelectActionPlayerController extends PlayerController {
         this.selected = selected;
 
         Event<Actor> onChange = new Event<>();
-        hudStats = new HudStats(5, 5, 30, 25, onChange);
+        hudStats = new HudStats(5, 65, onChange);
         hudStats.setVisible(true);
         onChange.fire(selected);
 
-        hudActions = new HudActions(5, 60, 30, 35, onChange);
+        hudActions = new HudActions(40, 65, 30, 30, onChange);
         hudActions.setVisible(true);
     }
 

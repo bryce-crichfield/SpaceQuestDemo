@@ -52,7 +52,12 @@ public class Actor {
 
     public void onActorMoved(ActionActorMoved event) {
         if (event.actor.equals(this)) {
-//            currentMovementPoints -= event.movePath.size();
+            // remove the self-tile from the path
+            event.movePath.remove(0);
+
+            currentMovementPoints -= event.movePath.size();
+            System.out.println("Actor " + this + " has " + currentMovementPoints + " movement points left");
+            System.out.println("Moved for " + event.movePath.size() + " tiles");
             animation.start(event.movePath);
         }
     }

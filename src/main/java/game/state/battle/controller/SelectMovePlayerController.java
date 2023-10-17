@@ -36,11 +36,11 @@ public class SelectMovePlayerController extends PlayerController {
         this.selectedActor = selected;
 
         Event<Actor> onChangeSelected = new Event<>();
-        selectedActorStats = new HudStats(5, 5, 30, 25, onChangeSelected);
+        selectedActorStats = new HudStats(5, 5, onChangeSelected);
         selectedActorStats.setVisible(true);
         onChangeSelected.fire(selectedActor);
 
-        hoveredActorStats = new HudStats(55, 5, 30, 25, onChangeHovered);
+        hoveredActorStats = new HudStats(5, 40, onChangeHovered);
         hoveredActorStats.setVisible(false);
         onChangeHovered.fire(selectedActor);
     }
@@ -72,14 +72,24 @@ public class SelectMovePlayerController extends PlayerController {
 
         on(ActionActorMoved.event).run(movement -> {
             // the actor has now moved and can no longer move this turn, it is waiting for the next turn
-            selectedActor.setWaiting(true);
-            ActorUnselected.event.fire(selectedActor);
-            getBattleState().getSelector().deselectActor();
-            ControllerTransition.defer.fire(ObserverPlayerController::new);
+            if (selectedActor.getMovementPoints() <= 0) {
+                selectedActor.setWaiting(true);
+                ActorUnselected.event.fire(selectedActor);
+                getBattleState().getSelector().deselectActor();
+                ControllerTransition.defer.fire(ObserverPlayerController::new);
+            } else {
+                ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, selectedActor));
+            }
+
         });
 
         on(ActorSelectionSwap.event).run(actor -> {
-            ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, actor));
+            if (actor.equals(selectedActor)) {
+                return;
+            } else if (actor.isWaiting()) {
+                return;
+            }
+//            ControllerTransition.defer.fire(state -> new SelectActionPlayerController(state, actor));
         });
 
         on(getBattleState().getOnWorldRender()).run(this::onRender);

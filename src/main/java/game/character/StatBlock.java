@@ -8,7 +8,7 @@ import lombok.With;
 public class StatBlock {
     // Core Stats
     int strength = 1;
-    int agility = 1;
+    int agility = 2;
     int intelligence = 1;
 
     // Secondary Stats

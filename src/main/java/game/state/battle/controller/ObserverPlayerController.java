@@ -20,7 +20,7 @@ public class ObserverPlayerController extends PlayerController {
     public ObserverPlayerController(BattleState battleState) {
         super(battleState);
         onChangeHovered = new Event<>();
-        hoveredActorStats = new HudStats(55, 5, 30, 25, onChangeHovered);
+        hoveredActorStats = new HudStats(5, 5, onChangeHovered);
         hoveredActorStats.setVisible(false);
     }
 
@@ -52,6 +52,9 @@ public class ObserverPlayerController extends PlayerController {
 
         on(CursorMoved.event).run(this::onCursorMoved);
         on(getBattleState().getOnGuiRender()).run(hoveredActorStats::onRender);
+
+        getBattleState().getCursor().setPosition(3, 0);
+        Keyboard.keyPressed.fire(Keyboard.PRIMARY);
     }
 
     private void onCursorMoved(Cursor cursor) {

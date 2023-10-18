@@ -1,8 +1,8 @@
 package game.state.battle.event;
 
 import game.event.Event;
-import game.state.battle.model.actor.Actor;
-import game.state.battle.model.world.Tile;
+import game.state.battle.model.Actor;
+import game.state.battle.model.Tile;
 
 import java.util.List;
 

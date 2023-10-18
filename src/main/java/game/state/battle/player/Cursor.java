@@ -1,9 +1,9 @@
-package game.state.battle.util;
+package game.state.battle.player;
 
 import game.Game;
 import game.io.Keyboard;
 import game.state.battle.event.CursorMoved;
-import game.state.battle.model.world.World;
+import game.state.battle.model.World;
 import game.util.Camera;
 import game.util.Util;
 

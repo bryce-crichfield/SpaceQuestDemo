@@ -1,25 +1,23 @@
 package game.state.battle.hud;
 
-import game.Game;
-import game.form.FormConst;
 import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.*;
-import game.form.properties.layout.FormVerticalLayout;
-import game.state.battle.controller.ObserverPlayerController;
-import game.state.battle.controller.SelectAttackPlayerController;
-import game.state.battle.controller.SelectItemPlayerController;
-import game.state.battle.controller.SelectMovePlayerController;
-import game.state.battle.event.ActorUnselected;
+import game.state.battle.player.*;
 import game.state.battle.event.ControllerTransition;
-import game.state.battle.model.actor.Actor;
-import game.event.Event;
+import game.state.battle.model.Actor;
 import game.util.Util;
 
 import java.awt.*;
-import java.util.Optional;
 
 public class HudActions extends FormMenu {
+    private PlayerMode controller;
+
+    public HudActions(int x, int y, PlayerMode controller) {
+        this(x, y);
+        this.controller = controller;
+    }
+
     private static final int WIDTH = 160;
     private static final int HEIGHT = 95;
 
@@ -41,12 +39,7 @@ public class HudActions extends FormMenu {
         option.getOnPrimary().listenWith((e) -> {
             // When the attack option is selected, we want to transition to the
             // attack controller, which will allow the player to select a target
-            ControllerTransition.defer.fire((state) -> {
-                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
-
-                return new SelectAttackPlayerController(state, selected.get());
-            });
+            ControllerTransition.defer.fire(() -> new SelectAttackPlayerMode(controller));
         });
 
         return option;
@@ -58,12 +51,7 @@ public class HudActions extends FormMenu {
             // When the move option is selected, we want to transition to the
             // move controller, which will allow the player to move the selected
             // actor to a new tile
-            ControllerTransition.defer.fire((state) -> {
-                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
-
-                return new SelectMovePlayerController(state, selected.get());
-            });
+            ControllerTransition.defer.fire(() -> new SelectMovePlayerMode(controller));
         });
 
         return option;
@@ -75,12 +63,7 @@ public class HudActions extends FormMenu {
             // When the item option is selected, we want to transition to the
             // item controller, which will allow the player to select an item
             // to use on the selected actor
-            ControllerTransition.defer.fire((state) -> {
-                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
-
-                return new SelectItemPlayerController(state, selected.get());
-            });
+            ControllerTransition.defer.fire(() -> new SelectItemPlayerMode(controller));
         });
 
         return option;
@@ -92,22 +75,18 @@ public class HudActions extends FormMenu {
             // When the wait option is selected, we want to transition to the
             // observer controller, which will allow the player to select a new
             // actor
-            ControllerTransition.defer.fire((state) -> {
-                Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
-
-                Actor actor = selected.get();
+            ControllerTransition.defer.fire(() -> {
+                Actor actor = controller.getActor().get();
                 actor.setWaiting(true);
-                ActorUnselected.event.fire(actor);
-                state.getSelector().deselectActor();
-                return new ObserverPlayerController(state);
+                controller.deselectActor();
+                return new ObserverPlayerMode(controller);
             });
         });
 
         return option;
     });
 
-    public HudActions(int x, int y) {
+    private HudActions(int x, int y) {
         super(x, y, WIDTH, HEIGHT);
 
         addChild(title);

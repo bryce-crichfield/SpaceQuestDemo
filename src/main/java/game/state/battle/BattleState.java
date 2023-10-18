@@ -1,39 +1,140 @@
 package game.state.battle;
 
 import game.Game;
+import game.io.Keyboard;
 import game.state.GameState;
+import game.state.battle.player.Cursor;
 import game.state.battle.event.*;
-import game.state.battle.controller.PlayerController;
-import game.state.battle.controller.ObserverPlayerController;
-import game.state.battle.util.Cursor;
-import game.state.battle.model.actor.Actor;
-import game.state.battle.model.world.World;
-import game.state.battle.util.Selector;
+import game.state.battle.player.Mode;
+import game.state.battle.player.PlayerMode;
+import game.state.battle.player.ObserverPlayerMode;
+import game.state.battle.model.Actor;
+import game.state.battle.model.World;
 import game.state.title.StarBackground;
 import game.util.Camera;
+import game.util.Util;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.time.Duration;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class BattleState extends GameState {
+
+    static class PlayerModeWrapper extends Mode {
+        PlayerMode mode;
+
+        public PlayerModeWrapper(World world, Cursor cursor) {
+            super(world);
+            this.mode = new ObserverPlayerMode(world, cursor);
+            mode.onEnter();
+        }
+
+        @Override
+        public void onKeyPressed(int keyCode) {
+            mode.onKeyPressed(keyCode);
+        }
+
+        @Override
+        public void onKeyReleased(int keyCode) {
+            mode.onKeyReleased(keyCode);
+        }
+
+        @Override
+        public void onEnter() {
+            mode.onEnter();
+        }
+
+        @Override
+        public void onUpdate(Duration delta) {
+            mode.onUpdate(delta);
+
+            ControllerTransition.defer.flush(event -> {
+                var newMode = event.get();
+                mode.onExit();
+                mode = newMode;
+                mode.onEnter();
+            });
+        }
+
+        @Override
+        public void onGuiRender(Graphics2D graphics) {
+            mode.onGuiRender(graphics);
+        }
+
+        @Override
+        public void onWorldRender(Graphics2D graphics) {
+            mode.onWorldRender(graphics);
+        }
+
+        @Override
+        public void onExit() {
+            mode.onExit();
+        }
+
+        @Override
+        public boolean isDone() {
+            return mode.isDone();
+        }
+    }
+    static class ComputerMode extends Mode {
+
+        protected ComputerMode(World world) {
+            super(world);
+        }
+
+        @Override
+        public void onKeyPressed(int keyCode) {
+
+        }
+
+        @Override
+        public void onKeyReleased(int keyCode) {
+
+        }
+
+        @Override
+        public void onEnter() {
+
+        }
+
+        @Override
+        public void onUpdate(Duration delta) {
+            System.out.println("Computer mode");
+        }
+
+        @Override
+        public void onGuiRender(Graphics2D graphics) {
+
+        }
+
+        @Override
+        public void onWorldRender(Graphics2D graphics) {
+
+        }
+
+        @Override
+        public void onExit() {
+
+        }
+
+        @Override
+        public boolean isDone() {
+            return false;
+        }
+    }
     private final StarBackground starBackground;
     private final Camera camera;
     private final World world;
-    private final Cursor cursor;
-    private final Selector selector;
-
-    private PlayerController mode;
+    private final Deque<Mode> modes = new LinkedList<>();
 
     public BattleState(Game game) {
         super(game);
         camera = new Camera(game);
         world = new World(16, 16);
         starBackground = new StarBackground(this, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
-        cursor = new Cursor(camera, game, world);
-        selector = new Selector(world);
-
 
         for (Actor actor : world.getActors()) {
             getSubscriptions().on(ActionActorMoved.event).run(actor::onActorMoved);
@@ -44,46 +145,50 @@ public class BattleState extends GameState {
             getSubscriptions().on(CursorMoved.event).run(actor::onCursorMoved);
         }
 
-        // This implies that the selector will always respond to cursor movements, meaning
-        // it is the responsibility of the modal controllers to decide when to allow
-        // cursor movements to be processed by the selector.
-        getSubscriptions().on(CursorMoved.event).run(selector::onCursorMoved);
-
-        ControllerTransition.defer.fire(state -> new ObserverPlayerController(state));
-        forceModeChange();
-    }
-
-    private void forceModeChange() {
-        ControllerTransition.defer.flush(event -> {
-            PlayerController newMode = event.apply(this);
-            if (mode != null)
-                mode.onExit();
-            mode = newMode;
-            mode.onEnter();
-        });
+        var cursor = new Cursor(camera, game, world);
+        var player = new PlayerModeWrapper(world, cursor);
+        var computer = new ComputerMode(world);
+        modes.addLast(player);
+        modes.addLast(computer);
+        modes.peek().onEnter();
     }
 
     @Override
     public void onEnter() {
+        getSubscriptions().on(Keyboard.keyPressed).run(this::onKeyPressed);
+    }
+
+    public void onKeyPressed(int keycode) {
+        if (!modes.isEmpty()) {
+            modes.peek().onKeyPressed(keycode);
+        }
     }
 
     @Override
     public void onUpdate(Duration delta) {
         starBackground.onUpdate(delta);
-        cursor.onUpdate(delta);
-
         world.onUpdate(delta);
 
         if (getGame().getKeyboard().pressed(KeyEvent.VK_ESCAPE)) {
             getGame().popState();
         }
 
-        forceModeChange();
+        if (!modes.isEmpty()) {
+            modes.peek().onUpdate(delta);
+            assert modes.peek() != null;
+            if (modes.peek().isDone()) {
+                var head = modes.pop();
+                head.onExit();
+                modes.addLast(head);
+                assert !modes.isEmpty();
+                modes.peek().onEnter();
+            }
+        }
     }
 
     @Override
     public void onRender(Graphics2D graphics) {
-        // Clear the screen
+        // Clear the screenw
         graphics.setColor(new Color(0x0A001A));
         graphics.fillRect(0, 0, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT);
 
@@ -94,29 +199,16 @@ public class BattleState extends GameState {
         AffineTransform restore = graphics.getTransform();
         AffineTransform transform = camera.getTransform();
         graphics.setTransform(transform);
-        {
-            world.onRender(graphics);
-            getOnWorldRender().fire(graphics);
+        world.onRender(graphics);
+        if (!modes.isEmpty()) {
+            modes.peek().onWorldRender(graphics);
         }
+
         graphics.setTransform(restore);
 
         // Restore the transform and render the cursor camera
-        getOnGuiRender().fire(graphics);
-    }
-
-    public Camera getCamera() {
-        return camera;
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    public Selector getSelector() {
-        return selector;
-    }
-
-    public Cursor getCursor() {
-        return cursor;
+        if (!modes.isEmpty()) {
+            modes.peek().onGuiRender(graphics);
+        }
     }
 }

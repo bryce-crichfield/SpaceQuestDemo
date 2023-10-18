@@ -5,6 +5,7 @@ import game.form.element.FormElement;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -87,4 +88,11 @@ public enum Util {
         return supplier.get();
     }
 
+
+    public static <T> Optional<T> headOption(Queue<T> queue) {
+        if (queue.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(queue.peek());
+    }
 }

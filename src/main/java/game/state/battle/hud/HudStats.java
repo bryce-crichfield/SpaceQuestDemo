@@ -1,16 +1,13 @@
 package game.state.battle.hud;
 
-import game.Game;
 import game.event.Event;
 import game.form.FormConst;
 import game.form.element.FormElement;
 import game.form.properties.*;
-import game.form.properties.layout.FormHorizontalLayout;
-import game.state.battle.model.actor.Actor;
+import game.state.battle.model.Actor;
 import game.util.Util;
 
 import java.awt.*;
-import java.util.function.BiConsumer;
 
 public class HudStats extends FormElement {
     public static final int WIDTH = 160;

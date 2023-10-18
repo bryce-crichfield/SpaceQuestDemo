@@ -1,10 +1,9 @@
-package game.state.battle.model.actor;
+package game.state.battle.model;
 
 import game.character.GameCharacter;
 import game.character.StarTrooper;
 import game.state.battle.event.*;
-import game.state.battle.model.world.Tile;
-import game.state.battle.util.Cursor;
+import game.state.battle.player.Cursor;
 
 import java.awt.*;
 import java.time.Duration;

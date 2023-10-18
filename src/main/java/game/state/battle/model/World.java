@@ -1,6 +1,5 @@
-package game.state.battle.model.world;
+package game.state.battle.model;
 
-import game.state.battle.model.actor.Actor;
 import game.util.Util;
 
 import java.awt.*;

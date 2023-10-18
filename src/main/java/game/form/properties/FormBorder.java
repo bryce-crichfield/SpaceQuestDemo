@@ -36,7 +36,7 @@ public class FormBorder {
 
         graphics.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         graphics.setPaint(color);
-        graphics.drawRoundRect(x, y, width, height, rounding, rounding);d
+        graphics.drawRoundRect(x, y, width, height, rounding, rounding);
 
         graphics.setStroke(stroke);
         graphics.setPaint(paint);

@@ -30,9 +30,15 @@ public class World {
             }
         }
 
-        actors.add(new Actor(3, 0, Color.RED));
+        actors.add(new Actor(3, 0, Color.ORANGE));
         actors.add(new Actor(5, 0, Color.BLUE));
         actors.add(new Actor(6, 0, Color.MAGENTA));
+
+        Actor enemy = new Actor(4, 0, Color.GREEN);
+        enemy.setPlayer(false);
+
+        actors.add(enemy);
+
     }
 
     public void wall(int x, int y) {

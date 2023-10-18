@@ -31,34 +31,10 @@ public class Selector {
         boolean primaryPressed = keyCode == Keyboard.PRIMARY;
         boolean secondaryPressed = keyCode == Keyboard.SECONDARY;
 
-        // Selection is concerned with 4 conditions
-        // DEPRECATED: This doesn't allow the modal controllers to use secondary to exit.  Controllers must handle this case.
-        // 1. Secondary pressed and an actor is selected -> deselect
-        boolean secondaryPressedWithActorSelected = secondaryPressed && currentlySelectedActor.isPresent();
-        // 2. Primary pressed and no actor is selected, and we clicked on an actor -> select
         boolean primaryPressedWithNoActorSelectedAndHovered = primaryPressed && currentlySelectedActor.isEmpty() && hovered.isPresent();
-        // 3. Primary pressed and an actor is selected, and we clicked on the same actor -> deselect
-        boolean primaryPressedWithActorSelectedAndHovered = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() == currentlySelectedActor.get();
-        // 4. Primary pressed and an actor is selected, and we clicked on a different actor -> deselect and select
-        boolean primaryPressedWithActorSelectedAndHoveredDifferent = primaryPressed && currentlySelectedActor.isPresent() && hovered.isPresent() && hovered.get() != currentlySelectedActor.get();
-        // DEPRECATED: This doesn't allow the modal controllers to use primary.  Controllers must handle this case.
-        // 5. Primary pressed and an actor is selected, and we clicked on an empty tile -> deselect
-        boolean primaryPressedWithActorSelectedAndHoveredEmpty = primaryPressed && currentlySelectedActor.isPresent() && hovered.isEmpty();
-
-        if (secondaryPressedWithActorSelected) {
-            // DEPRECATED: See above
-        } else if (primaryPressedWithNoActorSelectedAndHovered) {
-            selectActor(hovered.get());
-        } else if (primaryPressedWithActorSelectedAndHovered) {
-            // DEPRECATED: Caused issue in SelectMoveModalController
-//            deselectActor();
-        } else if (primaryPressedWithActorSelectedAndHoveredDifferent) {
-//            ActorUnselected.event.fire(currentlySelectedActor.get());
-//            currentlySelectedActor = hovered;
-//            ActorSelectionSwap.event.fire(currentlySelectedActor.get());
-//            ActorSelected.event.fire(currentlySelectedActor.get());
-        } else if (primaryPressedWithActorSelectedAndHoveredEmpty) {
-            // DEPRECATED: See above
+        if (primaryPressedWithNoActorSelectedAndHovered) {
+            if (hovered.get().isPlayer())
+                selectActor(hovered.get());
         }
     }
 

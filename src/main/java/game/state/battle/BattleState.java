@@ -23,6 +23,7 @@ public class BattleState extends GameState {
     private final World world;
     private final Cursor cursor;
     private final Selector selector;
+
     private PlayerController mode;
 
     public BattleState(Game game) {

@@ -20,7 +20,7 @@ public class ObserverPlayerController extends PlayerController {
     public ObserverPlayerController(BattleState battleState) {
         super(battleState);
         onChangeHovered = new Event<>();
-        hoveredActorStats = new HudStats(5, 5, onChangeHovered);
+        hoveredActorStats = new HudStats(20, 20, onChangeHovered);
         hoveredActorStats.setVisible(false);
     }
 

@@ -1,6 +1,8 @@
 package game.state.battle.controller;
 
 import game.event.Event;
+import game.form.properties.FormAlignment;
+import game.form.properties.layout.FormVerticalLayout;
 import game.io.Keyboard;
 import game.state.battle.BattleState;
 import game.state.battle.event.ActorHovered;
@@ -22,12 +24,13 @@ public class SelectActionPlayerController extends PlayerController {
         this.selected = selected;
 
         Event<Actor> onChange = new Event<>();
-        hudStats = new HudStats(5, 65, onChange);
+        hudStats = new HudStats(20, 20, onChange);
         hudStats.setVisible(true);
         onChange.fire(selected);
 
-        hudActions = new HudActions(200, 65, 30, 30, onChange);
+        hudActions = new HudActions(20, 210);
         hudActions.setVisible(true);
+        hudActions.setLayout(new FormVerticalLayout(FormAlignment.CENTER));
     }
 
     private void onKeyPressed(int keycode) {

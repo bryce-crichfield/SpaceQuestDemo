@@ -11,6 +11,27 @@ import java.util.Optional;
 public class FormText {
     @NonNull
     private String value;
+
+    public FormText setValue(String value) {
+        this.value = value;
+        return this;
+    }
+
+    public FormText setSize(Integer size) {
+        this.size = size;
+        return this;
+    }
+
+    public FormText setFill(Paint fill) {
+        this.fill = fill;
+        return this;
+    }
+
+    public FormText setBorder(Optional<FormBorder> border) {
+        this.border = border;
+        return this;
+    }
+
     @NonNull
     private Integer size;
     @NonNull

@@ -20,6 +20,15 @@ public class Actor {
     Color color;
     private boolean selected = false;
     private boolean hovered = false;
+    private boolean isPlayer = true;
+
+    public boolean isPlayer() {
+        return isPlayer;
+    }
+
+    public void setPlayer(boolean player) {
+        isPlayer = player;
+    }
 
     private boolean waiting = false;
     public Actor(int x, int y, Color color) {
@@ -124,6 +133,7 @@ public class Actor {
     public void onRender(Graphics2D graphics) {
         // Draw the actor
         Color color = selected ? Color.GREEN : waiting ? Color.GRAY : this.color;
+        color = !isPlayer ? Color.RED : color;
         float x = animation.getX();
         float y = animation.getY();
         graphics.setColor(color);

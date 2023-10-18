@@ -1,6 +1,7 @@
 package game.form.element;
 
 import game.event.Event;
+import game.form.FormConst;
 import game.form.properties.*;
 import game.form.properties.layout.FormVerticalLayout;
 import game.io.Keyboard;
@@ -17,9 +18,17 @@ public class FormMenu extends FormElement {
 
     public FormMenu(int x, int y, int width, int height) {
         super(x, y, width, height);
-        this.setLayout(new FormVerticalLayout());
-        this.setBorder(new FormBorder());
-        this.setFillPaint(Color.BLACK);
+        Paint gradient = FormConst.screenGradient(FormConst.DarkGray, FormConst.Black);
+        setFillPaint(gradient);
+        setRounding(10);
+        setLayout(new FormVerticalLayout());
+        setMargin(new FormMargin(5, 5, 5, 15));
+        setElementAlignment(FormAlignment.START);
+
+        FormBorder border = new FormBorder();
+        border.setThickness(1);
+        border.setThicknessOutline(2);
+        setBorder(border);
     }
 
     public void onKeyPressed(Integer keycode) {
@@ -84,9 +93,9 @@ public class FormMenu extends FormElement {
 
         int caretSize = 10;
         int centerY = (int) (bounds.getY() + bounds.getHeight() / 2) - caretSize / 2;
-        int centerX = (int) (bounds.getX() + caretSize);
+        int x = (int) (bounds.getX() - caretSize);
 
-        FormBounds caretBounds = new FormBounds(centerX, centerY, 10, 10);
+        FormBounds caretBounds = new FormBounds(x, centerY, 10, 10);
         FormText text = new FormText();
         text.setValue(">");
         text.onRender(graphics, caretBounds);

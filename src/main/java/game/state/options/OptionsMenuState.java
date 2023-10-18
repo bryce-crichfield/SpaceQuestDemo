@@ -17,9 +17,9 @@ public class OptionsMenuState extends GameState {
     public OptionsMenuState(Game game) {
         super(game);
 
-        menu = new FormMenu(25, 25, 50, 50);
+        menu = new FormMenu(25, 25, 200, 200);
 
-        FormElement musicVolume = new FormElement(100, 1);
+        FormElement musicVolume = new FormElement(100, 20);
         musicVolume.setLayout(new FormHorizontalLayout());
         FormElement music = new FormElement("Music");
         music.getBounds().setWidth(50);
@@ -28,7 +28,7 @@ public class OptionsMenuState extends GameState {
         volume.getBounds().setWidth(50);
         musicVolume.addChild(volume);
 
-        FormElement soundVolume = new FormElement(100, 1);
+        FormElement soundVolume = new FormElement(100, 20);
         soundVolume.setLayout(new FormHorizontalLayout());
         FormElement sound = new FormElement("Sound");
         sound.getBounds().setWidth(50);
@@ -37,26 +37,16 @@ public class OptionsMenuState extends GameState {
         volume2.getBounds().setWidth(50);
         soundVolume.addChild(volume2);
 
-        menu.addChild(musicVolume);
-        menu.addChild(soundVolume);
+        menu.addCaretChild(musicVolume);
+        menu.addCaretChild(soundVolume);
         menu.onLayout();
 
         menu.setRounding(25);
-        menu.setFillPaint(getPaint(menu));
+        Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
+        Paint gradient = new GradientPaint(0, 0, barelyBlack, Game.SCREEN_WIDTH, Game.SCREEN_HEIGHT, Color.BLACK);
+        menu.setFillPaint(gradient);
     }
 
-    @NotNull
-    private Paint getPaint(FormElement element) {
-        int menuX = (int) element.getBounds().getX();
-        int menuWidth = (int) element.getBounds().getWidth();
-        int menuY = (int) element.getBounds().getY();
-        int menuHeight = (int) element.getBounds().getHeight();
-
-        Paint paint = new GradientPaint(menuX, menuY, Color.BLACK, menuX + menuWidth, menuY + menuHeight,
-                                        Color.DARK_GRAY
-        );
-        return paint;
-    }
 
     @Override
     public void onEnter() {

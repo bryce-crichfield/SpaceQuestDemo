@@ -36,11 +36,11 @@ public class SelectMovePlayerController extends PlayerController {
         this.selectedActor = selected;
 
         Event<Actor> onChangeSelected = new Event<>();
-        selectedActorStats = new HudStats(5, 5, onChangeSelected);
+        selectedActorStats = new HudStats(20, 20, onChangeSelected);
         selectedActorStats.setVisible(true);
         onChangeSelected.fire(selectedActor);
 
-        hoveredActorStats = new HudStats(5, 40, onChangeHovered);
+        hoveredActorStats = new HudStats(280, 20, onChangeHovered);
         hoveredActorStats.setVisible(false);
         onChangeHovered.fire(selectedActor);
     }

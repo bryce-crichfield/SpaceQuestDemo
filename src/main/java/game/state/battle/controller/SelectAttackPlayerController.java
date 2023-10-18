@@ -28,7 +28,7 @@ public class SelectAttackPlayerController extends PlayerController {
         this.selectedActor = selectedActor;
 
         onChangeHovered = new Event<>();
-        hoveredActorStats = new HudStats(55, 5, onChangeHovered);
+        hoveredActorStats = new HudStats(20, 20, onChangeHovered);
         hoveredActorStats.setVisible(false);
     }
 

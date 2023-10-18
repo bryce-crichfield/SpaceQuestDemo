@@ -1,5 +1,7 @@
 package game.state.battle.hud;
 
+import game.Game;
+import game.form.FormConst;
 import game.form.element.FormElement;
 import game.form.element.FormMenu;
 import game.form.properties.*;
@@ -12,78 +14,87 @@ import game.state.battle.event.ActorUnselected;
 import game.state.battle.event.ControllerTransition;
 import game.state.battle.model.actor.Actor;
 import game.event.Event;
+import game.util.Util;
 
 import java.awt.*;
 import java.util.Optional;
 
 public class HudActions extends FormMenu {
-    private final Event<Actor> onActorChanged;
+    private static final int WIDTH = 160;
+    private static final int HEIGHT = 95;
 
-    public HudActions(int x, int y, int width, int height, Event<Actor> onActorChanged) {
-        super(x, y, width, height);
-        this.onActorChanged = onActorChanged;
-
-        Color barelyBlack = new Color(0x21, 0x21, 0x21, 0xff);
-        Paint gradient = new GradientPaint(0, 200, barelyBlack, 0, 400, Color.BLACK);
-        setFillPaint(gradient);
-        setRounding(25);
-        setLayout(new FormVerticalLayout());
-
-        FormElement title = new FormElement(100, 30);
+    private final FormElement title = Util.pure(() -> {
+        FormElement title = new FormElement(WIDTH, 20);
         FormText text = new FormText();
         text.setValue("Actions");
-        text.setSize(22);
+        text.setSize(16);
         title.setText(text);
-        title.setHorizontalTextAlignment(FormAlignment.CENTER);
+        title.setHorizontalTextAlignment(FormAlignment.START);
         title.setVerticalTextAlignment(FormAlignment.CENTER);
-        addChild(title);
+        title.setPadding(new FormMargin(0, 0, 3, 0));
 
+        return title;
+    });
 
-        FormElement v1 = new FormElement(100, 5);
-        addChild(v1);
-
-        String textPadding = "   ";
-        FormElement attack = createMenuOption(textPadding + "Attack", () -> {
+    private final FormElement attackOption = Util.pure(() -> {
+        FormElement option = createMenuOption("Attack");
+        option.getOnPrimary().listenWith((e) -> {
+            // When the attack option is selected, we want to transition to the
+            // attack controller, which will allow the player to select a target
             ControllerTransition.defer.fire((state) -> {
                 Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                if (selected.isEmpty()) {
-                    throw new RuntimeException("Invalid state, no actor selected");
-                }
+                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
+
                 return new SelectAttackPlayerController(state, selected.get());
             });
         });
 
-        addCaretChild(attack);
+        return option;
+    });
 
-        FormElement move = createMenuOption(textPadding + "Move", () -> {
+    private final FormElement moveOption = Util.pure(() -> {
+        FormElement option = createMenuOption("Move");
+        option.getOnPrimary().listenWith((e) -> {
+            // When the move option is selected, we want to transition to the
+            // move controller, which will allow the player to move the selected
+            // actor to a new tile
             ControllerTransition.defer.fire((state) -> {
                 Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                if (selected.isEmpty()) {
-                    throw new RuntimeException("Invalid state, no actor selected");
-                }
+                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
+
                 return new SelectMovePlayerController(state, selected.get());
             });
         });
-        addCaretChild(move);
 
-        FormElement item = createMenuOption(textPadding + "Item", () -> {
+        return option;
+    });
+
+    private final FormElement itemOption = Util.pure(() -> {
+        FormElement option = createMenuOption("Item");
+        option.getOnPrimary().listenWith((e) -> {
+            // When the item option is selected, we want to transition to the
+            // item controller, which will allow the player to select an item
+            // to use on the selected actor
             ControllerTransition.defer.fire((state) -> {
                 Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                if (selected.isEmpty()) {
-                    throw new RuntimeException("Invalid state, no actor selected");
-                }
+                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
 
                 return new SelectItemPlayerController(state, selected.get());
             });
         });
-        addCaretChild(item);
 
-        FormElement wait = createMenuOption(textPadding + "Wait", () -> {
+        return option;
+    });
+
+    private final FormElement waitOption = Util.pure(() -> {
+        FormElement option = createMenuOption("Wait");
+        option.getOnPrimary().listenWith((e) -> {
+            // When the wait option is selected, we want to transition to the
+            // observer controller, which will allow the player to select a new
+            // actor
             ControllerTransition.defer.fire((state) -> {
                 Optional<Actor> selected = state.getSelector().getCurrentlySelectedActor();
-                if (selected.isEmpty()) {
-                    throw new RuntimeException("Invalid state, no actor selected");
-                }
+                Util.ensure(selected.isPresent(), "Invalid state, no actor selected");
 
                 Actor actor = selected.get();
                 actor.setWaiting(true);
@@ -92,33 +103,32 @@ public class HudActions extends FormMenu {
                 return new ObserverPlayerController(state);
             });
         });
-        addCaretChild(wait);
 
-        FormElement v2 = new FormElement(100, 5);
-        addChild(v2);
+        return option;
+    });
 
+    public HudActions(int x, int y) {
+        super(x, y, WIDTH, HEIGHT);
 
-        onLayout();
+        addChild(title);
+        addCaretChild(attackOption);
+        addCaretChild(moveOption);
+        addCaretChild(itemOption);
+        addCaretChild(waitOption);
     }
 
-    private FormElement createMenuOption(String text, Runnable action) {
-        FormElement option = new FormElement(100, 20);
+    public static FormElement createMenuOption(String text) {
+        FormElement option = new FormElement(WIDTH / 2, 15);
+        option.setHorizontalTextAlignment(FormAlignment.START);
 
-        FormText defaultText = new FormText();
-        defaultText.setValue(text);
-        defaultText.setSize(16);
-        defaultText.setFill(Color.WHITE);
+        // Small text on not hovered
+        FormText defaultText = new FormText().setValue(text).setSize(12).setFill(Color.WHITE);
         option.setText(defaultText);
-
-        FormText hoverText = new FormText();
-        hoverText.setValue(text);
-        hoverText.setSize(16);
-        hoverText.setFill(Color.RED);
-        option.getOnHover().listenWith((e) -> option.setText(hoverText));
         option.getOnUnhover().listenWith((e) -> option.setText(defaultText));
 
-        option.setHorizontalTextAlignment(FormAlignment.START);
-        option.getOnPrimary().listenWith((e) -> action.run());
+        // Large text on hover
+        FormText hoverText = new FormText().setValue(text).setSize(14).setFill(Color.RED);
+        option.getOnHover().listenWith((e) -> option.setText(hoverText));
 
         return option;
     }

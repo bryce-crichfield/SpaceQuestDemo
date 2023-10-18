@@ -77,4 +77,14 @@ public enum Util {
         }
     }
 
+    public static void ensure(boolean check, String msg) {
+        if (!check) {
+            throw new RuntimeException("Optional was empty: " + msg);
+        }
+    }
+
+    public static <T> T pure(Supplier<T> supplier) {
+        return supplier.get();
+    }
+
 }
